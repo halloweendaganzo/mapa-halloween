@@ -160,6 +160,31 @@ const DEFAULT_HOUSES = [
 ];
 
 // ========================================================
+// CONFIGURACIÓN DE FIREBASE FIRESTORE (SINCRONIZACIÓN EN TIEMPO REAL)
+// ========================================================
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCqjideqvFrHA5_5CGWZ9V2GCXpt5Lj6ZY",
+  authDomain: "halloween-daganzo.firebaseapp.com",
+  projectId: "halloween-daganzo",
+  storageBucket: "halloween-daganzo.firebasestorage.app",
+  messagingSenderId: "241654398515",
+  appId: "1:241654398515:web:55f927e728ce1f165aed46"
+};
+
+let db = null;
+try {
+  if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+    }
+    db = firebase.firestore();
+    console.log("🔥 Firebase Firestore inicializado con éxito.");
+  }
+} catch (fbErr) {
+  console.warn("⚠️ Aviso al inicializar Firebase:", fbErr);
+}
+
+// ========================================================
 // GESTOR DE ALMACENAMIENTO DE DATOS (DATA STORE)
 // ========================================================
 class HouseStore {
@@ -167,6 +192,7 @@ class HouseStore {
     this.storageKey = 'daganzo_halloween_houses_v4';
     this.deletedKey = 'daganzo_deleted_houses_v1';
     this.houses = this.load();
+    this.initRealtimeSync();
     this.syncWithServer();
   }
 
@@ -226,6 +252,47 @@ class HouseStore {
     localStorage.setItem(this.storageKey, JSON.stringify(this.houses));
   }
 
+  // Sincronización en tiempo real mediante Firestore
+  initRealtimeSync() {
+    if (!db) return;
+    try {
+      // Escuchar cambios en la colección de casas en vivo
+      db.collection('houses').onSnapshot((snapshot) => {
+        if (!snapshot.empty) {
+          const remoteHouses = [];
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            remoteHouses.push({ ...data, id: data.id || doc.id });
+          });
+
+          const deletedIds = this.getDeletedIds();
+          const validHouses = remoteHouses.filter(h => !deletedIds.includes(h.id));
+
+          this.houses = validHouses;
+          this.save(this.houses);
+
+          if (window.app) {
+            window.app.refreshMapMarkers();
+            window.app.renderSidebarHouses();
+            window.app.updateGeneralCounters();
+            if (window.app.state.isAdminLoggedIn) {
+              window.app.renderAdminView();
+            }
+          }
+        } else {
+          // Si la base de datos de Firestore está vacía, sembramos las casas iniciales
+          DEFAULT_HOUSES.forEach(h => {
+            db.collection('houses').doc(h.id).set(h).catch(() => {});
+          });
+        }
+      }, (err) => {
+        console.warn("Firestore houses listener warning:", err);
+      });
+    } catch (e) {
+      console.warn("Error en initRealtimeSync:", e);
+    }
+  }
+
   async syncWithServer() {
     const deletedIds = this.getDeletedIds();
     try {
@@ -233,7 +300,6 @@ class HouseStore {
       if (res.ok) {
         const data = await res.json();
         if (data.ok && Array.isArray(data.houses)) {
-          // Filtrar cualquier casa que esté en la lista de eliminadas localmente
           this.houses = data.houses.filter(h => !deletedIds.includes(h.id));
           this.save(this.houses);
           if (window.app) {
@@ -247,35 +313,33 @@ class HouseStore {
           return;
         }
       }
-      // Si estamos en GitHub Pages (modo estático), cargar data/houses.json
-      const staticRes = await fetch('./data/houses.json');
-      if (staticRes.ok) {
-        const staticHouses = await staticRes.json();
-        if (Array.isArray(staticHouses)) {
-          // No sobreescribir si el usuario ha eliminado casas o tiene datos locales más recientes
-          const filtered = staticHouses.filter(h => !deletedIds.includes(h.id));
-          // Solo actualizar si hay casas nuevas que no tengamos
-          const currentIds = new Set(this.houses.map(h => h.id));
-          let hasNew = false;
-          filtered.forEach(h => {
-            if (!currentIds.has(h.id) && !deletedIds.includes(h.id)) {
-              this.houses.push(h);
-              hasNew = true;
+      // Si no hay API local ni Firestore, cargar data/houses.json
+      if (!db) {
+        const staticRes = await fetch('./data/houses.json');
+        if (staticRes.ok) {
+          const staticHouses = await staticRes.json();
+          if (Array.isArray(staticHouses)) {
+            const filtered = staticHouses.filter(h => !deletedIds.includes(h.id));
+            const currentIds = new Set(this.houses.map(h => h.id));
+            let hasNew = false;
+            filtered.forEach(h => {
+              if (!currentIds.has(h.id) && !deletedIds.includes(h.id)) {
+                this.houses.push(h);
+                hasNew = true;
+              }
+            });
+            if (hasNew) {
+              this.save(this.houses);
             }
-          });
-          if (hasNew) {
-            this.save(this.houses);
-          }
-          if (window.app) {
-            window.app.refreshMapMarkers();
-            window.app.renderSidebarHouses();
-            window.app.updateGeneralCounters();
+            if (window.app) {
+              window.app.refreshMapMarkers();
+              window.app.renderSidebarHouses();
+              window.app.updateGeneralCounters();
+            }
           }
         }
       }
-    } catch (err) {
-      console.warn('Sync server/static note:', err);
-    }
+    } catch (err) {}
   }
 
   // Si publicOnly es true, solo devuelve las casas aprobadas para el mapa
@@ -309,6 +373,15 @@ class HouseStore {
     this.houses.unshift(newHouse);
     this.save(this.houses);
 
+    // Guardar en Firestore en tiempo real para todos los dispositivos
+    if (db) {
+      try {
+        await db.collection('houses').doc(newHouse.id).set(newHouse);
+      } catch (fbErr) {
+        console.warn("Error guardando casa en Firestore:", fbErr);
+      }
+    }
+
     try {
       await fetch('/api/houses', {
         method: 'POST',
@@ -325,6 +398,16 @@ class HouseStore {
     if (idx !== -1) {
       this.houses[idx].status = 'approved';
       this.save(this.houses);
+
+      // Actualizar en Firestore en tiempo real
+      if (db) {
+        try {
+          await db.collection('houses').doc(id).update({ status: 'approved' });
+        } catch (fbErr) {
+          console.warn("Error aprobando en Firestore:", fbErr);
+        }
+      }
+
       try {
         await fetch('/api/admin/approve', {
           method: 'POST',
@@ -341,6 +424,16 @@ class HouseStore {
     this.saveDeletedId(id);
     this.houses = this.houses.filter(h => h.id !== id);
     this.save(this.houses);
+
+    // Borrar de Firestore en tiempo real para que desaparezca de TODOS los móviles
+    if (db) {
+      try {
+        await db.collection('houses').doc(id).delete();
+      } catch (fbErr) {
+        console.warn("Error borrando en Firestore:", fbErr);
+      }
+    }
+
     try {
       await fetch('/api/admin/reject', {
         method: 'POST',
@@ -359,6 +452,16 @@ class HouseStore {
     if (idx !== -1) {
       this.houses[idx] = { ...this.houses[idx], ...updatedData };
       this.save(this.houses);
+
+      // Actualizar en Firestore en tiempo real
+      if (db) {
+        try {
+          await db.collection('houses').doc(id).set(this.houses[idx], { merge: true });
+        } catch (fbErr) {
+          console.warn("Error actualizando en Firestore:", fbErr);
+        }
+      }
+
       try {
         await fetch('/api/admin/edit', {
           method: 'POST',
@@ -1525,18 +1628,35 @@ class HalloweenApp {
 
     let users = [];
 
-    // 1. Intentar desde la API Node
-    try {
-      const res = await fetch('/api/users');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.ok && Array.isArray(data.users) && data.users.length > 0) {
-          users = data.users;
+    // 1. Cargar vecinos desde Firestore (siempre sincronizado en la nube para todos los dispositivos)
+    if (db) {
+      try {
+        const snap = await db.collection('users').get();
+        if (!snap.empty) {
+          snap.forEach(doc => {
+            const uData = doc.data();
+            users.push({ ...uData, id: uData.id || doc.id });
+          });
         }
+      } catch (fbErr) {
+        console.warn("Aviso Firestore users:", fbErr);
       }
-    } catch (e) {}
+    }
 
-    // 2. Si falló (ej: GitHub Pages estático), cargar de data/users.json
+    // 2. Intentar desde la API Node si aún no hay
+    if (users.length === 0) {
+      try {
+        const res = await fetch('/api/users');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && Array.isArray(data.users) && data.users.length > 0) {
+            users = data.users;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 3. Si falló (ej: primera carga sin red), cargar de data/users.json
     if (users.length === 0) {
       try {
         const staticRes = await fetch('./data/users.json');
@@ -1557,7 +1677,7 @@ class HalloweenApp {
 
     users = users.filter(u => !deletedUserIds.includes(u.id) && !deletedUserIds.includes(u.email));
 
-    // 3. Combinar también con usuarios guardados localmente
+    // 4. Combinar con usuarios guardados localmente
     try {
       const localUsers = JSON.parse(localStorage.getItem('daganzo_users') || '[]');
       if (Array.isArray(localUsers)) {
@@ -1736,7 +1856,20 @@ class HalloweenApp {
       return;
     }
 
-    // 1. Llamar a la API Node (si está disponible)
+    // 1. Borrar de Firestore en tiempo real para todos los dispositivos
+    if (db) {
+      try {
+        if (userId) await db.collection('users').doc(userId).delete();
+        if (userEmail) {
+          const uSnap = await db.collection('users').where('email', '==', userEmail).get();
+          uSnap.forEach(d => d.ref.delete());
+        }
+      } catch (fbErr) {
+        console.warn("Error borrando usuario de Firestore:", fbErr);
+      }
+    }
+
+    // 2. Llamar a la API Node (si está disponible)
     try {
       await fetch('/api/admin/users/delete', {
         method: 'POST',
@@ -1983,6 +2116,23 @@ class HalloweenApp {
       return;
     }
 
+    const newUserPayload = {
+      id: `user-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      name,
+      phone,
+      email,
+      createdAt: Date.now()
+    };
+
+    // 1. Guardar en Firestore en tiempo real para el censo de vecinos
+    if (db) {
+      try {
+        await db.collection('users').doc(newUserPayload.id).set(newUserPayload);
+      } catch (fbErr) {
+        console.warn("Error guardando usuario en Firestore:", fbErr);
+      }
+    }
+
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -1990,25 +2140,20 @@ class HalloweenApp {
         body: JSON.stringify({ name, phone, email, password })
       });
       const data = await res.json();
-      if (!data.ok) {
-        this.showToast(data.error || 'Error al registrarse');
-        return;
+      if (data && data.user) {
+        this.currentUser = data.user;
+      } else {
+        this.currentUser = newUserPayload;
       }
-
-      this.currentUser = data.user;
-      localStorage.setItem('daganzo_user', JSON.stringify(this.currentUser));
-      this.updateUserSessionUI();
-      this.closeModal('modalUserAuth');
-      this.openModal('modalApunta');
-      this.showToast(`¡Bienvenido/a, ${name}! Ahora apunta los datos de tu casa 🎃`);
     } catch (err) {
-      this.currentUser = { name, phone, email };
-      localStorage.setItem('daganzo_user', JSON.stringify(this.currentUser));
-      this.updateUserSessionUI();
-      this.closeModal('modalUserAuth');
-      this.openModal('modalApunta');
-      this.showToast(`¡Bienvenido/a, ${name}!`);
+      this.currentUser = newUserPayload;
     }
+
+    localStorage.setItem('daganzo_user', JSON.stringify(this.currentUser));
+    this.updateUserSessionUI();
+    this.closeModal('modalUserAuth');
+    this.openModal('modalApunta');
+    this.showToast(`¡Bienvenido/a, ${name}! Ahora apunta los datos de tu casa 🎃`);
   }
 
   async handleUserLoginSubmit(e) {
