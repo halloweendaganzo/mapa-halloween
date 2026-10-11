@@ -60,28 +60,38 @@ const HALLOWEEN_50_ICONS = [
   { id: 'circo', emoji: '🎪', name: 'Circo de Pesadillas', category: 'terror' }
 ];
 
-// Galería de 20 fotos e ilustraciones ambientadas exclusivamente en Halloween
+// Galería de 30 fotos e ilustraciones ambientadas exclusivamente en Halloween
 const PHOTO_PRESETS = [
-  "assets/haunted_mansion.jpg",
-  "assets/hero_banner.jpg",
-  "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=700&q=80", // Calabazas talladas con fuego
-  "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?auto=format&fit=crop&w=700&q=80", // Árbol tenebroso y niebla
-  "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=700&q=80", // Calabazas con velas nocturnas
-  "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=700&q=80", // Esqueletos iluminados de neón
-  "https://images.unsplash.com/photo-1572099606223-6e29045d7de3?auto=format&fit=crop&w=700&q=80", // Noche fantasmagórica con luna
-  "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=700&q=80", // Calabaza terrorífica brillante
-  "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80", // Huerto de calabazas de otoño
-  "https://images.unsplash.com/photo-1476136236990-838240be4859?auto=format&fit=crop&w=700&q=80", // Calabaza sonriente y festiva
-  "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=700&q=80", // Dulces y murciélagos decorativos
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80", // Calabazas de Halloween iluminadas
-  "https://images.unsplash.com/photo-1572059002053-8cc5ad2f4a38?auto=format&fit=crop&w=700&q=80", // Caramelos de truco o trato
-  "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=700&q=80", // Castillo embrujado en la niebla
-  "https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=700&q=80", // Cielo nocturno y estrellas místicas
-  "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=700&q=80", // Arte retro de terror de Halloween
-  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=700&q=80", // Bosque encantado y bruma
-  "https://images.unsplash.com/photo-1514533450685-4493e01d1fdc?auto=format&fit=crop&w=700&q=80", // Silueta de castillo tenebroso
-  "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=700&q=80", // Fila de calabazas con luces
-  "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=700&q=80"  // Calabacita simpática de Halloween
+  "assets/haunted_mansion.jpg", // 1. Mansión encantada
+  "assets/hero_banner.jpg",     // 2. Decoración Halloween nocturna
+  "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=700&q=80", // 3. Calabaza tallada fuego
+  "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?auto=format&fit=crop&w=700&q=80", // 4. Árbol de pesadilla con niebla
+  "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=700&q=80", // 5. Velas y calabazas en penumbra
+  "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=700&q=80", // 6. Esqueletos neón Halloween
+  "https://images.unsplash.com/photo-1572099606223-6e29045d7de3?auto=format&fit=crop&w=700&q=80", // 7. Niebla fantasmal con luna
+  "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=700&q=80", // 8. Sonrisa siniestra de calabaza
+  "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80", // 9. Huerto de calabazas
+  "https://images.unsplash.com/photo-1476136236990-838240be4859?auto=format&fit=crop&w=700&q=80", // 10. Calabaza sonriente festiva
+  "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=700&q=80", // 11. Chuches de truco o trato y murciélagos
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80", // 12. Calabazas iluminadas en porche
+  "https://images.unsplash.com/photo-1572059002053-8cc5ad2f4a38?auto=format&fit=crop&w=700&q=80", // 13. Caramelos y dulces de fiesta
+  "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=700&q=80", // 14. Castillo gótico en la niebla
+  "https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=700&q=80", // 15. Noche oscura y cielo místico
+  "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=700&q=80", // 16. Arte retro de monstruos
+  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=700&q=80", // 17. Bosque encantado tenebroso
+  "https://images.unsplash.com/photo-1514533450685-4493e01d1fdc?auto=format&fit=crop&w=700&q=80", // 18. Silueta de castillo bajo la luna
+  "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=700&q=80", // 19. Hileras de calabazas con luces
+  "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=700&q=80", // 20. Calabaza pequeña naranja
+  "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=700&q=80", // 21. Camino misterioso entre la bruma
+  "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=700&q=80", // 22. Fantasmas en la noche
+  "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=700&q=80", // 23. Fachada de casa con decoración de Halloween
+  "https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?auto=format&fit=crop&w=700&q=80", // 24. Luces moradas mágicas
+  "https://images.unsplash.com/photo-1573059224875-f1404306b3e2?auto=format&fit=crop&w=700&q=80", // 25. Bodegón otoñal con calabazas
+  "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=700&q=80", // 26. Sombras y misterio
+  "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=700&q=80", // 27. Ramas retorcidas de Halloween
+  "https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=700&q=80", // 28. Pasaje oscuro y tenebroso
+  "https://images.unsplash.com/photo-1508672019048-805b876b67e2?auto=format&fit=crop&w=700&q=80", // 29. Noche mágica de sustos
+  "https://images.unsplash.com/photo-1517446580447-08ffd674c352?auto=format&fit=crop&w=700&q=80"  // 30. Niebla nocturna y linternas
 ];
 
 const DEFAULT_HOUSES = [];
