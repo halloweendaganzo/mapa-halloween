@@ -60,38 +60,38 @@ const HALLOWEEN_50_ICONS = [
   { id: 'circo', emoji: '🎪', name: 'Circo de Pesadillas', category: 'terror' }
 ];
 
-// Galería de 30 fotos e ilustraciones ambientadas exclusivamente en Halloween
+// Catálogo de 30 fotos e ilustraciones 100% ambientadas en Halloween (Almacenadas localmente sin caídas)
 const PHOTO_PRESETS = [
-  "assets/haunted_mansion.jpg", // 1. Mansión encantada
-  "assets/hero_banner.jpg",     // 2. Decoración Halloween nocturna
-  "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=700&q=80", // 3. Calabaza tallada fuego
-  "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?auto=format&fit=crop&w=700&q=80", // 4. Árbol de pesadilla con niebla
-  "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=700&q=80", // 5. Velas y calabazas en penumbra
-  "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=700&q=80", // 6. Esqueletos neón Halloween
-  "https://images.unsplash.com/photo-1572099606223-6e29045d7de3?auto=format&fit=crop&w=700&q=80", // 7. Niebla fantasmal con luna
-  "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=700&q=80", // 8. Sonrisa siniestra de calabaza
-  "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80", // 9. Huerto de calabazas
-  "https://images.unsplash.com/photo-1476136236990-838240be4859?auto=format&fit=crop&w=700&q=80", // 10. Calabaza sonriente festiva
-  "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=700&q=80", // 11. Chuches de truco o trato y murciélagos
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80", // 12. Calabazas iluminadas en porche
-  "https://images.unsplash.com/photo-1572059002053-8cc5ad2f4a38?auto=format&fit=crop&w=700&q=80", // 13. Caramelos y dulces de fiesta
-  "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=700&q=80", // 14. Castillo gótico en la niebla
-  "https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=700&q=80", // 15. Noche oscura y cielo místico
-  "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=700&q=80", // 16. Arte retro de monstruos
-  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=700&q=80", // 17. Bosque encantado tenebroso
-  "https://images.unsplash.com/photo-1514533450685-4493e01d1fdc?auto=format&fit=crop&w=700&q=80", // 18. Silueta de castillo bajo la luna
-  "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=700&q=80", // 19. Hileras de calabazas con luces
-  "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=700&q=80", // 20. Calabaza pequeña naranja
-  "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=700&q=80", // 21. Camino misterioso entre la bruma
-  "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=700&q=80", // 22. Fantasmas en la noche
-  "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&w=700&q=80", // 23. Fachada de casa con decoración de Halloween
-  "https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?auto=format&fit=crop&w=700&q=80", // 24. Luces moradas mágicas
-  "https://images.unsplash.com/photo-1573059224875-f1404306b3e2?auto=format&fit=crop&w=700&q=80", // 25. Bodegón otoñal con calabazas
-  "https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=700&q=80", // 26. Sombras y misterio
-  "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=700&q=80", // 27. Ramas retorcidas de Halloween
-  "https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=700&q=80", // 28. Pasaje oscuro y tenebroso
-  "https://images.unsplash.com/photo-1508672019048-805b876b67e2?auto=format&fit=crop&w=700&q=80", // 29. Noche mágica de sustos
-  "https://images.unsplash.com/photo-1517446580447-08ffd674c352?auto=format&fit=crop&w=700&q=80"  // 30. Niebla nocturna y linternas
+  { url: "assets/preset_photos/h1_mansion.jpg", title: "Mansión de Calabazas" },
+  { url: "assets/preset_photos/h2_esqueletos.jpg", title: "Esqueletos Neón Terror" },
+  { url: "assets/preset_photos/h3_calabaza_fuego.jpg", title: "Jack O'Lantern Ardiente" },
+  { url: "assets/preset_photos/h4_calabaza_sonrisa.jpg", title: "Calabaza Sonrisa Maléfica" },
+  { url: "assets/preset_photos/h5_arbol_terror.jpg", title: "Árbol Maldito en la Niebla" },
+  { url: "assets/preset_photos/h6_decoracion_casa.jpg", title: "Fachada Halloween Decorada" },
+  { url: "assets/preset_photos/h7_fachada_calabazas.jpg", title: "Porche de Calabazas Iluminadas" },
+  { url: "assets/preset_photos/h8_velas_calabazas.jpg", title: "Ritual de Velas y Calabazas" },
+  { url: "assets/preset_photos/h9_chuches_halloween.jpg", title: "Mesa Dulce Truco o Trato" },
+  { url: "assets/preset_photos/h10_fantasma_noche.jpg", title: "Fantasmas en la Noche Oscura" },
+  { url: "assets/preset_photos/h11_huerto_calabazas.jpg", title: "Huerto de Calabazas Embrujado" },
+  { url: "assets/preset_photos/h12_luces_calabaza.jpg", title: "Calabazas con Luces Festivas" },
+  { url: "assets/preset_photos/h13_caramelos_fiesta.jpg", title: "Bolsitas Truco o Trato" },
+  { url: "assets/preset_photos/h14_jack_o_lantern.jpg", title: "Gran Calabaza Iluminada" },
+  { url: "assets/preset_photos/h15_calabaza_naranja.jpg", title: "Calabaza Clásica Tallada" },
+  { url: "assets/preset_photos/h16_niebla_luna.jpg", title: "Noche de Luna Llena y Niebla" },
+  { url: "assets/preset_photos/h17_bodegon_calabazas.jpg", title: "Bodegón de Halloween y Otoño" },
+  { url: "assets/preset_photos/h18_noche_fantasmal.jpg", title: "Siluetas de Fantasmas" },
+  { url: "assets/preset_photos/h19_bosque_encantado.jpg", title: "Bosque Encantado Tenebroso" },
+  { url: "assets/preset_photos/h20_camino_tenebroso.jpg", title: "Sendero Embrujado en la Niebla" },
+  { url: "assets/preset_photos/h21_castillo_sombras.jpg", title: "Castillo Sombrío de Halloween" },
+  { url: "assets/preset_photos/h22_otoño_calabazas.jpg", title: "Calabazas de Noche Tenebrosa" },
+  { url: "assets/preset_photos/h23_castillo_gotico.jpg", title: "Castillo Gótico Bajo la Luna" },
+  { url: "assets/preset_photos/h24_ramas_siniestras.jpg", title: "Ramas Retorcidas de Pesadilla" },
+  { url: "assets/preset_photos/h25_pasaje_sombras.jpg", title: "Pasaje del Terror Siniestro" },
+  { url: "assets/preset_photos/h26_noche_misterio.jpg", title: "Noche Oscura de Misterio" },
+  { url: "assets/preset_photos/h27_monstruo_retro.jpg", title: "Criatura de Halloween" },
+  { url: "assets/preset_photos/h28_noche_estrellada.jpg", title: "Cielo Místico de Halloween" },
+  { url: "assets/preset_photos/h29_mansion_embrujada.jpg", title: "La Gran Mansión Embrujada" },
+  { url: "assets/preset_photos/h30_casa_fantasma.jpg", title: "Aquelarre Nocturno Daganzo" }
 ];
 
 const DEFAULT_HOUSES = [];
@@ -1021,10 +1021,10 @@ class HalloweenApp {
     const streetIn = document.getElementById('houseStreet');
     if (streetIn) streetIn.value = '';
     const hoursIn = document.getElementById('houseHours');
-    if (hoursIn) hoursIn.value = '19:00 - 22:30';
-    const hStart = document.getElementById('customHourStart');
+    if (hoursIn) hoursIn.value = '19:00 a 22:30';
+    const hStart = document.getElementById('selectHourStart');
     if (hStart) hStart.value = '19:00';
-    const hEnd = document.getElementById('customHourEnd');
+    const hEnd = document.getElementById('selectHourEnd');
     if (hEnd) hEnd.value = '22:30';
 
     const customImg = document.getElementById('houseCustomImage');
@@ -1481,7 +1481,8 @@ class HalloweenApp {
     const hours = document.getElementById('houseHours')?.value.trim() || '19:00 - 22:30';
     const desc = document.getElementById('houseDesc')?.value.trim() || '¡Decoración vecinal lista para Halloween en Daganzo!';
     const customImg = document.getElementById('houseCustomImage')?.value.trim();
-    const imgUrl = customImg || this.wizard.image || PHOTO_PRESETS[0];
+    const defaultPreset = typeof PHOTO_PRESETS[0] === 'object' ? PHOTO_PRESETS[0].url : PHOTO_PRESETS[0];
+    const imgUrl = customImg || this.wizard.image || defaultPreset;
 
     const iconItem = HALLOWEEN_50_ICONS.find(i => i.id === this.wizard.iconId) || HALLOWEEN_50_ICONS[0];
 
@@ -2546,16 +2547,35 @@ class HalloweenApp {
     const container = document.getElementById('presetPhotosGrid');
     if (!container) return;
 
-    container.innerHTML = PHOTO_PRESETS.map((url, i) => `
-      <div class="preset-photo-thumb ${i === 0 ? 'selected' : ''}" data-url="${url}" onclick="window.app.selectPresetPhoto(this, '${url}')" title="Temática ${i+1}">
-        <img src="${url}" alt="Temática Halloween ${i+1}" loading="lazy">
-      </div>
-    `).join('');
+    container.innerHTML = PHOTO_PRESETS.map((item, i) => {
+      const url = typeof item === 'object' ? item.url : item;
+      const title = typeof item === 'object' ? item.title : `Temática ${i+1}`;
+      const isSelected = this.wizard.image === url || (!this.wizard.image && i === 0);
+
+      return `
+        <div class="preset-photo-thumb ${isSelected ? 'selected' : ''}" 
+             data-url="${url}" 
+             data-title="${title}"
+             onclick="window.app.selectPresetPhoto(this, '${url}')" 
+             title="${title}">
+          <img src="${url}" alt="${title}" loading="lazy">
+          <button type="button" class="thumb-zoom-btn" title="Ver en grande" onclick="event.stopPropagation(); window.app.openPhotoPreviewModal('${url}', '${title}')">
+            🔍
+          </button>
+          <span class="thumb-select-tag">${title}</span>
+        </div>
+      `;
+    }).join('');
   }
 
   selectPresetPhoto(el, url) {
     document.querySelectorAll('.preset-photo-thumb').forEach(t => t.classList.remove('selected'));
-    if (el) el.classList.add('selected');
+    if (el) {
+      el.classList.add('selected');
+    } else {
+      const target = document.querySelector(`.preset-photo-thumb[data-url="${url}"]`);
+      if (target) target.classList.add('selected');
+    }
     this.selectedPresetPhoto = url;
     this.wizard.image = url;
 
@@ -2568,6 +2588,41 @@ class HalloweenApp {
 
     const previewImg = document.getElementById('wizardPreviewImg');
     if (previewImg) previewImg.src = url;
+  }
+
+  openPhotoPreviewModal(url, title = 'Ilustración de Halloween') {
+    const modal = document.getElementById('modalPhotoPreview');
+    const imgLarge = document.getElementById('photoPreviewImgLarge');
+    const titleEl = document.getElementById('photoPreviewTitle');
+    const selectBtn = document.getElementById('btnSelectFromPhotoPreview');
+    const closeBtn = document.getElementById('btnClosePhotoPreview');
+
+    if (!modal || !imgLarge) return;
+
+    imgLarge.src = url;
+    if (titleEl) {
+      titleEl.innerHTML = `<span>🎃</span> ${title}`;
+    }
+
+    if (selectBtn) {
+      selectBtn.onclick = () => {
+        this.selectPresetPhoto(null, url);
+        modal.style.display = 'none';
+        this.showToast(`✓ Imagen seleccionada: ${title}`);
+      };
+    }
+
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        modal.style.display = 'none';
+      };
+    }
+
+    modal.onclick = (e) => {
+      if (e.target === modal) modal.style.display = 'none';
+    };
+
+    modal.style.display = 'flex';
   }
 
   handleMobilePhotoUpload(e) {
@@ -3292,37 +3347,18 @@ class HalloweenApp {
       });
     });
 
-    // Horarios rápidos y personalizados
-    const updateCustomHoursString = () => {
-      const start = document.getElementById('customHourStart')?.value || '19:00';
-      const end = document.getElementById('customHourEnd')?.value || '22:30';
-      const combined = `${start} - ${end}`;
+    // Horarios de Visita con desplegables (Horas y Medias horas)
+    const updateSelectedHours = () => {
+      const start = document.getElementById('selectHourStart')?.value || '19:00';
+      const end = document.getElementById('selectHourEnd')?.value || '22:30';
+      const combined = `${start} a ${end}`;
       this.wizard.hours = combined;
-      const inp = document.getElementById('houseHours');
-      if (inp) inp.value = combined;
+      const inpHours = document.getElementById('houseHours');
+      if (inpHours) inpHours.value = combined;
     };
 
-    document.querySelectorAll('.quick-hour-chip').forEach(chip => {
-      chip.addEventListener('click', (e) => {
-        document.querySelectorAll('.quick-hour-chip').forEach(c => c.classList.remove('selected'));
-        e.currentTarget.classList.add('selected');
-        const h = e.currentTarget.dataset.hours;
-        if (h === 'custom') {
-          updateCustomHoursString();
-          document.getElementById('customHourStart')?.focus();
-        } else {
-          this.wizard.hours = h;
-          const inp = document.getElementById('houseHours');
-          if (inp) inp.value = h;
-        }
-      });
-    });
-
-    document.getElementById('customHourStart')?.addEventListener('change', updateCustomHoursString);
-    document.getElementById('customHourEnd')?.addEventListener('change', updateCustomHoursString);
-    document.getElementById('houseHours')?.addEventListener('input', (e) => {
-      this.wizard.hours = e.target.value.trim();
-    });
+    document.getElementById('selectHourStart')?.addEventListener('change', updateSelectedHours);
+    document.getElementById('selectHourEnd')?.addEventListener('change', updateSelectedHours);
 
     // Subida de foto desde el móvil
     const fileInput = document.getElementById('housePhotoFileInput');
