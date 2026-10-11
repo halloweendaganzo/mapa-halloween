@@ -60,16 +60,28 @@ const HALLOWEEN_50_ICONS = [
   { id: 'circo', emoji: '🎪', name: 'Circo de Pesadillas', category: 'terror' }
 ];
 
-// Galería de fotos e ilustraciones de Halloween para que los vecinos puedan elegir con 1 clic
+// Galería de 20 fotos e ilustraciones ambientadas exclusivamente en Halloween
 const PHOTO_PRESETS = [
   "assets/haunted_mansion.jpg",
   "assets/hero_banner.jpg",
-  "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1572099606223-6e29045d7de3?auto=format&fit=crop&w=700&q=80"
+  "https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?auto=format&fit=crop&w=700&q=80", // Calabazas talladas con fuego
+  "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?auto=format&fit=crop&w=700&q=80", // Árbol tenebroso y niebla
+  "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=700&q=80", // Calabazas con velas nocturnas
+  "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=700&q=80", // Esqueletos iluminados de neón
+  "https://images.unsplash.com/photo-1572099606223-6e29045d7de3?auto=format&fit=crop&w=700&q=80", // Noche fantasmagórica con luna
+  "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=700&q=80", // Calabaza terrorífica brillante
+  "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=700&q=80", // Huerto de calabazas de otoño
+  "https://images.unsplash.com/photo-1476136236990-838240be4859?auto=format&fit=crop&w=700&q=80", // Calabaza sonriente y festiva
+  "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=700&q=80", // Dulces y murciélagos decorativos
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80", // Calabazas de Halloween iluminadas
+  "https://images.unsplash.com/photo-1572059002053-8cc5ad2f4a38?auto=format&fit=crop&w=700&q=80", // Caramelos de truco o trato
+  "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=700&q=80", // Castillo embrujado en la niebla
+  "https://images.unsplash.com/photo-1538370965046-79c0d6907d47?auto=format&fit=crop&w=700&q=80", // Cielo nocturno y estrellas místicas
+  "https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=700&q=80", // Arte retro de terror de Halloween
+  "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=700&q=80", // Bosque encantado y bruma
+  "https://images.unsplash.com/photo-1514533450685-4493e01d1fdc?auto=format&fit=crop&w=700&q=80", // Silueta de castillo tenebroso
+  "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=700&q=80", // Fila de calabazas con luces
+  "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=700&q=80"  // Calabacita simpática de Halloween
 ];
 
 const DEFAULT_HOUSES = [];
@@ -1000,8 +1012,18 @@ class HalloweenApp {
     if (streetIn) streetIn.value = '';
     const hoursIn = document.getElementById('houseHours');
     if (hoursIn) hoursIn.value = '19:00 - 22:30';
+    const hStart = document.getElementById('customHourStart');
+    if (hStart) hStart.value = '19:00';
+    const hEnd = document.getElementById('customHourEnd');
+    if (hEnd) hEnd.value = '22:30';
+
     const customImg = document.getElementById('houseCustomImage');
     if (customImg) customImg.value = '';
+    const mobilePhotoPreview = document.getElementById('mobilePhotoUploadPreview');
+    if (mobilePhotoPreview) mobilePhotoPreview.style.display = 'none';
+    const fileInp = document.getElementById('housePhotoFileInput');
+    if (fileInp) fileInp.value = '';
+
     const descIn = document.getElementById('houseDesc');
     if (descIn) descIn.value = '';
 
@@ -2508,23 +2530,110 @@ class HalloweenApp {
   }
 
   // ========================================================
-  // PRESET PHOTOS
+  // PRESET PHOTOS & SUBIDA DE FOTO DESDE EL MÓVIL
   // ========================================================
   renderPresetPhotosSelectors() {
     const container = document.getElementById('presetPhotosGrid');
     if (!container) return;
 
     container.innerHTML = PHOTO_PRESETS.map((url, i) => `
-      <div class="preset-photo-thumb ${i === 0 ? 'selected' : ''}" data-url="${url}" onclick="window.app.selectPresetPhoto(this, '${url}')">
-        <img src="${url}" alt="Preset ${i+1}">
+      <div class="preset-photo-thumb ${i === 0 ? 'selected' : ''}" data-url="${url}" onclick="window.app.selectPresetPhoto(this, '${url}')" title="Temática ${i+1}">
+        <img src="${url}" alt="Temática Halloween ${i+1}" loading="lazy">
       </div>
     `).join('');
   }
 
   selectPresetPhoto(el, url) {
     document.querySelectorAll('.preset-photo-thumb').forEach(t => t.classList.remove('selected'));
-    el.classList.add('selected');
+    if (el) el.classList.add('selected');
     this.selectedPresetPhoto = url;
+    this.wizard.image = url;
+
+    // Si había una foto del móvil subida, limpiarla visualmente
+    const mobilePreview = document.getElementById('mobilePhotoUploadPreview');
+    if (mobilePreview) mobilePreview.style.display = 'none';
+
+    const customImgInput = document.getElementById('houseCustomImage');
+    if (customImgInput) customImgInput.value = '';
+
+    const previewImg = document.getElementById('wizardPreviewImg');
+    if (previewImg) previewImg.src = url;
+  }
+
+  handleMobilePhotoUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.showToast('Por favor, selecciona un archivo de imagen válido.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Redimensionar suavemente en un canvas para optimizar memoria en móvil (máximo 1200px)
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+        this.wizard.image = compressedDataUrl;
+        this.selectedPresetPhoto = compressedDataUrl;
+
+        // Deseleccionar presets
+        document.querySelectorAll('.preset-photo-thumb').forEach(t => t.classList.remove('selected'));
+
+        // Mostrar vista previa de foto subida
+        const previewWrap = document.getElementById('mobilePhotoUploadPreview');
+        const thumb = document.getElementById('mobilePhotoThumb');
+        const nameLabel = document.getElementById('mobilePhotoName');
+        if (thumb) thumb.src = compressedDataUrl;
+        if (nameLabel) nameLabel.textContent = file.name;
+        if (previewWrap) previewWrap.style.display = 'flex';
+
+        const customInp = document.getElementById('houseCustomImage');
+        if (customInp) customInp.value = '';
+
+        const wizImg = document.getElementById('wizardPreviewImg');
+        if (wizImg) wizImg.src = compressedDataUrl;
+
+        this.showToast('¡Foto de tu móvil cargada con éxito! 📷');
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeMobilePhoto() {
+    const fileInp = document.getElementById('housePhotoFileInput');
+    if (fileInp) fileInp.value = '';
+    const previewWrap = document.getElementById('mobilePhotoUploadPreview');
+    if (previewWrap) previewWrap.style.display = 'none';
+
+    // Volver al primer preset
+    this.selectPresetPhoto(document.querySelector('.preset-photo-thumb'), PHOTO_PRESETS[0]);
   }
 
   // ========================================================
@@ -3173,16 +3282,50 @@ class HalloweenApp {
       });
     });
 
-    // Horarios rápidos
+    // Horarios rápidos y personalizados
+    const updateCustomHoursString = () => {
+      const start = document.getElementById('customHourStart')?.value || '19:00';
+      const end = document.getElementById('customHourEnd')?.value || '22:30';
+      const combined = `${start} - ${end}`;
+      this.wizard.hours = combined;
+      const inp = document.getElementById('houseHours');
+      if (inp) inp.value = combined;
+    };
+
     document.querySelectorAll('.quick-hour-chip').forEach(chip => {
       chip.addEventListener('click', (e) => {
         document.querySelectorAll('.quick-hour-chip').forEach(c => c.classList.remove('selected'));
         e.currentTarget.classList.add('selected');
         const h = e.currentTarget.dataset.hours;
-        this.wizard.hours = h;
-        const inp = document.getElementById('houseHours');
-        if (inp) inp.value = h;
+        if (h === 'custom') {
+          updateCustomHoursString();
+          document.getElementById('customHourStart')?.focus();
+        } else {
+          this.wizard.hours = h;
+          const inp = document.getElementById('houseHours');
+          if (inp) inp.value = h;
+        }
       });
+    });
+
+    document.getElementById('customHourStart')?.addEventListener('change', updateCustomHoursString);
+    document.getElementById('customHourEnd')?.addEventListener('change', updateCustomHoursString);
+    document.getElementById('houseHours')?.addEventListener('input', (e) => {
+      this.wizard.hours = e.target.value.trim();
+    });
+
+    // Subida de foto desde el móvil
+    const fileInput = document.getElementById('housePhotoFileInput');
+    document.getElementById('btnUploadMobilePhoto')?.addEventListener('click', () => {
+      fileInput?.click();
+    });
+
+    fileInput?.addEventListener('change', (e) => {
+      this.handleMobilePhotoUpload(e);
+    });
+
+    document.getElementById('btnRemoveMobilePhoto')?.addEventListener('click', () => {
+      this.removeMobilePhoto();
     });
 
     // Foto personalizada por URL
@@ -3190,7 +3333,11 @@ class HalloweenApp {
       const val = e.target.value.trim();
       if (val) {
         document.querySelectorAll('.preset-photo-thumb').forEach(t => t.classList.remove('selected'));
+        const mobilePreview = document.getElementById('mobilePhotoUploadPreview');
+        if (mobilePreview) mobilePreview.style.display = 'none';
         this.wizard.image = val;
+        const wizImg = document.getElementById('wizardPreviewImg');
+        if (wizImg) wizImg.src = val;
       }
     });
 
