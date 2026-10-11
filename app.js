@@ -1544,22 +1544,46 @@ class HalloweenApp {
   // PANEL DE ADMINISTRACIÓN Y MODERACIÓN VECINAL
   // ========================================================
   getAdminPin() {
-    return localStorage.getItem('daganzo_admin_custom_pin') || '1234';
+    return localStorage.getItem('daganzo_admin_custom_pin') || '';
   }
 
   async loginAdmin(pin) {
-    const currentPin = this.getAdminPin();
-    let isCorrect = (pin && (pin === currentPin || pin === '1234' || pin === 'daganzo' || pin === 'admin'));
+    if (!pin) {
+      this.showToast('Introduce tu contraseña');
+      return;
+    }
 
-    // Comprobar también en Firestore si está configurado
-    if (db && !isCorrect && pin) {
+    let isCorrect = false;
+
+    // 1. Comprobar primero en Firestore (la fuente de verdad compartida)
+    if (db) {
       try {
         const pinDoc = await db.collection('settings').doc('admin').get();
-        if (pinDoc.exists && pinDoc.data()?.pin === pin) {
-          isCorrect = true;
-          localStorage.setItem('daganzo_admin_custom_pin', pin);
+        if (pinDoc.exists && pinDoc.data()?.pin) {
+          const remotePin = String(pinDoc.data().pin).trim();
+          if (pin.trim() === remotePin) {
+            isCorrect = true;
+            localStorage.setItem('daganzo_admin_custom_pin', remotePin);
+          }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn("Aviso Firestore al verificar PIN:", e);
+      }
+    }
+
+    // 2. Si no hay conexión o no está en Firestore, comprobar en localStorage
+    if (!isCorrect) {
+      const localPin = this.getAdminPin();
+      if (localPin) {
+        if (pin.trim() === localPin.trim()) {
+          isCorrect = true;
+        }
+      } else {
+        // Solo si nunca se ha establecido ninguna clave personalizada, permitir 1234
+        if (pin.trim() === '1234') {
+          isCorrect = true;
+        }
+      }
     }
 
     if (isCorrect) {
@@ -1568,7 +1592,7 @@ class HalloweenApp {
       this.showToast('Sesión de administrador iniciada ✔️');
       this.renderAdminView();
     } else {
-      this.showToast('PIN incorrecto. Acceso denegado.');
+      this.showToast('❌ Contraseña incorrecta. Acceso denegado.');
     }
   }
 
