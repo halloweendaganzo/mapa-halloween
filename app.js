@@ -1737,9 +1737,68 @@ class HalloweenApp {
     }
   }
 
+  showAdminConfirm({ title = '¿Estás seguro?', message = '', acceptText = 'Sí, continuar', isDanger = true }) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('modalAdminConfirm');
+      const titleEl = document.getElementById('adminConfirmTitle');
+      const msgEl = document.getElementById('adminConfirmMessage');
+      const acceptBtn = document.getElementById('btnAdminConfirmAccept');
+      const cancelBtn = document.getElementById('btnAdminConfirmCancel');
+
+      if (!modal || !acceptBtn || !cancelBtn) {
+        // Fallback a confirm nativo
+        const ok = window.confirm(message || title);
+        resolve(ok);
+        return;
+      }
+
+      if (titleEl) titleEl.textContent = title;
+      if (msgEl) msgEl.textContent = message;
+      if (acceptBtn) {
+        acceptBtn.textContent = acceptText;
+        acceptBtn.style.background = isDanger ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #10b981, #059669)';
+      }
+
+      modal.style.display = 'flex';
+      modal.classList.add('open');
+
+      const cleanup = () => {
+        modal.classList.remove('open');
+        modal.style.display = 'none';
+        acceptBtn.onclick = null;
+        cancelBtn.onclick = null;
+        modal.onclick = null;
+      };
+
+      acceptBtn.onclick = (e) => {
+        e.stopPropagation();
+        cleanup();
+        resolve(true);
+      };
+
+      cancelBtn.onclick = (e) => {
+        e.stopPropagation();
+        cleanup();
+        resolve(false);
+      };
+
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          cleanup();
+          resolve(false);
+        }
+      };
+    });
+  }
+
   async adminApproveHouse(id) {
+    if (!id) return;
     const house = await this.store.approve(id);
     if (house) {
+      if (this.previewMarker) {
+        this.map.removeLayer(this.previewMarker);
+        this.previewMarker = null;
+      }
       this.refreshMapMarkers();
       this.renderSidebarHouses();
       this.updateGeneralCounters();
@@ -1750,15 +1809,32 @@ class HalloweenApp {
   }
 
   async adminRejectHouse(id) {
+    if (!id) return;
     const house = this.store.getById(id);
     const title = house ? house.title : 'la casa';
-    if (confirm(`¿Rechazar y descartar la solicitud de "${title}"? El icono ${house?.icon || '🎃'} volverá a quedar libre.`)) {
+    const iconEmoji = house?.icon || '🎃';
+
+    const confirmed = await this.showAdminConfirm({
+      title: 'Descartar Solicitud',
+      message: `¿Deseas descartar la solicitud de "${title}"? El icono ${iconEmoji} quedará libre de nuevo para cualquier otro vecino.`,
+      acceptText: 'Sí, Descartar',
+      isDanger: true
+    });
+
+    if (confirmed) {
+      if (this.previewMarker) {
+        this.map.removeLayer(this.previewMarker);
+        this.previewMarker = null;
+      }
       await this.store.reject(id);
       this.refreshMapMarkers();
       this.renderSidebarHouses();
       this.updateGeneralCounters();
       this.renderAdminView();
-      this.showToast(`❌ Solicitud descartada.`);
+      if (this.selectedHouse?.id === id) {
+        this.closeHouseCard();
+      }
+      this.showToast(`❌ Solicitud descartada. El icono ${iconEmoji} ha quedado libre.`);
     }
   }
 
@@ -2277,6 +2353,59 @@ class HalloweenApp {
         }).join('');
       }
     }
+
+    // Vinculación directa de eventos para máxima fiabilidad en móviles táctiles
+    const bindCardActions = (container) => {
+      if (!container) return;
+      container.querySelectorAll('.btn-action-primary-approve').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const card = btn.closest('.admin-house-card');
+          const id = card?.getAttribute('data-id');
+          if (id) this.adminApproveHouse(id);
+        });
+      });
+
+      container.querySelectorAll('.btn-action-view').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const card = btn.closest('.admin-house-card');
+          const id = card?.getAttribute('data-id');
+          if (id) this.adminFocusHouse(id);
+        });
+      });
+
+      container.querySelectorAll('.btn-action-edit').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const card = btn.closest('.admin-house-card');
+          const id = card?.getAttribute('data-id');
+          if (id) this.openEditHouseModal(id);
+        });
+      });
+
+      container.querySelectorAll('.btn-action-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const card = btn.closest('.admin-house-card');
+          const id = card?.getAttribute('data-id');
+          if (id) {
+            if (card.classList.contains('admin-pending-card')) {
+              this.adminRejectHouse(id);
+            } else {
+              this.adminDeleteHouse(id);
+            }
+          }
+        });
+      });
+    };
+
+    bindCardActions(pendingList);
+    bindCardActions(approvedList);
   }
 
   // ========================================================
@@ -2425,36 +2554,96 @@ class HalloweenApp {
 
 
   adminFocusHouse(id) {
+    if (!id) return;
     const house = this.store.getById(id);
-    if (house) {
-      this.closeModal('modalAdmin');
-      this.switchView('map');
-      this.openHouseCard(house);
+    if (!house) {
+      this.showToast('No se encontró la información de esta casa');
+      return;
     }
+
+    this.closeModal('modalAdmin');
+    this.switchView('map');
+
+    // Si la casa es pendiente, no está en el mapa por defecto. Añadir un marcador de vista previa temporal
+    if (house.status === 'pending') {
+      if (this.previewMarker) {
+        this.map.removeLayer(this.previewMarker);
+        this.previewMarker = null;
+      }
+
+      const matched = HALLOWEEN_50_ICONS.find(i => i.id === house.iconId || i.emoji === house.icon);
+      const iconEmoji = matched ? matched.emoji : (house.icon || '🎃');
+
+      const pinHtml = `
+        <div class="pin-bubble-glow pin-cat-${house.category || 'caramelos'}" style="border-color: #fbbf24; box-shadow: 0 0 25px rgba(245, 158, 11, 0.7);">
+          <span class="pin-inner-emoji">${iconEmoji}</span>
+          <span class="pin-checked-badge" style="background: #f59e0b; border-color: #fff;">⏳</span>
+        </div>
+      `;
+
+      const customIcon = L.divIcon({
+        html: pinHtml,
+        className: 'spooky-pin-wrap pin-spotlight-active',
+        iconSize: [38, 38],
+        iconAnchor: [19, 34]
+      });
+
+      this.previewMarker = L.marker(house.coords, { icon: customIcon, zIndexOffset: 4000 }).addTo(this.map);
+      this.previewMarker.bindPopup(`
+        <div style="text-align: center; padding: 6px 4px; font-family: var(--font-body);">
+          <div style="font-size: 1.4rem; margin-bottom: 2px;">${iconEmoji}</div>
+          <b style="color: #fbbf24; font-size: 0.95rem;">${house.title}</b>
+          <div style="font-size: 0.72rem; color: #f59e0b; font-weight: 700; margin: 2px 0;">⏳ Solicitud Pendiente</div>
+          <p style="font-size: 0.78rem; color: #cbd5e1; margin: 3px 0 0 0;">📍 ${house.street}</p>
+        </div>
+      `);
+      this.previewMarker.on('click', () => {
+        this.openHouseCard(house);
+      });
+    }
+
+    this.openHouseCard(house);
+    this.showToast(`👁️ Viendo "${house.title}" en el mapa de Daganzo`);
   }
 
   openEditHouseModal(id) {
+    if (!id) return;
     const house = this.store.getById(id);
-    if (!house) return;
+    if (!house) {
+      this.showToast('No se encontró la casa para editar');
+      return;
+    }
 
     this.editingHouseId = id;
-    this.tempCoords = house.coords;
+    this.tempCoords = house.coords ? [...house.coords] : DAGANZO_COORDS;
     this.adminSelectedIconId = house.iconId || 'calabaza';
 
     const f = document.getElementById('formEditHouse');
     if (!f) return;
 
-    f.elements['editName'].value = house.title;
-    f.elements['editStreet'].value = house.street;
-    f.elements['editCategory'].value = house.category;
-    f.elements['editHours'].value = house.hours || '19:00 - 22:30';
-    f.elements['editDesc'].value = house.description;
-    f.elements['editImage'].value = house.image;
+    if (f.elements['editName']) f.elements['editName'].value = house.title || '';
+    if (f.elements['editStreet']) f.elements['editStreet'].value = house.street || '';
+    if (f.elements['editCategory']) f.elements['editCategory'].value = house.category || 'caramelos';
+    if (f.elements['editHours']) f.elements['editHours'].value = house.hours || '19:00 - 22:30';
+    if (f.elements['editDesc']) f.elements['editDesc'].value = house.description || '';
+    if (f.elements['editImage']) f.elements['editImage'].value = house.image || '';
 
-    document.getElementById('editCoordsText').innerHTML = `📍 Coordenadas: <b>${house.coords[0].toFixed(4)}, ${house.coords[1].toFixed(4)}</b> (Toca el mapa para cambiarlas)`;
+    const coordsDisplay = house.coords ? `${house.coords[0].toFixed(4)}, ${house.coords[1].toFixed(4)}` : 'Daganzo de Arriba';
+    const coordsEl = document.getElementById('editCoordsText');
+    if (coordsEl) {
+      coordsEl.innerHTML = `📍 Coordenadas: <b>${coordsDisplay}</b> (Toca el mapa para cambiarlas)`;
+    }
 
     this.renderAdminEditIconsGrid(house.id, this.adminSelectedIconId);
-    this.openModal('modalEditHouse');
+    
+    // Abrir el modal de edición asegurando que esté por encima de cualquier otro
+    const editModal = document.getElementById('modalEditHouse');
+    if (editModal) {
+      editModal.classList.add('open');
+      editModal.scrollTop = 0;
+      const sheet = editModal.querySelector('.modal-sheet');
+      if (sheet) sheet.scrollTop = 0;
+    }
   }
 
   // Renderiza el selector de los 50 iconos en la edición de Admin
@@ -2472,6 +2661,7 @@ class HalloweenApp {
       return `
         <div class="icon-pick-card ${isSelected ? 'selected' : ''} ${isTaken ? 'taken' : ''}"
              data-icon-id="${icon.id}"
+             role="button"
              title="${isTaken ? `🔒 Reservado por: ${takenByTitle}` : `${icon.name}`}"
              onclick="window.app.selectAdminEditIcon('${icon.id}', '${houseId}')">
           <span class="icon-glyph">${icon.emoji}</span>
@@ -2493,26 +2683,30 @@ class HalloweenApp {
     this.renderAdminEditIconsGrid(houseId, iconId);
   }
 
-  saveEditedHouse() {
+  async saveEditedHouse() {
     if (!this.editingHouseId) return;
 
     const f = document.getElementById('formEditHouse');
+    if (!f) return;
+
     const chosenIconItem = HALLOWEEN_50_ICONS.find(i => i.id === this.adminSelectedIconId) || HALLOWEEN_50_ICONS[0];
 
     const updated = {
-      title: f.elements['editName'].value,
-      street: f.elements['editStreet'].value,
-      category: f.elements['editCategory'].value,
+      title: f.elements['editName']?.value.trim() || 'Casa Encantada',
+      street: f.elements['editStreet']?.value.trim() || 'Daganzo de Arriba',
+      category: f.elements['editCategory']?.value || 'caramelos',
       iconId: chosenIconItem.id,
       icon: chosenIconItem.emoji,
-      hours: f.elements['editHours'].value,
-      description: f.elements['editDesc'].value,
-      image: f.elements['editImage'].value || PHOTO_PRESETS[0],
+      hours: f.elements['editHours']?.value.trim() || '19:00 - 22:30',
+      description: f.elements['editDesc']?.value.trim() || '',
+      image: f.elements['editImage']?.value.trim() || PHOTO_PRESETS[0],
       coords: this.tempCoords
     };
 
-    this.store.update(this.editingHouseId, updated);
+    await this.store.update(this.editingHouseId, updated);
     this.refreshMapMarkers();
+    this.renderSidebarHouses();
+    this.updateGeneralCounters();
     this.renderAdminView();
     this.closeModal('modalEditHouse');
     this.showToast('Casa actualizada correctamente ✔️');
@@ -2523,11 +2717,23 @@ class HalloweenApp {
   }
 
   async adminDeleteHouse(id) {
+    if (!id) return;
     const house = this.store.getById(id);
     const title = house ? house.title : 'esta casa';
     const freedIcon = house?.icon || '🎃';
 
-    if (confirm(`¿Seguro que deseas eliminar permanentemente "${title}"?`)) {
+    const confirmed = await this.showAdminConfirm({
+      title: 'Eliminar Casa',
+      message: `¿Seguro que deseas eliminar permanentemente "${title}"? El icono ${freedIcon} volverá a quedar disponible para todos.`,
+      acceptText: 'Sí, Eliminar Definitivamente',
+      isDanger: true
+    });
+
+    if (confirmed) {
+      if (this.previewMarker) {
+        this.map.removeLayer(this.previewMarker);
+        this.previewMarker = null;
+      }
       await this.store.delete(id);
       this.refreshMapMarkers();
       this.renderSidebarHouses();
