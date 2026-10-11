@@ -2154,30 +2154,49 @@ class HalloweenApp {
           const hasPhone = cleanPhone.length >= 9;
 
           return `
-            <div class="admin-house-item admin-pending-card" data-id="${h.id}" style="border-left: 4px solid #ff6b00;">
-              <div style="font-size: 1.8rem; width: 44px; text-align: center;">${iconEmoji}</div>
-              <img class="admin-thumb" src="${h.image}" alt="" style="width: 60px; height: 60px; border-radius: var(--radius-md);">
-              <div class="admin-info">
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <h4 style="font-size: 1.05rem;">${h.title}</h4>
-                  <span class="user-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">⏳ Pendiente</span>
+            <div class="admin-house-card admin-pending-card" data-id="${h.id}">
+              <!-- Cabecera de la tarjeta con imagen, icono y datos principales -->
+              <div class="admin-card-header">
+                <div class="admin-card-photo-wrap">
+                  <img class="admin-card-img" src="${h.image}" alt="${h.title}">
+                  <div class="admin-card-icon-badge">${iconEmoji}</div>
                 </div>
-                <p>📍 <b>${h.street}</b> • 🕒 ${h.hours || '19:00 - 22:30'} • 🏷️ Temática: ${h.category}</p>
-                <div style="font-size: 0.76rem; color: #cbd5e1; margin-top: 4px; display: flex; gap: 10px; flex-wrap: wrap;">
-                  <span>👤 Vecino: <b>${h.ownerName || 'Anónimo'}</b></span>
-                  ${ownerContact ? `<span>📞 Contacto: <b>${ownerContact}</b></span>` : ''}
+                <div class="admin-card-main-meta">
+                  <div class="admin-card-title-row">
+                    <h4 class="admin-card-title">${h.title}</h4>
+                    <span class="user-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">⏳ Pendiente de Aprobación</span>
+                  </div>
+                  <div class="admin-card-detail-line">📍 <b>${h.street}</b></div>
+                  <div class="admin-card-detail-line">🕒 Horario: <b>${h.hours || '19:00 a 22:30'}</b></div>
+                  <div class="admin-card-detail-line">🎭 Temática: <span style="color: #cbd5e1; text-transform: capitalize;">${h.category || 'Halloween'}</span></div>
+                  <div class="admin-card-owner-box">
+                    <span>👤 Inscrita por: <b>${h.ownerName || 'Vecino'}</b></span>
+                    ${ownerContact ? `<span style="margin-left: 8px;">📞 ${ownerContact}</span>` : ''}
+                  </div>
+                  ${h.description ? `<p class="admin-card-quote">"${h.description}"</p>` : ''}
                 </div>
-                ${h.description ? `<p style="font-size: 0.75rem; color: #a8a29e; margin-top: 4px; font-style: italic;">"${h.description}"</p>` : ''}
               </div>
-              <div class="admin-btns" style="flex-direction: column; gap: 6px; min-width: 140px;">
-                <button class="btn-admin-approve" onclick="window.app.adminApproveHouse('${h.id}')" style="padding: 8px 12px; font-size: 0.85rem; width: 100%;">
+
+              <!-- Barra de Acciones del Administrador -->
+              <div class="admin-card-actions-bar">
+                <button type="button" class="btn-action-primary-approve" onclick="window.app.adminApproveHouse('${h.id}')">
                   <span>✓</span> Aprobar y Publicar
                 </button>
-                <div style="display: flex; gap: 4px; width: 100%;">
-                  ${hasPhone ? `<a href="https://wa.me/34${cleanPhone}" target="_blank" rel="noopener" class="btn-icon-admin" style="color: #4ade80; flex: 1;" title="Hablar por WhatsApp">💬</a>` : ''}
-                  <button class="btn-icon-admin" title="Ver en mapa" onclick="window.app.adminFocusHouse('${h.id}')" style="flex: 1;">👁️</button>
-                  <button class="btn-icon-admin" title="Editar" onclick="window.app.openEditHouseModal('${h.id}')" style="flex: 1;">✏️</button>
-                  <button class="btn-icon-admin btn-icon-delete" title="Rechazar" onclick="window.app.adminRejectHouse('${h.id}')" style="flex: 1;">🗑️</button>
+                <div class="admin-card-actions-secondary">
+                  <button type="button" class="btn-action-view" onclick="window.app.adminFocusHouse('${h.id}')" title="Ver en el mapa">
+                    <span>👁️</span> Ver
+                  </button>
+                  <button type="button" class="btn-action-edit" onclick="window.app.openEditHouseModal('${h.id}')" title="Editar datos">
+                    <span>✏️</span> Editar
+                  </button>
+                  ${hasPhone ? `
+                    <a href="https://wa.me/34${cleanPhone}" target="_blank" rel="noopener" class="btn-action-whatsapp" title="Escribir por WhatsApp">
+                      <span>💬</span> WhatsApp
+                    </a>
+                  ` : ''}
+                  <button type="button" class="btn-action-delete" onclick="window.app.adminRejectHouse('${h.id}')" title="Descartar solicitud">
+                    <span>🗑️</span> Eliminar
+                  </button>
                 </div>
               </div>
             </div>
@@ -2215,23 +2234,43 @@ class HalloweenApp {
           const hasPhone = cleanPhone.length >= 9;
 
           return `
-            <div class="admin-house-item" data-id="${h.id}">
-              <div style="font-size: 1.6rem; width: 40px; text-align: center;">${iconEmoji}</div>
-              <img class="admin-thumb" src="${h.image}" alt="" style="width: 54px; height: 54px; border-radius: var(--radius-md);">
-              <div class="admin-info">
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <h4 style="font-size: 0.98rem;">${h.title}</h4>
-                  <span class="user-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #34d399;">Publicada</span>
-                  <span class="house-cat-tag">Temática: ${h.category}</span>
+            <div class="admin-house-card" data-id="${h.id}">
+              <!-- Cabecera de la tarjeta con imagen, icono y datos principales -->
+              <div class="admin-card-header">
+                <div class="admin-card-photo-wrap">
+                  <img class="admin-card-img" src="${h.image}" alt="${h.title}">
+                  <div class="admin-card-icon-badge">${iconEmoji}</div>
                 </div>
-                <p style="margin-top: 3px;">📍 <b>${h.street}</b> • 🕒 ${h.hours || '19:00 - 22:30'}</p>
-                ${ownerContact ? `<div style="font-size: 0.74rem; color: #94a3b8; margin-top: 2px;">👤 ${h.ownerName || 'Vecino'}: ${ownerContact}</div>` : ''}
+                <div class="admin-card-main-meta">
+                  <div class="admin-card-title-row">
+                    <h4 class="admin-card-title">${h.title}</h4>
+                    <span class="user-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">✓ Publicada en Mapa</span>
+                  </div>
+                  <div class="admin-card-detail-line">📍 <b>${h.street}</b></div>
+                  <div class="admin-card-detail-line">🕒 Horario: <b>${h.hours || '19:00 a 22:30'}</b></div>
+                  <div class="admin-card-detail-line">🎭 Temática: <span style="color: #cbd5e1; text-transform: capitalize;">${h.category || 'Halloween'}</span></div>
+                  ${ownerContact ? `<div class="admin-card-owner-box"><span>👤 ${h.ownerName || 'Vecino'}: ${ownerContact}</span></div>` : ''}
+                </div>
               </div>
-              <div class="admin-btns" style="align-items: center;">
-                ${hasPhone ? `<a href="https://wa.me/34${cleanPhone}" target="_blank" rel="noopener" class="btn-icon-admin" style="color: #4ade80;" title="WhatsApp">💬</a>` : ''}
-                <button class="btn-icon-admin" title="Ver en el mapa" onclick="window.app.adminFocusHouse('${h.id}')">👁️</button>
-                <button class="btn-icon-admin" title="Editar datos" onclick="window.app.openEditHouseModal('${h.id}')">✏️</button>
-                <button class="btn-icon-admin btn-icon-delete" title="Eliminar casa permanentemente" onclick="window.app.adminDeleteHouse('${h.id}')">🗑️</button>
+
+              <!-- Barra de Acciones del Administrador -->
+              <div class="admin-card-actions-bar">
+                <div class="admin-card-actions-secondary" style="width: 100%;">
+                  <button type="button" class="btn-action-view" onclick="window.app.adminFocusHouse('${h.id}')" title="Ver en el mapa">
+                    <span>👁️</span> Ver en Mapa
+                  </button>
+                  <button type="button" class="btn-action-edit" onclick="window.app.openEditHouseModal('${h.id}')" title="Editar datos">
+                    <span>✏️</span> Editar
+                  </button>
+                  ${hasPhone ? `
+                    <a href="https://wa.me/34${cleanPhone}" target="_blank" rel="noopener" class="btn-action-whatsapp" title="Escribir por WhatsApp">
+                      <span>💬</span> WhatsApp
+                    </a>
+                  ` : ''}
+                  <button type="button" class="btn-action-delete" onclick="window.app.adminDeleteHouse('${h.id}')" title="Eliminar casa permanentemente">
+                    <span>🗑️</span> Eliminar
+                  </button>
+                </div>
               </div>
             </div>
           `;
