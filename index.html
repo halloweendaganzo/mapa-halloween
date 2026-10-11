@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#05030a">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Mapa Oficial de Halloween de Daganzo de Arriba 2026 - Descubre las casas encantadas, pasajes del terror y truco o trato.">
+  <title>🎃 HALLOWEEN DAGANZO 2026</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎃</text></svg>">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Estilos Temáticos de Halloween con Creepster y Neón -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Capa de niebla y resplandor ambiental -->
+  <div class="ambient-fog-layer"></div>
+
+  <!-- ENJAMBRE DE MURCIÉLAGOS VOLANDO POR TODA LA WEB -->
+  <div class="bat-sky-layer">
+    <!-- Murciélago 1 (Izquierda a Derecha Alto) -->
+    <div class="bat-flock-item flight-path-1" style="width: 52px; height: 32px; animation-delay: 0s;">
+      <div class="bat-wings-wrapper">
+        <svg viewBox="0 0 100 60" width="100%" height="100%">
+          <path fill="#0d0818" stroke="#7928ca" stroke-width="1.8" d="M50 32 C35 15, 12 18, 0 10 C8 32, 22 38, 32 46 C38 41, 44 41, 50 44 C56 41, 62 41, 68 46 C78 38, 92 32, 100 10 C88 18, 65 15, 50 32 Z" />
+          <circle cx="47" cy="33" r="1.8" fill="#ff5500"/>
+          <circle cx="53" cy="33" r="1.8" fill="#ff5500"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Murciélago 2 (Derecha a Izquierda Medio) -->
+    <div class="bat-flock-item flight-path-2" style="width: 44px; height: 26px; animation-delay: 3s;">
+      <div class="bat-wings-wrapper" style="animation-duration: 0.15s;">
+        <svg viewBox="0 0 100 60" width="100%" height="100%">
+          <path fill="#0d0818" stroke="#ff5500" stroke-width="1.5" d="M50 32 C35 15, 12 18, 0 10 C8 32, 22 38, 32 46 C38 41, 44 41, 50 44 C56 41, 62 41, 68 46 C78 38, 92 32, 100 10 C88 18, 65 15, 50 32 Z" />
+          <circle cx="47" cy="33" r="1.6" fill="#00ff88"/>
+          <circle cx="53" cy="33" r="1.6" fill="#00ff88"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Murciélago 3 (Diagonal Rápido) -->
+    <div class="bat-flock-item flight-path-3" style="width: 36px; height: 22px; animation-delay: 6s;">
+      <div class="bat-wings-wrapper" style="animation-duration: 0.14s;">
+        <svg viewBox="0 0 100 60" width="100%" height="100%">
+          <path fill="#150f22" stroke="#9d4edd" stroke-width="1.5" d="M50 32 C35 15, 12 18, 0 10 C8 32, 22 38, 32 46 C38 41, 44 41, 50 44 C56 41, 62 41, 68 46 C78 38, 92 32, 100 10 C88 18, 65 15, 50 32 Z" />
+          <circle cx="47" cy="33" r="1.5" fill="#ff5500"/>
+          <circle cx="53" cy="33" r="1.5" fill="#ff5500"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Murciélago 4 (Swoop Grande Primer Plano) -->
+    <div class="bat-flock-item flight-path-4" style="width: 62px; height: 38px; animation-delay: 8s;">
+      <div class="bat-wings-wrapper" style="animation-duration: 0.2s;">
+        <svg viewBox="0 0 100 60" width="100%" height="100%">
+          <path fill="#080510" stroke="#a855f7" stroke-width="2" d="M50 32 C35 15, 12 18, 0 10 C8 32, 22 38, 32 46 C38 41, 44 41, 50 44 C56 41, 62 41, 68 46 C78 38, 92 32, 100 10 C88 18, 65 15, 50 32 Z" />
+          <circle cx="47" cy="33" r="2" fill="#ff5500"/>
+          <circle cx="53" cy="33" r="2" fill="#ff5500"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Murciélago 5 (Vuelo Ondulante) -->
+    <div class="bat-flock-item flight-path-5" style="width: 48px; height: 30px; animation-delay: 11s;">
+      <div class="bat-wings-wrapper" style="animation-duration: 0.16s;">
+        <svg viewBox="0 0 100 60" width="100%" height="100%">
+          <path fill="#120c1e" stroke="#ff8800" stroke-width="1.6" d="M50 32 C35 15, 12 18, 0 10 C8 32, 22 38, 32 46 C38 41, 44 41, 50 44 C56 41, 62 41, 68 46 C78 38, 92 32, 100 10 C88 18, 65 15, 50 32 Z" />
+          <circle cx="47" cy="33" r="1.6" fill="#ff5500"/>
+          <circle cx="53" cy="33" r="1.6" fill="#ff5500"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Murciélago 6 (Cruzando Abajo) -->
+    <div class="bat-flock-item flight-path-6" style="width: 40px; height: 24px; animation-delay: 14s;">
+      <div class="bat-wings-wrapper" style="animation-duration: 0.15s;">
+        <svg viewBox="0 0 100 60" width="100%" height="100%">
+          <path fill="#0f091a" stroke="#7928ca" stroke-width="1.5" d="M50 32 C35 15, 12 18, 0 10 C8 32, 22 38, 32 46 C38 41, 44 41, 50 44 C56 41, 62 41, 68 46 C78 38, 92 32, 100 10 C88 18, 65 15, 50 32 Z" />
+          <circle cx="47" cy="33" r="1.5" fill="#00ff88"/>
+          <circle cx="53" cy="33" r="1.5" fill="#00ff88"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       1. PORTADA HERO AMBIENTADA EN HALLOWEEN
+       ======================================================== -->
+  <section id="viewHome" class="view-container home-screen">
+    <div class="home-container">
+
+      <!-- Título de Halloween con tipografía Creepster -->
+      <h1 class="hero-spooky-title">
+        Halloween<br>
+        <span class="orange-word">Daganzo 2026</span>
+      </h1>
+
+      <p class="hero-description">
+        La plataforma vecinal para descubrir las casas más terroríficas del pueblo, encontrar puntos de truco o trato, recorrer pasajes del miedo y registrar tu propia fachada.
+      </p>
+
+
+      <!-- BOTÓN PRINCIPAL MONUMENTAL -->
+      <button id="btnHomeEnterMap" class="btn-cta-monumental">
+        <span>🗺️ Explorar Mapa Encantado</span>
+        <span style="font-size: 1.5rem;">➔</span>
+      </button>
+
+      <!-- TARJETAS DE ACCIÓN EN CRISTAL NEÓN CON TELARAÑAS -->
+      <div class="hero-cards-grid">
+        <div id="btnHomeApunta" class="hero-action-card">
+          <div class="hero-action-icon" style="color: var(--neon-pumpkin);">➕</div>
+          <h3>Apunta tu Casa</h3>
+          <p>Aparece en el mapa al instante</p>
+        </div>
+
+        <div id="btnHomeShare" class="hero-action-card">
+          <div class="hero-action-icon" style="color: #38bdf8;">🔗</div>
+          <h3>Compartir</h3>
+          <p>Envía el mapa por WhatsApp</p>
+        </div>
+
+        <div id="btnHomePass" class="hero-action-card">
+          <div class="hero-action-icon" style="color: var(--neon-purple);">🎫</div>
+          <h3>Pasaporte</h3>
+          <p>Check-in y diploma digital</p>
+        </div>
+      </div>
+
+      <!-- BOTÓN ADMIN DISCRETO -->
+      <div style="margin-bottom: 24px;">
+        <button id="btnHomeAdmin" class="hud-btn" style="background: rgba(168, 85, 247, 0.15); border-color: var(--border-neon-purple); color: #d8b4fe;">
+          <span>🛡️ Panel de Administración</span>
+        </button>
+      </div>
+
+      <!-- TIRA DE DATOS EN VIVO -->
+      <div class="hero-live-strip">
+        <div class="strip-item">
+          <span>🏚️</span> <span id="homeStatCount"><strong>6</strong> Casas registradas</span>
+        </div>
+        <div class="strip-item">
+          <span>🍬</span> <span>Truco o Trato</span>
+        </div>
+        <div class="strip-item">
+          <span>👻</span> <span>Pasajes del Terror</span>
+        </div>
+        <div class="strip-item">
+          <span>📍</span> <span>Daganzo de Arriba</span>
+        </div>
+      </div>
+ 
+       <!-- PIE DE PÁGINA -->
+       <footer class="hero-author-footer">
+         <p>Web creada y administrada por <b>Víctor Romero</b> 🎃</p>
+       </footer>
+
+     </div>
+   </section>
+
+  <!-- ========================================================
+       2. PANTALLA DEL MAPA (LIMPIA, MODERNA & HUD FLOTANTE)
+       ======================================================== -->
+  <section id="viewMap" class="view-container map-screen view-hidden">
+    
+    <!-- BARRA HUD SUPERIOR FLOTANTE -->
+    <header class="map-hud-topbar">
+      <div class="hud-group-left">
+        <!-- Volver a Inicio -->
+        <button id="btnBackHome" class="hud-btn" title="Volver a la portada">
+          <span>⬅️</span> <span class="hud-btn-txt">Inicio</span>
+        </button>
+
+        <!-- Botón Desplegar Menú Lateral de Casas -->
+        <button id="btnToggleSidebar" class="hud-btn hud-btn-sidebar" title="Abrir lista de casas">
+          <span>🎃</span> <span>Casas (<b id="mapHeaderHouseCount">6</b>)</span>
+        </button>
+      </div>
+
+      <div class="hud-group-right">
+        <!-- Botón Desplegar Menú Flotante de Opciones -->
+        <button id="btnToggleMapOptions" class="hud-btn hud-btn-options" title="Desplegar opciones y herramientas">
+          <span style="font-size: 1.05rem;">⚙️</span>
+          <span>Opciones</span>
+          <span class="options-chevron-arrow">▾</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MENÚ FLOTANTE DE OPCIONES CON ICONOS Y TEXTO EXPLICATIVO -->
+    <div id="mapOptionsMenuBackdrop" class="map-options-backdrop">
+      <div id="mapOptionsMenu" class="map-options-floating-card">
+        <div class="options-menu-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="options-header-icon">⚙️</div>
+            <div>
+              <div class="options-menu-title">Opciones del Mapa</div>
+              <div class="options-menu-subtitle">Daganzo de Arriba • Halloween 2026</div>
+            </div>
+          </div>
+          <button id="btnCloseMapOptions" type="button" class="btn-options-close" title="Cerrar opciones">&times;</button>
+        </div>
+
+        <div class="options-menu-list">
+          <!-- 1. Mi Ubicación Real GPS -->
+          <button id="optGpsLocate" type="button" class="options-menu-item">
+            <div class="opt-icon-badge opt-badge-blue">🎯</div>
+            <div class="opt-text-wrap">
+              <div class="opt-title">Mi Ubicación Real (GPS)</div>
+              <div class="opt-desc">Centrar el mapa en tu posición exacta en el pueblo</div>
+            </div>
+          </button>
+
+          <!-- 1.5 Mi Cuenta de Vecino / Estado de Sesión -->
+          <button id="optUserAccount" type="button" class="options-menu-item" style="background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.25);">
+            <div class="opt-icon-badge opt-badge-purple">👤</div>
+            <div class="opt-text-wrap">
+              <div class="opt-title" id="optUserTitle">Mi Cuenta de Vecino</div>
+              <div class="opt-desc" id="optUserDesc">Identificado para inscribir casas en Daganzo</div>
+            </div>
+            <span class="opt-status-tag" id="optUserActionBtn">Cambiar</span>
+          </button>
+
+          <!-- 2. Apuntar Casa -->
+          <button id="optApuntaCasa" type="button" class="options-menu-item opt-item-featured">
+            <div class="opt-icon-badge opt-badge-orange">➕</div>
+            <div class="opt-text-wrap">
+              <div class="opt-title">Apuntar mi Casa</div>
+              <div class="opt-desc">Inscribe tu casa decorada o pasaje del terror</div>
+            </div>
+            <span class="opt-badge-pill">¡Participa!</span>
+          </button>
+
+          <!-- 3. Sonido Ambiental -->
+          <button id="optAudioToggle" type="button" class="options-menu-item">
+            <div class="opt-icon-badge opt-badge-purple" id="optAudioIcon">🔊</div>
+            <div class="opt-text-wrap">
+              <div class="opt-title">Sonido & Música de Terror</div>
+              <div class="opt-desc" id="optAudioDesc">Efectos sonoros y misterio ambiental</div>
+            </div>
+            <span class="opt-status-tag" id="optAudioStatus">Sonido</span>
+          </button>
+
+          <!-- 4. Compartir Mapa -->
+          <button id="optShareMap" type="button" class="options-menu-item">
+            <div class="opt-icon-badge opt-badge-cyan">🔗</div>
+            <div class="opt-text-wrap">
+              <div class="opt-title">Compartir el Mapa</div>
+              <div class="opt-desc">Enviar el enlace por WhatsApp a familiares y vecinos</div>
+            </div>
+          </button>
+
+          <!-- 5. Pasaporte y Diploma -->
+          <button id="optPassport" type="button" class="options-menu-item">
+            <div class="opt-icon-badge opt-badge-green">📜</div>
+            <div class="opt-text-wrap">
+              <div class="opt-title">Pasaporte del Explorador</div>
+              <div class="opt-desc">Ver tus sellos de visita y descargar diploma oficial</div>
+            </div>
+          </button>
+
+          <!-- 7. Panel Administrador -->
+          <button id="optAdmin" type="button" class="options-menu-item opt-item-admin">
+            <div class="opt-icon-badge opt-badge-violet">🛡️</div>
+            <div class="opt-text-wrap">
+              <div class="opt-title">Panel de Administración</div>
+              <div class="opt-desc">Moderación y aprobación de casas (Víctor Romero)</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENÚ LATERAL RESUMEN DE CASAS (SIDEBAR FLOTANTE) -->
+    <aside id="sidebarPanel" class="map-sidebar-overlay">
+      <div class="sidebar-top-bar">
+        <div class="sidebar-title-header">
+          <h2><span>🎃</span> Casas Encantadas</h2>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button id="btnSidebarShare" class="btn-sidebar-close" title="Compartir el mapa" style="font-size: 1rem;">🔗</button>
+            <button id="btnCloseSidebar" class="btn-sidebar-close" title="Cerrar">&times;</button>
+          </div>
+        </div>
+
+        <!-- Buscador -->
+        <div class="sidebar-search-wrap">
+          <input type="text" id="searchInput" placeholder="Buscar por calle o nombre..." autocomplete="off">
+          <span>🔍</span>
+        </div>
+
+        <!-- Filtros Rápidos -->
+        <div class="sidebar-tags-scroll">
+          <button class="tag-pill active" data-filter="all">Todas</button>
+          <button class="tag-pill" data-filter="caramelos">🍬 Caramelos</button>
+          <button class="tag-pill" data-filter="terror">👻 Pasajes</button>
+          <button class="tag-pill" data-filter="infantil">👶 Peques</button>
+        </div>
+      </div>
+
+      <!-- Feed de Casas -->
+      <div id="sidebarHousesList" class="sidebar-cards-feed">
+        <!-- Renderizado dinámicamente -->
+      </div>
+    </aside>
+
+    <!-- ÁREA DEL MAPA LEAFLET -->
+    <div class="map-canvas-full">
+      <div id="map"></div>
+
+      <!-- Botón Flotante Estilo Google Maps "Mi Ubicación" -->
+      <button id="btnFloatingGps" class="hud-floating-gps-btn" title="Centrar en mi ubicación actual" type="button">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="7"/>
+          <line x1="12" y1="2" x2="12" y2="5"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="2" y1="12" x2="5" y2="12"/>
+          <line x1="19" y1="12" x2="22" y2="12"/>
+          <circle cx="12" cy="12" r="2.5" fill="#38bdf8"/>
+        </svg>
+      </button>
+
+      <!-- Selector Discreto de Capas (Abajo a la Derecha) -->
+      <div class="hud-layer-switcher">
+        <button class="layer-switch-btn active" data-layer="street" title="Google Maps con todos los nombres de calles">
+          <span>🗺️</span> Google
+        </button>
+        <button class="layer-switch-btn" data-layer="night" title="Modo noche con nombres de calles">
+          <span>🌙</span> Noche
+        </button>
+        <button class="layer-switch-btn" data-layer="satellite" title="Google Satélite con nombres de calles">
+          <span>🛰️</span> Satélite
+        </button>
+      </div>
+
+      <!-- TARJETA FLOTANTE CENTRADA DE DETALLE DE CASA -->
+      <div id="houseDetailBackdrop" class="house-detail-backdrop"></div>
+      <div id="houseDetailCard" class="house-detail-flyout">
+        <div class="flyout-photo">
+          <img id="cardImg" src="" alt="Decoración Halloween">
+          <button id="btnCloseCard" class="btn-flyout-close">&times;</button>
+        </div>
+
+        <div class="flyout-body">
+          <h3 id="cardTitle">Nombre de la Casa</h3>
+          <div id="cardStreet" class="flyout-street">📍 Calle Mayor, Daganzo</div>
+
+          <div class="flyout-chips-row">
+            <span id="cardHours" class="chip-stat">🕒 19:00 - 22:30</span>
+          </div>
+
+          <p id="cardDesc" class="flyout-desc">Descripción...</p>
+
+          <button id="btnCardViewOnMap" class="btn-flyout-map" type="button" onclick="window.app && window.app.highlightHouseOnMap()">
+            <span>🗺️ Ver en el Mapa</span>
+          </button>
+
+          <div class="flyout-actions">
+            <button id="btnCardCheckin" class="btn-flyout-checkin">
+              <span>🎃 Marcar Visitada</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       MODAL 1: ASISTENTE PASO A PASO - APUNTA TU CASA
+       ======================================================== -->
+  <div id="modalApunta" class="modal-backdrop">
+    <div class="modal-sheet wizard-modal-sheet">
+      <div class="modal-top">
+        <h2><span>🎃</span> Asistente Embrujado</h2>
+        <button class="btn-modal-close">&times;</button>
+      </div>
+
+      <!-- Barra de usuario activo / Cambiar cuenta -->
+      <div id="wizardUserSessionBar" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 107, 0, 0.1); border: 1px solid rgba(255, 107, 0, 0.25); border-radius: 12px; padding: 8px 12px; margin-bottom: 14px;">
+        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+          <span style="font-size: 1.1rem; flex-shrink: 0;">👤</span>
+          <div style="font-size: 0.8rem; color: #cbd5e1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            Conectado como: <strong id="wizardUserName" style="color: var(--neon-pumpkin);">Vecino</strong>
+            <span id="wizardUserEmail" style="color: var(--text-muted); font-size: 0.72rem; margin-left: 4px;"></span>
+          </div>
+        </div>
+        <button id="btnWizardLogout" type="button" style="font-size: 0.74rem; color: #fca5a5; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 4px 8px; cursor: pointer; flex-shrink: 0; margin-left: 8px;">
+          Cambiar / Salir
+        </button>
+      </div>
+
+      <!-- Barra de progreso e indicadores de pasos -->
+      <div class="wizard-stepper-header">
+        <div class="wizard-steps-indicator">
+          <button class="wizard-step-node active" data-step="1" title="Paso 1: Ubicación">
+            <span class="step-circle">1</span>
+            <span class="step-label">Ubicación</span>
+          </button>
+          <button class="wizard-step-node" data-step="2" title="Paso 2: Icono Único">
+            <span class="step-circle">2</span>
+            <span class="step-label">Icono (50)</span>
+          </button>
+          <button class="wizard-step-node" data-step="3" title="Paso 3: Sustómetro">
+            <span class="step-circle">3</span>
+            <span class="step-label">Susto</span>
+          </button>
+          <button class="wizard-step-node" data-step="4" title="Paso 4: Fachada">
+            <span class="step-circle">4</span>
+            <span class="step-label">Detalles</span>
+          </button>
+          <button class="wizard-step-node" data-step="5" title="Paso 5: Publicar">
+            <span class="step-circle">5</span>
+            <span class="step-label">Listo</span>
+          </button>
+        </div>
+        <div class="wizard-progress-track">
+          <div id="wizardProgressBar" class="wizard-progress-bar" style="width: 20%;"></div>
+        </div>
+      </div>
+
+      <form id="formUserAddHouse">
+        <!-- ==================== PASO 1: UBICACIÓN ==================== -->
+        <div id="wizardStep1" class="wizard-step-panel active">
+          <p class="step-instruction">
+            📍 <b>Paso 1 de 5:</b> Dinos dónde está tu decoración. Puedes escribir tu calle o pinchar directamente sobre el mapa de Daganzo.
+          </p>
+
+          <div class="input-row" style="position: relative;">
+            <label for="houseStreet">Dirección en Daganzo de Arriba (o elige en el mapa):</label>
+            <div style="position: relative;">
+              <input type="text" id="houseStreet" name="houseStreet" class="form-control-input" placeholder="Ej: Calle Mayor, 14 o Calle San Vicente..." autocomplete="off" required>
+              <span id="addressLookupSpinner" class="addr-spinner-badge" style="display: none;">📍 Buscando...</span>
+            </div>
+            <!-- Desplegable dinámico de sugerencias de Daganzo de Arriba -->
+            <div id="daganzoAddressSuggestions" class="daganzo-suggestions-dropdown" style="display: none;"></div>
+          </div>
+
+          <div class="location-options-row">
+            <button type="button" id="btnWizardLocGps" class="btn-loc-tool">
+              <span>📍</span> Usar mi GPS ahora
+            </button>
+            <button type="button" id="btnWizardPickOnMainMap" class="btn-loc-tool">
+              <span>🗺️</span> Marcar en mapa grande
+            </button>
+          </div>
+
+          <!-- Mini mapa selector interactivo -->
+          <div class="wizard-mini-map-container">
+            <div id="wizardMiniMap"></div>
+          </div>
+
+          <!-- Indicador de confirmación de coordenadas -->
+          <div id="wizardLocationBadge" class="location-confirmed-badge">
+            <span>✔️</span> <span id="wizardLocStatusText">Arrastra el pin o pincha en el mapa para ubicar tu casa</span>
+          </div>
+        </div>
+
+        <!-- ==================== PASO 2: ICONO EXCLUSIVO (50 DISPONIBLES) ==================== -->
+        <div id="wizardStep2" class="wizard-step-panel">
+          <p class="step-instruction">
+            🎭 <b>Paso 2 de 5:</b> Dale un nombre terrorífico a tu casa y <b>reserva tu icono exclusivo</b>. ¡Nadie más en Daganzo podrá usar el mismo icono que tú!
+          </p>
+
+          <div class="input-row">
+            <label for="houseName">Nombre o Temática de tu Decoración:</label>
+            <input type="text" id="houseName" name="houseName" class="form-control-input" placeholder="Ej: El Aquelarre de las Brujas, La Cripta Maldita..." required>
+          </div>
+
+          <div class="icons-catalog-header">
+            <label style="margin: 0;">Elige tu Icono Único para el Mapa:</label>
+            <span id="wizardIconsAvailableCount" class="icons-stats-pill">50 disponibles</span>
+          </div>
+
+          <!-- Filtros de categoría de iconos -->
+          <div class="icon-category-filter">
+            <button type="button" class="icon-filter-btn active" data-icon-cat="all">Todos (50)</button>
+            <button type="button" class="icon-filter-btn" data-icon-cat="terror">👻 Terror</button>
+            <button type="button" class="icon-filter-btn" data-icon-cat="caramelos">🍬 Chuches</button>
+            <button type="button" class="icon-filter-btn" data-icon-cat="magia">🔮 Magia</button>
+            <button type="button" class="icon-filter-btn" data-icon-cat="monstruo">👾 Criaturas</button>
+          </div>
+
+          <!-- Rejilla interactiva de los 50 iconos -->
+          <div id="wizardIconsGrid" class="icons-50-grid">
+            <!-- Rellenado dinámicamente con los 50 iconos y control de reserva -->
+          </div>
+
+          <!-- Vista previa del icono elegido -->
+          <div class="selected-icon-preview-box">
+            <div id="wizardSelectedPinPreview" class="preview-pin-display">
+              <span id="wizardSelectedPinEmoji">🎃</span>
+            </div>
+            <div>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">Icono reservado para tu casa:</div>
+              <strong id="wizardSelectedIconName" style="color: #ffaa55; font-size: 0.95rem;">Calabaza Tallada</strong>
+              <div id="wizardSelectedIconLockStatus" style="font-size: 0.7rem; color: #10b981;">✓ Disponible y reservado para ti</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PASO 3: SUSTÓMETRO & CHUCHES ==================== -->
+        <div id="wizardStep3" class="wizard-step-panel">
+          <p class="step-instruction">
+            👻 <b>Paso 3 de 5:</b> Ajusta el nivel de miedo y dinos qué tipo de caramelos y sorpresas tienes preparadas para los visitantes.
+          </p>
+
+          <label style="display: block; font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; color: #d1cbe0; margin-bottom: 8px;">
+            Sustómetro (Intensidad del miedo):
+          </label>
+          <div class="sustometro-grid">
+            <div class="sustometro-card selected" data-level="infantil">
+              <div class="susto-badge">👶</div>
+              <h5>Para Peques</h5>
+              <p>Sin sustos bruscos. Música festiva, luces y alegría.</p>
+            </div>
+            <div class="sustometro-card" data-level="caramelos">
+              <div class="susto-badge">🎃</div>
+              <h5>Misterio</h5>
+              <p>Ambiente de Halloween clásico, decoración y truco o trato.</p>
+            </div>
+            <div class="sustometro-card" data-level="terror">
+              <div class="susto-badge">💀</div>
+              <h5>Pasaje Terror</h5>
+              <p>¡Para valientes! Sustos, sonido tenebroso y oscuridad.</p>
+            </div>
+          </div>
+
+          <label style="display: block; font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; color: #d1cbe0; margin-bottom: 8px;">
+            ¿Repartes caramelos para el Truco o Trato?
+          </label>
+          <div class="candy-options-grid">
+            <div class="spooky-checkbox-chip selected" data-candy="normal">
+              <span>🍬</span> Reparto de chuches
+            </div>
+            <div class="spooky-checkbox-chip" data-candy="glutenfree">
+              <span>🌾</span> Chuches sin gluten (Celíacos)
+            </div>
+            <div class="spooky-checkbox-chip" data-candy="chocolates">
+              <span>🍫</span> Chocolates y dulces
+            </div>
+            <div class="spooky-checkbox-chip" data-candy="none">
+              <span>🚫</span> Solo exhibición / Sin chuches
+            </div>
+          </div>
+
+          <label style="display: block; font-family: var(--font-display); font-size: 0.82rem; font-weight: 700; color: #d1cbe0; margin-bottom: 8px;">
+            Efectos Especiales y Sorpresas:
+          </label>
+          <div class="spooky-effects-grid">
+            <div class="spooky-checkbox-chip" data-effect="smoke">
+              <span>🌫️</span> Máquina de humo
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="actors">
+              <span>🎭</span> Actores en vivo
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="photocall">
+              <span>📸</span> Photocall familiar
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="sound">
+              <span>🔊</span> Efectos de audio
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PASO 4: HORARIO & FACHADA ==================== -->
+        <div id="wizardStep4" class="wizard-step-panel">
+          <p class="step-instruction">
+            🕒 <b>Paso 4 de 5:</b> ¿A qué hora se puede visitar tu fachada? Elige una foto o ilustración que represente tu temática.
+          </p>
+
+          <div class="input-row">
+            <label>Horario de Apertura / Visitas:</label>
+            <div class="quick-hours-row">
+              <span class="quick-hour-chip selected" data-hours="19:00 - 22:30">19:00 - 22:30</span>
+              <span class="quick-hour-chip" data-hours="18:00 - 21:00">18:00 - 21:00 (Peques)</span>
+              <span class="quick-hour-chip" data-hours="20:00 - 00:00">20:00 - 00:00 (Noche)</span>
+              <span class="quick-hour-chip" data-hours="Todo el día">Todo el día</span>
+            </div>
+            <input type="text" id="houseHours" name="houseHours" class="form-control-input" value="19:00 - 22:30">
+          </div>
+
+          <div class="input-row">
+            <label>Foto o Ilustración para tu Fachada:</label>
+            <div id="presetPhotosGrid" class="preset-photos-grid">
+              <!-- Rellenado dinámicamente con ilustraciones -->
+            </div>
+            <input type="text" id="houseCustomImage" class="form-control-input" placeholder="O pega el enlace de tu propia foto (opcional)" style="margin-top: 6px; font-size: 0.78rem;">
+          </div>
+
+          <div class="input-row">
+            <label for="houseDesc">Descripción breve para los visitantes (opcional):</label>
+            <textarea id="houseDesc" name="houseDesc" class="form-control-textarea" rows="2" placeholder="Ej: Ven disfrazado con toda la familia, caramelos para los primeros 100 niños..."></textarea>
+          </div>
+        </div>
+
+        <!-- ==================== PASO 5: VISTA PREVIA Y PUBLICAR ==================== -->
+        <div id="wizardStep5" class="wizard-step-panel">
+          <p class="step-instruction">
+            ✨ <b>Paso 5 de 5:</b> ¡Todo listo! Así se verá tu casa en el mapa y en el menú de Daganzo. Comprueba que todo esté correcto y publica al instante.
+          </p>
+
+          <!-- Tarjeta de vista previa interactiva -->
+          <div class="wizard-preview-card">
+            <div class="wizard-preview-header">
+              <img id="wizardPreviewImg" src="assets/haunted_mansion.jpg" alt="Fachada Preview">
+              <div style="position: absolute; bottom: 8px; left: 12px; display: flex; align-items: center; gap: 8px;">
+                <div id="wizardPreviewPin" class="preview-pin-display" style="width: 36px; height: 36px;">
+                  <span id="wizardPreviewPinEmoji">🎃</span>
+                </div>
+                <span id="wizardPreviewBadgeCategory" class="chip-stat" style="background: rgba(0,0,0,0.7); border-color: var(--neon-pumpkin);">🎃 Halloween</span>
+              </div>
+            </div>
+            <div class="wizard-preview-body">
+              <h3 id="wizardPreviewTitle" style="color: #ffaa55; font-family: var(--font-spooky); font-size: 1.4rem; margin-bottom: 4px;">La Mansión Encantada</h3>
+              <div id="wizardPreviewStreet" style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 8px;">📍 Calle Mayor, Daganzo</div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+                <span id="wizardPreviewHours" class="chip-stat">🕒 19:00 - 22:30</span>
+                <span id="wizardPreviewCandies" class="chip-stat">🍬 Reparto Chuches</span>
+                <span id="wizardPreviewSusto" class="chip-stat">🟢 Para Peques</span>
+              </div>
+              <p id="wizardPreviewDesc" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin: 0;">Descripción de tu casa...</p>
+            </div>
+          </div>
+
+          <div style="background: rgba(255, 85, 0, 0.1); border: 1px solid var(--border-neon-orange); padding: 12px 16px; border-radius: var(--radius-md); font-size: 0.82rem; color: #ffaa55; margin-bottom: 14px; text-align: left; line-height: 1.45;">
+            <div style="font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <span>🛡️</span> Validación y Moderación Oficial
+            </div>
+            Al enviar tu casa, quedará en <b>estado de revisión</b> para que el administrador verifique los datos. Tu icono exclusivo quedará <b>reservado</b> para ti y se publicará en el mapa tras ser aprobada.
+          </div>
+        </div>
+
+        <!-- Botones de navegación del Wizard -->
+        <div class="wizard-footer-nav">
+          <button type="button" id="btnWizardPrev" class="btn-wizard-back" style="visibility: hidden;">
+            ⬅️ Anterior
+          </button>
+          <button type="button" id="btnWizardNext" class="btn-wizard-next">
+            <span>Siguiente Paso</span> ➔
+          </button>
+          <button type="submit" id="btnWizardSubmit" class="btn-cta-monumental" style="display: none; padding: 12px 20px; font-size: 1.15rem; margin-bottom: 0;">
+            <span>🎃 ¡Enviar Casa a Revisión del Administrador!</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 1.5: REGISTRO Y ACCESO DE VECINOS PROPIETARIOS
+       ======================================================== -->
+  <div id="modalUserAuth" class="modal-backdrop">
+    <div class="modal-sheet" style="max-width: 460px;">
+      <div class="modal-top">
+        <h2><span>👤</span> Registro de Vecino</h2>
+        <button class="btn-modal-close">&times;</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.45;">
+        Para registrar tu casa en el mapa de Daganzo, identifícate para que el administrador pueda validar y verificar la solicitud:
+      </p>
+
+      <!-- Selector de Pestañas: Registro / Iniciar Sesión -->
+      <div style="display: flex; gap: 6px; margin-bottom: 18px; background: rgba(255,255,255,0.05); padding: 4px; border-radius: var(--radius-full); border: 1px solid var(--border-glass);">
+        <button id="tabBtnRegister" type="button" class="hud-btn active" style="flex: 1; justify-content: center; height: 38px; border: none; font-size: 0.84rem;">
+          Crear Cuenta
+        </button>
+        <button id="tabBtnLogin" type="button" class="hud-btn" style="flex: 1; justify-content: center; height: 38px; border: none; background: transparent; color: var(--text-muted); font-size: 0.84rem;">
+          Ya tengo cuenta
+        </button>
+      </div>
+
+      <!-- Formulario de Registro -->
+      <form id="formUserRegister">
+        <div class="input-row">
+          <label for="regName">Nombre y Apellidos o Familia:</label>
+          <input type="text" id="regName" class="form-control-input" placeholder="Ej: Familia Moreno o Juan Pérez" required>
+        </div>
+
+        <div class="input-row">
+          <label for="regPhone">Teléfono / WhatsApp de contacto:</label>
+          <input type="tel" id="regPhone" class="form-control-input" placeholder="Ej: 612 34 56 78 (para avisos)" required>
+        </div>
+
+        <div class="input-row">
+          <label for="regEmail">Correo electrónico:</label>
+          <input type="email" id="regEmail" class="form-control-input" placeholder="tu@email.com" required>
+        </div>
+
+        <div class="input-row">
+          <label for="regPass">Contraseña de acceso:</label>
+          <input type="password" id="regPass" class="form-control-input" placeholder="Mínimo 4 caracteres" required minlength="4">
+        </div>
+
+        <button type="submit" class="btn-cta-monumental" style="width: 100%; padding: 13px; font-size: 1.15rem; margin-top: 8px;">
+          <span>Crear Cuenta y Apuntar Casa ➔</span>
+        </button>
+      </form>
+
+      <!-- Formulario de Login -->
+      <form id="formUserLogin" style="display: none;">
+        <div class="input-row">
+          <label for="loginEmail">Correo electrónico:</label>
+          <input type="email" id="loginEmail" class="form-control-input" placeholder="tu@email.com" required>
+        </div>
+
+        <div class="input-row">
+          <label for="loginPass">Contraseña:</label>
+          <input type="password" id="loginPass" class="form-control-input" placeholder="Tu contraseña" required>
+        </div>
+
+        <button type="submit" class="btn-cta-monumental" style="width: 100%; padding: 13px; font-size: 1.15rem; margin-top: 8px;">
+          <span>Entrar a Mi Cuenta ➔</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 1.7: AYUDA Y CONFIGURACIÓN DE UBICACIÓN GPS
+       ======================================================== -->
+  <div id="modalGpsHelp" class="modal-backdrop">
+    <div class="modal-sheet" style="max-width: 480px;">
+      <div class="modal-top">
+        <h2><span>🎯</span> Ubicación en el Mapa</h2>
+        <button class="btn-modal-close">&times;</button>
+      </div>
+
+      <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 14px; margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start;">
+        <span style="font-size: 1.8rem; line-height: 1;">📍</span>
+        <div style="font-size: 0.84rem; color: #e2e8f0; line-height: 1.45;">
+          <b style="color: #38bdf8;">El navegador no ha facilitado el GPS automático.</b>
+          <div style="margin-top: 4px; color: #94a3b8; font-size: 0.78rem;">
+            En conexiones de red local por IP (<code>http://192.168...</code>), los móviles bloquean el GPS por seguridad hasta que la web tenga candado HTTPS. ¡Pero puedes situarte manualmente en un toque!
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
+        <button id="btnGpsPlaceCenter" type="button" class="btn-cta-monumental" style="width: 100%; padding: 12px; font-size: 0.95rem;">
+          <span>🎯 Situarme en Plaza de Daganzo</span>
+        </button>
+
+        <button id="btnGpsPickOnMap" type="button" class="hud-btn" style="width: 100%; justify-content: center; height: 44px; font-size: 0.86rem; border-color: rgba(56, 189, 248, 0.5); color: #38bdf8;">
+          <span>👆 Tocar mi calle en el mapa</span>
+        </button>
+
+        <button id="btnGpsRetryPrompt" type="button" class="hud-btn" style="width: 100%; justify-content: center; height: 42px; font-size: 0.82rem; background: transparent;">
+          <span>🔄 Reintentar solicitud de GPS</span>
+        </button>
+      </div>
+
+      <div style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.4; border-top: 1px solid var(--border-glass); padding-top: 12px;">
+        <b>¿Cómo desbloquear en tu navegador?</b><br>
+        Toca el icono del candado o ajustes 🔒 junto a la dirección web arriba, entra en <i>Permisos del sitio</i> y activa <b>Ubicación</b>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 2: PANEL DE ADMINISTRACIÓN Y MODERACIÓN (DASHBOARD)
+       ======================================================== -->
+  <div id="modalAdmin" class="modal-backdrop">
+    <div class="modal-sheet admin-dashboard-sheet">
+      <div class="modal-top">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="admin-top-shield-icon">🛡️</div>
+          <div>
+            <h2 style="margin: 0; line-height: 1.2;">Panel de Control Oficial</h2>
+            <div style="font-size: 0.76rem; color: #a8a29e;">Moderación Vecinal & Gestión • Halloween Daganzo 2026</div>
+          </div>
+        </div>
+        <button class="btn-modal-close" title="Cerrar panel">&times;</button>
+      </div>
+
+      <!-- Pantalla de Login con PIN -->
+      <div id="adminLoginBox" class="admin-login-box">
+        <div style="font-size: 2.8rem; margin-bottom: 8px;">🔐</div>
+        <h3 style="color: #fff; margin-bottom: 6px; font-family: var(--font-spooky); font-size: 1.7rem; letter-spacing: 1px;">Acceso Administrador</h3>
+        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">
+          Introduce el PIN de moderación (PIN por defecto: <b>1234</b>)
+        </p>
+        <div style="display: flex; gap: 8px; max-width: 280px; margin: 0 auto 10px auto;">
+          <input type="password" id="adminPinInput" class="form-control-input" placeholder="PIN" style="text-align: center; font-size: 1.1rem; letter-spacing: 4px;">
+          <button id="btnAdminLogin" class="hud-btn hud-btn-primary">Entrar</button>
+        </div>
+      </div>
+
+      <!-- Dashboard del Admin Completo -->
+      <div id="adminDashboardBox" style="display: none;">
+        <!-- Barra de KPIs (Métricas Rápidas en Vivo) -->
+        <div class="admin-kpi-grid">
+          <div class="admin-kpi-card" onclick="window.app.setAdminTab('approved')">
+            <div class="kpi-icon" style="color: #ff8800;">🏚️</div>
+            <div class="kpi-content">
+              <span class="kpi-num" id="kpiApproved">0</span>
+              <span class="kpi-label">Casas Publicadas</span>
+            </div>
+          </div>
+          <div class="admin-kpi-card" onclick="window.app.setAdminTab('pending')">
+            <div class="kpi-icon" style="color: #f59e0b;">⏳</div>
+            <div class="kpi-content">
+              <span class="kpi-num" id="kpiPending">0</span>
+              <span class="kpi-label">En Revisión</span>
+            </div>
+          </div>
+          <div class="admin-kpi-card" onclick="window.app.setAdminTab('users')">
+            <div class="kpi-icon" style="color: #a855f7;">👥</div>
+            <div class="kpi-content">
+              <span class="kpi-num" id="kpiUsers">0</span>
+              <span class="kpi-label">Vecinos Registrados</span>
+            </div>
+          </div>
+          <div class="admin-kpi-card">
+            <div class="kpi-icon" style="color: #06b6d4;">🍬</div>
+            <div class="kpi-content">
+              <span class="kpi-num" id="kpiCandies">0</span>
+              <span class="kpi-label">Puntos Chuches</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Herramientas: Pestañas + Buscador + Acciones -->
+        <div class="admin-toolbar-row">
+          <div class="admin-nav-tabs">
+            <button id="adminTabBtnApproved" class="admin-tab-nav-btn active" type="button" onclick="window.app.setAdminTab('approved')">
+              <span>🏚️ Casas Publicadas</span>
+              <span class="tab-badge" id="adminBadgeApproved">0</span>
+            </button>
+            <button id="adminTabBtnPending" class="admin-tab-nav-btn" type="button" onclick="window.app.setAdminTab('pending')">
+              <span>⏳ Solicitudes Pendientes</span>
+              <span class="tab-badge badge-pending" id="adminBadgePending">0</span>
+            </button>
+            <button id="adminTabBtnUsers" class="admin-tab-nav-btn" type="button" onclick="window.app.setAdminTab('users')">
+              <span>👥 Vecinos Registrados</span>
+              <span class="tab-badge" id="adminBadgeUsers">0</span>
+            </button>
+          </div>
+
+          <div class="admin-toolbar-actions">
+            <div class="admin-search-wrap">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Buscar casa, vecino o calle...">
+            </div>
+            <button id="btnAdminAddNewHouse" type="button" class="hud-btn hud-btn-primary" style="height: 38px; font-size: 0.8rem; padding: 0 12px;" title="Añadir una casa directamente">
+              ➕ Nueva Casa
+            </button>
+            <button id="btnAdminExportBackup" type="button" class="hud-btn" style="height: 38px; font-size: 0.8rem; padding: 0 10px;" title="Descargar copia de seguridad en JSON">
+              📥 Backup JSON
+            </button>
+            <button id="btnAdminResetHouses" type="button" class="hud-btn" style="height: 38px; font-size: 0.8rem; padding: 0 10px;" title="Restablecer casas por defecto">
+              🔄 Muestra
+            </button>
+            <button id="btnAdminLogout" type="button" class="hud-btn" style="height: 38px; font-size: 0.8rem; padding: 0 10px; background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); color: #fca5a5;">
+              Salir
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenedores de las Pestañas -->
+        <div class="admin-tab-content-area">
+          <!-- Vista 1: Solicitudes Pendientes -->
+          <div id="adminViewPending" class="admin-tab-view" style="display: none;">
+            <div id="adminPendingList" class="admin-houses-list"></div>
+          </div>
+
+          <!-- Vista 2: Casas Aprobadas / Publicadas -->
+          <div id="adminViewApproved" class="admin-tab-view">
+            <div id="adminHousesList" class="admin-houses-list"></div>
+          </div>
+
+          <!-- Vista 3: Vecinos Registrados -->
+          <div id="adminViewUsers" class="admin-tab-view" style="display: none;">
+            <div id="adminUsersList" class="admin-houses-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 3: EDITAR CASA (ADMIN)
+       ======================================================== -->
+  <div id="modalEditHouse" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-top">
+        <h2><span>✏️</span> Editar Casa</h2>
+        <button class="btn-modal-close">&times;</button>
+      </div>
+
+      <form id="formEditHouse">
+        <div class="input-row">
+          <label for="editName">Nombre / Título:</label>
+          <input type="text" id="editName" name="editName" class="form-control-input" required>
+        </div>
+
+        <div class="input-row">
+          <label for="editStreet">Dirección:</label>
+          <input type="text" id="editStreet" name="editStreet" class="form-control-input" required>
+        </div>
+
+        <div class="map-location-picker">
+          <span id="editCoordsText">📍 Coordenadas actuales (toca en el mapa para cambiarlas)</span>
+        </div>
+
+        <!-- Selector de los 50 iconos para el administrador -->
+        <div class="input-row">
+          <label>Icono asignado en el mapa (50 Iconos exclusivos):</label>
+          <div id="adminEditIconsGrid" class="icons-50-grid" style="max-height: 160px;">
+            <!-- Grid de iconos para admin -->
+          </div>
+        </div>
+
+        <div class="input-row">
+          <label for="editCategory">Categoría / Nivel:</label>
+          <select id="editCategory" name="editCategory" class="form-control-select">
+            <option value="caramelos">🍬 Caramelos / Truco o Trato</option>
+            <option value="terror">👻 Pasaje Terror</option>
+            <option value="infantil">👶 Para Peques</option>
+          </select>
+        </div>
+
+        <div class="input-row">
+          <label for="editHours">Horario:</label>
+          <input type="text" id="editHours" name="editHours" class="form-control-input">
+        </div>
+
+        <div class="input-row">
+          <label for="editImage">URL de la Imagen:</label>
+          <input type="text" id="editImage" name="editImage" class="form-control-input">
+        </div>
+
+        <div class="input-row">
+          <label for="editDesc">Descripción:</label>
+          <textarea id="editDesc" name="editDesc" class="form-control-textarea" rows="2"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+          <button type="submit" class="btn-cta-monumental" style="flex: 2; min-width: 180px; padding: 14px; font-size: 1.15rem; margin-bottom: 0;">
+            <span>💾 Guardar Cambios</span>
+          </button>
+          <button type="button" id="btnAdminDeleteFromEditModal" class="btn-admin-action btn-admin-reject" style="flex: 1; min-width: 120px; padding: 14px; font-size: 0.95rem; justify-content: center; border-radius: var(--radius-xl);">
+            <span>🗑️ Eliminar</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL 4: HALLOWEEN PASS & DIPLOMA DIGITAL
+       ======================================================== -->
+  <div id="modalPass" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-top">
+        <h2><span>🎫</span> Pasaporte del Terror</h2>
+        <button class="btn-modal-close">&times;</button>
+      </div>
+
+      <div class="input-row">
+        <label for="passAliasInput">Tu Alias de Explorador(a):</label>
+        <input type="text" id="passAliasInput" class="form-control-input" placeholder="Ej: Superviviente de Daganzo">
+      </div>
+
+      <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 16px; text-align: center; margin-bottom: 16px;">
+        <h4 style="color: #fff; font-size: 0.95rem; margin-bottom: 4px; font-family: var(--font-spooky); font-size: 1.4rem; letter-spacing: 1px;">Progreso de tu Ruta</h4>
+        <p id="passProgText" style="color: var(--neon-pumpkin); font-size: 0.84rem; font-weight: 700;">0 de 6 completadas (0%)</p>
+        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: var(--radius-full); overflow: hidden; margin: 10px 0;">
+          <div id="passProgFill" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-pumpkin), var(--neon-purple)); border-radius: var(--radius-full); transition: width 0.4s;"></div>
+        </div>
+      </div>
+
+      <button id="btnGenerateDiploma" class="btn-cta-monumental" style="width: 100%; padding: 14px; font-size: 1.25rem; margin-bottom: 0;">
+        <span>📜 Obtener Diploma Oficial en Imagen</span>
+      </button>
+
+      <canvas id="diplomaCanvas" style="display: none;"></canvas>
+
+      <div style="text-align: center; margin-top: 14px;">
+        <img id="diplomaImgPreview" src="" alt="Diploma" style="display: none; width: 100%; border-radius: var(--radius-md); border: 1px solid var(--neon-pumpkin); margin-bottom: 10px;">
+        <a id="btnDownloadDiploma" class="hud-btn" style="display: none; width: 100%; justify-content: center; height: 42px; text-decoration: none;">
+          <span>💾 Descargar Diploma (PNG)</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ========================================================
+       MODAL 6: COMPARTIR MAPA (WHATSAPP, COPIAR, RRSS)
+       ======================================================== -->
+  <div id="modalShare" class="modal-backdrop">
+    <div class="modal-sheet" style="max-width: 440px;">
+      <div class="modal-top">
+        <h2><span>🔗</span> Compartir Mapa</h2>
+        <button class="btn-modal-close">&times;</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.45;">
+        Difunde el terror entre los vecinos de Daganzo de Arriba para que nadie se pierda las casas decoradas y los puntos de truco o trato:
+      </p>
+
+      <div class="share-actions-grid">
+        <!-- WhatsApp -->
+        <a id="btnShareWhatsApp" class="share-channel-btn share-whatsapp" target="_blank" rel="noopener">
+          <span class="share-channel-icon">💬</span>
+          <div class="share-channel-text">
+            <strong>Compartir en WhatsApp</strong>
+            <small>Envía el mapa a grupos y vecinos</small>
+          </div>
+          <span class="share-channel-arrow">➔</span>
+        </a>
+
+        <!-- Copiar enlace -->
+        <button id="btnShareCopyLink" class="share-channel-btn share-copy" type="button">
+          <span class="share-channel-icon">📋</span>
+          <div class="share-channel-text">
+            <strong>Copiar enlace del mapa</strong>
+            <small id="shareCopyHint">Toca para copiar al portapapeles</small>
+          </div>
+          <span class="share-channel-arrow">📄</span>
+        </button>
+
+        <!-- Telegram -->
+        <a id="btnShareTelegram" class="share-channel-btn share-telegram" target="_blank" rel="noopener">
+          <span class="share-channel-icon">✈️</span>
+          <div class="share-channel-text">
+            <strong>Compartir en Telegram</strong>
+            <small>Canales y chats vecinales</small>
+          </div>
+          <span class="share-channel-arrow">➔</span>
+        </a>
+
+        <!-- Compartir nativo (si el navegador lo permite) -->
+        <button id="btnShareNative" class="share-channel-btn share-native" type="button" style="display: none;">
+          <span class="share-channel-icon">📱</span>
+          <div class="share-channel-text">
+            <strong>Más aplicaciones</strong>
+            <small>Otras apps de tu teléfono</small>
+          </div>
+          <span class="share-channel-arrow">➔</span>
+        </button>
+      </div>
+
+      <div style="margin-top: 16px; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+        <span id="shareUrlDisplay" style="font-size: 0.76rem; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr;"></span>
+        <button id="btnShareQuickCopy" class="hud-btn" type="button" style="height: 32px; font-size: 0.75rem; flex-shrink: 0; padding: 0 10px;">Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notificaciones -->
+  <div id="spookyToast" class="spooky-toast"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Scripts de la Aplicación -->
+  <script src="sound.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
