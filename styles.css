@@ -2081,12 +2081,14 @@ body {
 .icon-pick-card .icon-glyph {
   font-size: 1.55rem;
   line-height: 1;
+  pointer-events: none;
 }
 
 /* Ocultamos el nombre de texto dentro del botón individual para evitar que genere scroll */
 /* El nombre completo se muestra en la tarjeta de vista previa seleccionada justo debajo */
 .icon-pick-card .icon-name {
   display: none;
+  pointer-events: none;
 }
 
 .icon-pick-card.taken .icon-taken-tag {
@@ -2102,6 +2104,7 @@ body {
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
 }
 
 /* Vista previa del icono seleccionado */
