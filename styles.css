@@ -1318,7 +1318,7 @@ body {
   background: rgba(3, 2, 7, 0.72);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 2100;
+  z-index: 1000050;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -1342,7 +1342,7 @@ body {
   border: 1.5px solid var(--border-neon-orange);
   border-radius: var(--radius-2xl);
   overflow: hidden;
-  z-index: 2200;
+  z-index: 1000060;
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 35px var(--neon-pumpkin-glow);
   display: flex;
   flex-direction: column;
@@ -2696,6 +2696,11 @@ body {
   border: 1px solid var(--border-glass);
 }
 
+.admin-card-actions-bar button *,
+.admin-card-actions-bar a * {
+  pointer-events: none;
+}
+
 .btn-action-view {
   background: rgba(59, 130, 246, 0.15) !important;
   color: #93c5fd !important;
@@ -2981,119 +2986,9 @@ body {
   border-color: #c084fc;
 }
 
-/* Estilos de Moderación de Casas y Vecinos */
-.admin-pending-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(255, 170, 0, 0.4);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: all 0.2s ease;
-}
-
-.admin-pending-card:hover {
-  border-color: var(--neon-pumpkin);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.admin-pending-header {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.admin-pending-thumb {
-  width: 60px;
-  height: 60px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid var(--border-glass);
-}
-
-.admin-pending-meta {
-  flex: 1;
-  min-width: 0;
-}
-
-.admin-pending-meta h4 {
-  font-family: var(--font-display);
-  font-size: 0.98rem;
-  color: #ffaa55;
-  margin-bottom: 2px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.admin-pending-meta p {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  margin-bottom: 2px;
-}
-
-.admin-neighbor-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(168, 85, 247, 0.15);
-  border: 1px solid var(--border-neon-purple);
-  padding: 3px 8px;
-  border-radius: var(--radius-full);
-  font-size: 0.72rem;
-  color: #e0aaff;
-  margin-top: 4px;
-}
-
-.admin-pending-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.btn-admin-approve {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
-  transition: transform 0.2s;
-}
-
-.btn-admin-approve:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
-}
-
-.btn-admin-reject {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-display);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-}
-
-.btn-admin-reject:hover {
-  background: rgba(239, 68, 68, 0.3);
-  color: #fff;
+/* Elevación de modal de edición por encima del panel de admin */
+#modalEditHouse {
+  z-index: 1000100 !important;
 }
 
 /* ========================================================
