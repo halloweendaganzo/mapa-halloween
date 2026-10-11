@@ -146,8 +146,9 @@ class HouseStore {
       return [];
     }
 
-    // Filtrar las casas que hayan sido eliminadas por el administrador
-    loaded = loaded.filter(h => !deletedIds.includes(h.id));
+    // Filtrar casas de muestra antiguas y casas eliminadas por el administrador
+    const sampleIds = new Set(['casa-1', 'casa-2', 'casa-3', 'casa-4', 'casa-5', 'casa-6']);
+    loaded = loaded.filter(h => !deletedIds.includes(h.id) && !sampleIds.has(h.id));
 
     // Asegurar status y compatibilidad de iconId con los 50 iconos
     loaded = loaded.map(h => {
@@ -175,9 +176,14 @@ class HouseStore {
       db.collection('houses').onSnapshot((snapshot) => {
         if (!snapshot.empty) {
           const remoteHouses = [];
+          const sampleIds = new Set(['casa-1', 'casa-2', 'casa-3', 'casa-4', 'casa-5', 'casa-6']);
           snapshot.forEach(doc => {
             const data = doc.data();
-            remoteHouses.push({ ...data, id: data.id || doc.id });
+            const houseId = data.id || doc.id;
+            // No cargar las 6 casas de muestra fijas
+            if (!sampleIds.has(houseId)) {
+              remoteHouses.push({ ...data, id: houseId });
+            }
           });
 
           const deletedIds = this.getDeletedIds();
