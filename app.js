@@ -683,6 +683,67 @@ class HalloweenApp {
     document.getElementById('cardHours').textContent = `🕒 ${house.hours || '19:00 - 22:30'}`;
     document.getElementById('cardDesc').textContent = house.description;
 
+    // Badges de caramelos y sustómetro
+    const candyLabelsMap = {
+      normal: '🍬 Chuches',
+      glutenfree: '🌾 Sin Gluten',
+      chocolates: '🍫 Chocolates',
+      sugarfree: '🍏 Sin Azúcar',
+      toys: '🎁 Juguetes/Pegatinas',
+      vegan: '🌱 Veganas',
+      deluxe: '🍭 Bolsitas sorpresa',
+      none: '🚫 Sin Chuches'
+    };
+    const sustoLabelsMap = {
+      infantil: '👶 Para Peques',
+      caramelos: '🎃 Clásico',
+      terror: '💀 Pasaje Terror'
+    };
+    const effectLabelsMap = {
+      smoke: '🌫️ Humo',
+      actors: '🎭 Actores en vivo',
+      photocall: '📸 Photocall',
+      sound: '🔊 Efectos Audio',
+      animatronics: '🤖 Animatronics',
+      lights: '⚡ Luces / Láser',
+      blacklight: '💜 Luz UV',
+      walkthrough: '🚪 Pasaje accesible',
+      interactive: '🎯 Retos/Juegos',
+      projection: '📽️ Proyección'
+    };
+
+    const candyBadge = document.getElementById('cardCandyBadge');
+    if (candyBadge) {
+      const cType = house.candiesType || (house.hasCandies ? 'normal' : 'none');
+      candyBadge.textContent = candyLabelsMap[cType] || '🍬 Chuches';
+      candyBadge.style.display = 'inline-block';
+    }
+
+    const sustoBadge = document.getElementById('cardSustoBadge');
+    if (sustoBadge) {
+      sustoBadge.textContent = sustoLabelsMap[house.category] || '🎃 Halloween';
+      sustoBadge.style.display = 'inline-block';
+    }
+
+    const effectsRow = document.getElementById('cardEffectsRow');
+    if (effectsRow) {
+      effectsRow.innerHTML = '';
+      if (Array.isArray(house.effects) && house.effects.length > 0) {
+        house.effects.forEach(ef => {
+          if (effectLabelsMap[ef]) {
+            const span = document.createElement('span');
+            span.className = 'chip-stat';
+            span.style.background = 'rgba(168, 85, 247, 0.15)';
+            span.style.borderColor = 'rgba(168, 85, 247, 0.4)';
+            span.style.color = '#e9d5ff';
+            span.style.fontSize = '0.72rem';
+            span.textContent = effectLabelsMap[ef];
+            effectsRow.appendChild(span);
+          }
+        });
+      }
+    }
+
     // Check-in botón (letras blancas nítidas con alto contraste)
     const isVisited = this.state.visited.includes(house.id);
     const checkinBtn = document.getElementById('btnCardCheckin');
@@ -1399,10 +1460,27 @@ class HalloweenApp {
     };
 
     const candyLabels = {
-      normal: '🍬 Chuches',
+      normal: '🍬 Chuches variado',
       glutenfree: '🌾 Sin Gluten (Celíacos)',
-      chocolates: '🍫 Chocolates',
+      chocolates: '🍫 Chocolates y bombones',
+      sugarfree: '🍏 Sin Azúcar / Fruta',
+      toys: '🎁 Juguetes / Pegatinas',
+      vegan: '🌱 Veganas / Sin lactosa',
+      deluxe: '🍭 Bolsitas sorpresa',
       none: '🚫 Solo Exhibición'
+    };
+
+    const effectLabels = {
+      smoke: '🌫️ Humo',
+      actors: '🎭 Actores',
+      photocall: '📸 Photocall',
+      sound: '🔊 Sonido',
+      animatronics: '🤖 Animatronics',
+      lights: '⚡ Luces / Láser',
+      blacklight: '💜 Luz UV',
+      walkthrough: '🚪 Pasaje',
+      interactive: '🎯 Retos',
+      projection: '📽️ Proyección'
     };
 
     const imgEl = document.getElementById('wizardPreviewImg');
