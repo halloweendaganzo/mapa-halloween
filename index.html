@@ -351,9 +351,13 @@
           <h3 id="cardTitle">Nombre de la Casa</h3>
           <div id="cardStreet" class="flyout-street">📍 Calle Mayor, Daganzo</div>
 
-          <div class="flyout-chips-row">
+          <div class="flyout-chips-row" id="cardChipsRow">
             <span id="cardHours" class="chip-stat">🕒 19:00 - 22:30</span>
+            <span id="cardCandyBadge" class="chip-stat" style="display: none;">🍬 Chuches</span>
+            <span id="cardSustoBadge" class="chip-stat" style="display: none;">🟢 Para Peques</span>
           </div>
+
+          <div id="cardEffectsRow" style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px;"></div>
 
           <p id="cardDesc" class="flyout-desc">Descripción...</p>
 
@@ -536,13 +540,25 @@
           </label>
           <div class="candy-options-grid">
             <div class="spooky-checkbox-chip selected" data-candy="normal">
-              <span>🍬</span> Reparto de chuches
+              <span>🍬</span> Reparto de chuches variado
             </div>
             <div class="spooky-checkbox-chip" data-candy="glutenfree">
               <span>🌾</span> Chuches sin gluten (Celíacos)
             </div>
             <div class="spooky-checkbox-chip" data-candy="chocolates">
-              <span>🍫</span> Chocolates y dulces
+              <span>🍫</span> Chocolates y bombones
+            </div>
+            <div class="spooky-checkbox-chip" data-candy="sugarfree">
+              <span>🍏</span> Opciones sin azúcar / Fruta
+            </div>
+            <div class="spooky-checkbox-chip" data-candy="toys">
+              <span>🎁</span> Juguetes / Pegatinas (No comida)
+            </div>
+            <div class="spooky-checkbox-chip" data-candy="vegan">
+              <span>🌱</span> Chuches veganas / Sin lactosa
+            </div>
+            <div class="spooky-checkbox-chip" data-candy="deluxe">
+              <span>🍭</span> Bolsitas sorpresa preparadas
             </div>
             <div class="spooky-checkbox-chip" data-candy="none">
               <span>🚫</span> Solo exhibición / Sin chuches
@@ -554,7 +570,7 @@
           </label>
           <div class="spooky-effects-grid">
             <div class="spooky-checkbox-chip" data-effect="smoke">
-              <span>🌫️</span> Máquina de humo
+              <span>🌫️</span> Máquina de humo / Niebla
             </div>
             <div class="spooky-checkbox-chip" data-effect="actors">
               <span>🎭</span> Actores en vivo
@@ -563,7 +579,25 @@
               <span>📸</span> Photocall familiar
             </div>
             <div class="spooky-checkbox-chip" data-effect="sound">
-              <span>🔊</span> Efectos de audio
+              <span>🔊</span> Efectos de audio y gritos
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="animatronics">
+              <span>🤖</span> Animatronics con movimiento
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="lights">
+              <span>⚡</span> Luces estroboscópicas / Láser
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="blacklight">
+              <span>💜</span> Luz ultravioleta / Flúor
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="walkthrough">
+              <span>🚪</span> Pasaje interior accesible
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="interactive">
+              <span>🎯</span> Juegos interactivos / Retos
+            </div>
+            <div class="spooky-checkbox-chip" data-effect="projection">
+              <span>📽️</span> Proyección o hologramas
             </div>
           </div>
         </div>
