@@ -2808,15 +2808,29 @@ class HalloweenApp {
       this.openModal('modalPass');
     });
 
-    // Acceso Secreto Administrador: tocar la calabaza 🎃 del pie de página
-    document.getElementById('secretAdminTrigger')?.addEventListener('click', () => {
-      this.openModal('modalAdmin');
-    });
+    // Acceso Secreto Administrador: tocar la calabaza 🎃 o el pie de página
+    const secretTrigger = document.getElementById('secretAdminTrigger');
+    if (secretTrigger) {
+      const openAdminSecret = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        this.openModal('modalAdmin');
+      };
+      secretTrigger.addEventListener('click', openAdminSecret);
+      secretTrigger.addEventListener('touchend', openAdminSecret);
+    }
 
     // Soporte para abrir admin directamente mediante enlace secreto (ej: web.com/?admin o #admin)
-    if (window.location.search.includes('admin') || window.location.hash.includes('admin')) {
-      setTimeout(() => this.openModal('modalAdmin'), 400);
-    }
+    const checkAdminQuery = () => {
+      if (window.location.search.includes('admin') || window.location.hash.includes('admin')) {
+        this.openModal('modalAdmin');
+      }
+    };
+    checkAdminQuery();
+    setTimeout(checkAdminQuery, 300);
+    setTimeout(checkAdminQuery, 1000);
 
     // 4. Header del Mapa y Menú Flotante de Opciones
     document.getElementById('btnToggleMapOptions')?.addEventListener('click', (e) => {
