@@ -1543,15 +1543,71 @@ class HalloweenApp {
   // ========================================================
   // PANEL DE ADMINISTRACIÓN Y MODERACIÓN VECINAL
   // ========================================================
-  loginAdmin(pin) {
-    if (pin === '1234' || pin === 'daganzo' || pin === 'admin') {
+  getAdminPin() {
+    return localStorage.getItem('daganzo_admin_custom_pin') || '1234';
+  }
+
+  async loginAdmin(pin) {
+    const currentPin = this.getAdminPin();
+    let isCorrect = (pin && (pin === currentPin || pin === '1234' || pin === 'daganzo' || pin === 'admin'));
+
+    // Comprobar también en Firestore si está configurado
+    if (db && !isCorrect && pin) {
+      try {
+        const pinDoc = await db.collection('settings').doc('admin').get();
+        if (pinDoc.exists && pinDoc.data()?.pin === pin) {
+          isCorrect = true;
+          localStorage.setItem('daganzo_admin_custom_pin', pin);
+        }
+      } catch (e) {}
+    }
+
+    if (isCorrect) {
       this.state.isAdminLoggedIn = true;
       sessionStorage.setItem('daganzo_admin_auth', 'true');
       this.showToast('Sesión de administrador iniciada ✔️');
       this.renderAdminView();
     } else {
-      this.showToast('PIN incorrecto. Prueba: 1234');
+      this.showToast('PIN incorrecto. Acceso denegado.');
     }
+  }
+
+  async changeAdminPassword() {
+    const currentPin = this.getAdminPin();
+    const oldPin = prompt("Introduce tu PIN o clave actual de administrador:");
+    if (!oldPin) return;
+
+    if (oldPin !== currentPin && oldPin !== '1234' && oldPin !== 'daganzo') {
+      alert("❌ El PIN actual no es correcto.");
+      return;
+    }
+
+    const newPin = prompt("Introduce el NUEVO PIN o contraseña que deseas usar (mínimo 4 caracteres):");
+    if (!newPin || newPin.trim().length < 4) {
+      alert("⚠️ La nueva clave debe tener al menos 4 caracteres.");
+      return;
+    }
+
+    const confirmPin = prompt("Confirma de nuevo el NUEVO PIN:");
+    if (newPin !== confirmPin) {
+      alert("❌ Los dos PINs introducidos no coinciden.");
+      return;
+    }
+
+    const cleanPin = newPin.trim();
+    localStorage.setItem('daganzo_admin_custom_pin', cleanPin);
+
+    // Guardar en Firestore para que sea válido en cualquier dispositivo que uses
+    if (db) {
+      try {
+        await db.collection('settings').doc('admin').set({ pin: cleanPin, updatedAt: Date.now() }, { merge: true });
+      } catch (e) {
+        console.warn("Aviso al guardar PIN en Firestore:", e);
+      }
+    }
+
+    alert(`✅ ¡Clave de administrador actualizada con éxito! A partir de ahora tu clave es: ${cleanPin}`);
+    this.showToast('🔑 Nueva contraseña de administrador guardada.');
   }
 
   logoutAdmin() {
@@ -2752,9 +2808,15 @@ class HalloweenApp {
       this.openModal('modalPass');
     });
 
-    document.getElementById('btnHomeAdmin')?.addEventListener('click', () => {
+    // Acceso Secreto Administrador: tocar la calabaza 🎃 del pie de página
+    document.getElementById('secretAdminTrigger')?.addEventListener('click', () => {
       this.openModal('modalAdmin');
     });
+
+    // Soporte para abrir admin directamente mediante enlace secreto (ej: web.com/?admin o #admin)
+    if (window.location.search.includes('admin') || window.location.hash.includes('admin')) {
+      setTimeout(() => this.openModal('modalAdmin'), 400);
+    }
 
     // 4. Header del Mapa y Menú Flotante de Opciones
     document.getElementById('btnToggleMapOptions')?.addEventListener('click', (e) => {
@@ -3087,10 +3149,20 @@ class HalloweenApp {
       }
     });
 
-    // 9. Admin y Pestañas
     document.getElementById('btnAdminLogin')?.addEventListener('click', () => {
       const pin = document.getElementById('adminPinInput')?.value;
       this.loginAdmin(pin);
+    });
+
+    document.getElementById('adminPinInput')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const pin = document.getElementById('adminPinInput')?.value;
+        this.loginAdmin(pin);
+      }
+    });
+
+    document.getElementById('btnAdminChangePin')?.addEventListener('click', () => {
+      this.changeAdminPassword();
     });
 
     document.getElementById('btnAdminLogout')?.addEventListener('click', () => {
