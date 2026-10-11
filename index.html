@@ -615,16 +615,54 @@
               <span class="quick-hour-chip" data-hours="18:00 - 21:00">18:00 - 21:00 (Peques)</span>
               <span class="quick-hour-chip" data-hours="20:00 - 00:00">20:00 - 00:00 (Noche)</span>
               <span class="quick-hour-chip" data-hours="Todo el día">Todo el día</span>
+              <span class="quick-hour-chip" data-hours="custom">✏️ Personalizar horas</span>
             </div>
-            <input type="text" id="houseHours" name="houseHours" class="form-control-input" value="19:00 - 22:30">
+
+            <!-- Selector personalizado de horas Desde / Hasta -->
+            <div id="customHoursPickerRow" style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
+              <div style="flex: 1;">
+                <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-bottom: 2px;">Hora Inicio:</small>
+                <input type="time" id="customHourStart" class="form-control-input" value="19:00" style="padding: 8px 10px;">
+              </div>
+              <span style="color: #ffaa55; font-weight: 700; margin-top: 14px;">a</span>
+              <div style="flex: 1;">
+                <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-bottom: 2px;">Hora Fin:</small>
+                <input type="time" id="customHourEnd" class="form-control-input" value="22:30" style="padding: 8px 10px;">
+              </div>
+            </div>
+
+            <!-- Campo final de texto editable por si prefieren escribir libremente -->
+            <input type="text" id="houseHours" name="houseHours" class="form-control-input" value="19:00 - 22:30" placeholder="Ej: 19:00 - 22:30 o Solo de 20 a 22h" style="margin-top: 8px;">
           </div>
 
           <div class="input-row">
-            <label>Foto o Ilustración para tu Fachada:</label>
-            <div id="presetPhotosGrid" class="preset-photos-grid">
-              <!-- Rellenado dinámicamente con ilustraciones -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="margin-bottom: 0;">Foto o Ilustración para tu Fachada:</label>
+              <span style="font-size: 0.72rem; color: #ffaa55;">20 temáticas de Halloween</span>
             </div>
-            <input type="text" id="houseCustomImage" class="form-control-input" placeholder="O pega el enlace de tu propia foto (opcional)" style="margin-top: 6px; font-size: 0.78rem;">
+
+            <!-- Botón para subir foto directamente desde el móvil / ordenador -->
+            <div class="photo-upload-container" style="margin-bottom: 12px;">
+              <input type="file" id="housePhotoFileInput" accept="image/*" style="display: none;">
+              <button type="button" id="btnUploadMobilePhoto" class="btn-upload-photo" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: rgba(168, 85, 247, 0.12); border: 1.5px dashed var(--neon-purple); border-radius: var(--radius-md); color: #e9d5ff; font-size: 0.84rem; cursor: pointer; transition: all 0.25s;">
+                <span>📷</span>
+                <strong>Subir foto de mi casa desde el móvil</strong>
+              </button>
+              <div id="mobilePhotoUploadPreview" style="display: none; align-items: center; gap: 10px; margin-top: 8px; padding: 8px 12px; background: rgba(16, 185, 129, 0.12); border: 1px solid var(--toxic-green); border-radius: 10px;">
+                <img id="mobilePhotoThumb" src="" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid #fff;">
+                <div style="flex: 1; overflow: hidden;">
+                  <span style="display: block; font-size: 0.78rem; color: #10b981; font-weight: 700;">✓ Foto de tu móvil seleccionada</span>
+                  <small id="mobilePhotoName" style="color: #cbd5e1; font-size: 0.72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;"></small>
+                </div>
+                <button type="button" id="btnRemoveMobilePhoto" style="background: none; border: none; color: #f87171; font-size: 1.1rem; cursor: pointer;">&times;</button>
+              </div>
+            </div>
+
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 6px;">O elige una de nuestras 20 ilustraciones ambientadas:</div>
+            <div id="presetPhotosGrid" class="preset-photos-grid">
+              <!-- Rellenado dinámicamente con 20 ilustraciones -->
+            </div>
+            <input type="text" id="houseCustomImage" class="form-control-input" placeholder="O pega el enlace de tu propia imagen (opcional)" style="margin-top: 8px; font-size: 0.78rem;">
           </div>
 
           <div class="input-row">
