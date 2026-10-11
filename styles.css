@@ -3219,6 +3219,21 @@ body {
     gap: 10px;
     margin-bottom: 10px;
   }
+
+  /* Modales en móviles: cargar desde arriba con espacio cómodo y scroll nativo limpio */
+  .modal-backdrop {
+    align-items: flex-start !important;
+    padding: 12px 10px calc(18px + env(safe-area-inset-bottom, 0px)) 10px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-sheet {
+    max-height: calc(100vh - 24px - env(safe-area-inset-top, 0px)) !important;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top, 0px)) !important;
+    padding: 18px 14px !important;
+    margin-top: calc(4px + env(safe-area-inset-top, 0px));
+  }
 }
 
 /* ========================================================
