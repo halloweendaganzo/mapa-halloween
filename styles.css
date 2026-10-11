@@ -1533,8 +1533,8 @@ body {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 2000;
-  background: rgba(4, 3, 8, 0.85);
+  z-index: 1000000;
+  background: rgba(4, 3, 8, 0.88);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
