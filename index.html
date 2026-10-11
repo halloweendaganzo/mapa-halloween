@@ -609,36 +609,72 @@
           </p>
 
           <div class="input-row">
-            <label>Horario de Apertura / Visitas:</label>
-            <div class="quick-hours-row">
-              <span class="quick-hour-chip selected" data-hours="19:00 - 22:30">19:00 - 22:30</span>
-              <span class="quick-hour-chip" data-hours="18:00 - 21:00">18:00 - 21:00 (Peques)</span>
-              <span class="quick-hour-chip" data-hours="20:00 - 00:00">20:00 - 00:00 (Noche)</span>
-              <span class="quick-hour-chip" data-hours="Todo el día">Todo el día</span>
-              <span class="quick-hour-chip" data-hours="custom">✏️ Personalizar horas</span>
+            <label>Horario de Visitas (Elige hora de inicio y fin):</label>
+            <!-- Dos desplegables con horas y medias horas -->
+            <div class="hours-dropdowns-container" style="display: flex; gap: 10px; align-items: center; margin-top: 6px;">
+              <div style="flex: 1;">
+                <label for="selectHourStart" style="font-size: 0.74rem; color: #cbd5e1; margin-bottom: 4px; display: block;">Hora de Inicio:</label>
+                <select id="selectHourStart" class="form-control-input" style="font-size: 0.95rem; font-weight: 600; padding: 10px 12px; cursor: pointer;">
+                  <!-- Horas y medias horas de 16:00 a 02:00 -->
+                  <option value="16:00">16:00</option>
+                  <option value="16:30">16:30</option>
+                  <option value="17:00">17:00</option>
+                  <option value="17:30">17:30</option>
+                  <option value="18:00">18:00</option>
+                  <option value="18:30">18:30</option>
+                  <option value="19:00" selected>19:00</option>
+                  <option value="19:30">19:30</option>
+                  <option value="20:00">20:00</option>
+                  <option value="20:30">20:30</option>
+                  <option value="21:00">21:00</option>
+                  <option value="21:30">21:30</option>
+                  <option value="22:00">22:00</option>
+                  <option value="22:30">22:30</option>
+                  <option value="23:00">23:00</option>
+                  <option value="23:30">23:30</option>
+                  <option value="00:00">00:00</option>
+                  <option value="00:30">00:30</option>
+                  <option value="01:00">01:00</option>
+                </select>
+              </div>
+
+              <div style="color: var(--neon-pumpkin); font-weight: bold; font-size: 1.1rem; padding-top: 18px;">➔</div>
+
+              <div style="flex: 1;">
+                <label for="selectHourEnd" style="font-size: 0.74rem; color: #cbd5e1; margin-bottom: 4px; display: block;">Hora de Fin:</label>
+                <select id="selectHourEnd" class="form-control-input" style="font-size: 0.95rem; font-weight: 600; padding: 10px 12px; cursor: pointer;">
+                  <!-- Horas y medias horas de 17:00 a 03:00 -->
+                  <option value="17:00">17:00</option>
+                  <option value="17:30">17:30</option>
+                  <option value="18:00">18:00</option>
+                  <option value="18:30">18:30</option>
+                  <option value="19:00">19:00</option>
+                  <option value="19:30">19:30</option>
+                  <option value="20:00">20:00</option>
+                  <option value="20:30">20:30</option>
+                  <option value="21:00">21:00</option>
+                  <option value="21:30">21:30</option>
+                  <option value="22:00">22:00</option>
+                  <option value="22:30" selected>22:30</option>
+                  <option value="23:00">23:00</option>
+                  <option value="23:30">23:30</option>
+                  <option value="00:00">00:00</option>
+                  <option value="00:30">00:30</option>
+                  <option value="01:00">01:00</option>
+                  <option value="01:30">01:30</option>
+                  <option value="02:00">02:00</option>
+                </select>
+              </div>
             </div>
 
-            <!-- Selector personalizado de horas Desde / Hasta -->
-            <div id="customHoursPickerRow" style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
-              <div style="flex: 1;">
-                <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-bottom: 2px;">Hora Inicio:</small>
-                <input type="time" id="customHourStart" class="form-control-input" value="19:00" style="padding: 8px 10px;">
-              </div>
-              <span style="color: #ffaa55; font-weight: 700; margin-top: 14px;">a</span>
-              <div style="flex: 1;">
-                <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-bottom: 2px;">Hora Fin:</small>
-                <input type="time" id="customHourEnd" class="form-control-input" value="22:30" style="padding: 8px 10px;">
-              </div>
-            </div>
-
-            <!-- Campo final de texto editable por si prefieren escribir libremente -->
-            <input type="text" id="houseHours" name="houseHours" class="form-control-input" value="19:00 - 22:30" placeholder="Ej: 19:00 - 22:30 o Solo de 20 a 22h" style="margin-top: 8px;">
+            <!-- Campo oculto/sincronizado para el formulario -->
+            <input type="hidden" id="houseHours" name="houseHours" value="19:00 - 22:30">
           </div>
 
           <div class="input-row">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <label style="margin-bottom: 0;">Foto o Ilustración para tu Fachada:</label>
-              <span style="font-size: 0.72rem; color: #ffaa55;">20 temáticas de Halloween</span>
+              <span style="font-size: 0.72rem; color: #ffaa55;">30 temáticas 100% Halloween</span>
             </div>
 
             <!-- Botón para subir foto directamente desde el móvil / ordenador -->
@@ -658,9 +694,11 @@
               </div>
             </div>
 
-            <div style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 6px;">O elige una de nuestras 20 ilustraciones ambientadas:</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-size: 0.76rem; color: #cbd5e1;">Toca una imagen para seleccionarla o 🔍 para verla en grande:</span>
+            </div>
             <div id="presetPhotosGrid" class="preset-photos-grid">
-              <!-- Rellenado dinámicamente con 20 ilustraciones -->
+              <!-- Rellenado dinámicamente con 30 ilustraciones 100% Halloween -->
             </div>
             <input type="text" id="houseCustomImage" class="form-control-input" placeholder="O pega el enlace de tu propia imagen (opcional)" style="margin-top: 8px; font-size: 0.78rem;">
           </div>
@@ -1127,6 +1165,26 @@
       <div style="margin-top: 16px; padding: 10px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; gap: 8px;">
         <span id="shareUrlDisplay" style="font-size: 0.76rem; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; direction: ltr;"></span>
         <button id="btnShareQuickCopy" class="hud-btn" type="button" style="height: 32px; font-size: 0.75rem; flex-shrink: 0; padding: 0 10px;">Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Vista Previa de Foto en Grande (Lightbox) -->
+  <div id="modalPhotoPreview" class="modal-backdrop" style="display: none; z-index: 10500;">
+    <div class="modal-sheet photo-preview-modal-sheet" style="max-width: 620px; padding: 16px; text-align: center; background: rgba(13, 11, 24, 0.98); border: 2px solid var(--neon-pumpkin);">
+      <div class="modal-top" style="margin-bottom: 12px; justify-content: space-between;">
+        <h3 id="photoPreviewTitle" style="color: #ffaa55; font-size: 1.15rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🎃</span> Vista previa en grande
+        </h3>
+        <button id="btnClosePhotoPreview" class="btn-modal-close" style="width: 36px; height: 36px; font-size: 1.5rem;">&times;</button>
+      </div>
+      <div style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 107, 0, 0.3); background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+        <img id="photoPreviewImgLarge" src="" alt="Ilustración Halloween en grande" style="width: 100%; max-height: 55vh; object-fit: contain; display: block; margin: 0 auto;">
+      </div>
+      <div style="margin-top: 14px; display: flex; gap: 10px; justify-content: center;">
+        <button id="btnSelectFromPhotoPreview" type="button" class="hud-btn btn-cta" style="flex: 1; max-width: 280px; padding: 12px; font-size: 0.95rem; font-weight: 700; background: linear-gradient(135deg, #ff6b00, #ff8800);">
+          ✓ Elegir esta imagen para mi fachada
+        </button>
       </div>
     </div>
   </div>
