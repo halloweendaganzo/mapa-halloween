@@ -134,12 +134,7 @@
         </div>
       </div>
 
-      <!-- BOTÓN ADMIN DISCRETO -->
-      <div style="margin-bottom: 24px;">
-        <button id="btnHomeAdmin" class="hud-btn" style="background: rgba(168, 85, 247, 0.15); border-color: var(--border-neon-purple); color: #d8b4fe;">
-          <span>🛡️ Panel de Administración</span>
-        </button>
-      </div>
+
 
       <!-- TIRA DE DATOS EN VIVO -->
       <div class="hero-live-strip">
@@ -157,9 +152,9 @@
         </div>
       </div>
  
-       <!-- PIE DE PÁGINA -->
+       <!-- PIE DE PÁGINA (CON ACCESO SECRETO DISCRETO AL PULSAR EN LA CALABAZA) -->
        <footer class="hero-author-footer">
-         <p>Web creada y administrada por <b>Víctor Romero</b> 🎃</p>
+         <p>Web creada y administrada por <b>Víctor Romero</b> <span id="secretAdminTrigger" title="" style="cursor: pointer; user-select: none;">🎃</span></p>
        </footer>
 
      </div>
@@ -266,12 +261,12 @@
             </div>
           </button>
 
-          <!-- 7. Panel Administrador -->
-          <button id="optAdmin" type="button" class="options-menu-item opt-item-admin">
+          <!-- 7. Panel Administrador (Oculto al público, solo visible tras autenticar o con trigger secreto) -->
+          <button id="optAdmin" type="button" class="options-menu-item opt-item-admin" style="display: none;">
             <div class="opt-icon-badge opt-badge-violet">🛡️</div>
             <div class="opt-text-wrap">
               <div class="opt-title">Panel de Administración</div>
-              <div class="opt-desc">Moderación y aprobación de casas (Víctor Romero)</div>
+              <div class="opt-desc">Moderación y aprobación de casas</div>
             </div>
           </button>
         </div>
@@ -850,6 +845,9 @@
             </div>
             <button id="btnAdminAddNewHouse" type="button" class="hud-btn hud-btn-primary" style="height: 38px; font-size: 0.8rem; padding: 0 12px;" title="Añadir una casa directamente">
               ➕ Nueva Casa
+            </button>
+            <button id="btnAdminChangePin" type="button" class="hud-btn" style="height: 38px; font-size: 0.8rem; padding: 0 10px; border-color: rgba(168, 85, 247, 0.4); color: #d8b4fe;" title="Cambiar clave o PIN de administrador">
+              🔑 Cambiar Clave
             </button>
             <button id="btnAdminExportBackup" type="button" class="hud-btn" style="height: 38px; font-size: 0.8rem; padding: 0 10px;" title="Descargar copia de seguridad en JSON">
               📥 Backup JSON
