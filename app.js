@@ -1436,14 +1436,23 @@ class HalloweenApp {
       return `
         <div class="icon-pick-card ${isSelected ? 'selected' : ''} ${isTaken ? 'taken' : ''}"
              data-icon-id="${icon.id}"
-             title="${isTaken ? `🔒 Reservado por: ${takenByTitle}` : `${icon.name} (Disponible)`}"
-             onclick="window.app.selectWizardIcon('${icon.id}')">
+             role="button"
+             tabindex="0"
+             title="${isTaken ? `🔒 Reservado por: ${takenByTitle}` : `${icon.name} (Disponible)`}">
           <span class="icon-glyph">${icon.emoji}</span>
           <span class="icon-name">${icon.name}</span>
           ${isTaken ? `<span class="icon-taken-tag" title="Reservado por ${takenByTitle}">🔒</span>` : ''}
         </div>
       `;
     }).join('');
+
+    // Event listeners directos para máxima respuesta en móvil y táctil
+    grid.querySelectorAll('.icon-pick-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const id = card.dataset.iconId;
+        if (id) this.selectWizardIcon(id);
+      });
+    });
   }
 
   // Selecciona un icono exclusivo
@@ -1457,7 +1466,16 @@ class HalloweenApp {
 
     this.wizard.iconId = iconId;
     window.spookyAudio?.playStinger('unlock');
-    this.renderWizardIconsGrid(this.wizard.iconCategoryFilter || 'all');
+
+    // Actualizar clase selected en todas las tarjetas de inmediato sin redibujar todo
+    document.querySelectorAll('#wizardIconsGrid .icon-pick-card').forEach(c => {
+      if (c.dataset.iconId === iconId) {
+        c.classList.add('selected');
+      } else {
+        c.classList.remove('selected');
+      }
+    });
+
     this.updateWizardSelectedIconDisplay();
   }
 
@@ -1467,11 +1485,13 @@ class HalloweenApp {
     const nameEl = document.getElementById('wizardSelectedIconName');
     const lockEl = document.getElementById('wizardSelectedIconLockStatus');
     const miniMapEmoji = document.getElementById('miniMapMarkerEmoji');
+    const previewPinEmoji = document.getElementById('wizardPreviewPinEmoji');
 
     if (emojiEl) emojiEl.textContent = icon.emoji;
     if (nameEl) nameEl.textContent = icon.name;
     if (lockEl) lockEl.innerHTML = `✓ Icono exclusivo reservado para tu casa`;
     if (miniMapEmoji) miniMapEmoji.textContent = icon.emoji;
+    if (previewPinEmoji) previewPinEmoji.textContent = icon.emoji;
   }
 
   // Vista previa de la tarjeta en Paso 5
