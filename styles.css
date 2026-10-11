@@ -2518,73 +2518,242 @@ body {
   padding-right: 6px;
 }
 
-.admin-house-item {
+/* ========================================================
+   TARJETAS MODERNAS DE CASAS EN EL PANEL DE ADMINISTRACIÓN
+   ======================================================== */
+.admin-house-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-glass);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  padding: 16px;
   display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.admin-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.admin-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.admin-info h4 {
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  color: #fff;
-  white-space: nowrap;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.2s ease;
   overflow: hidden;
-  text-overflow: ellipsis;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
-.admin-info p {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.admin-btns {
-  display: flex;
-  gap: 6px;
-}
-
-.btn-icon-admin {
+.admin-house-card:hover {
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-glass);
-  color: #cbd5e1;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-sm);
+  border-color: rgba(255, 107, 0, 0.35);
+}
+
+.admin-pending-card {
+  border-left: 5px solid #ff6b00 !important;
+  background: linear-gradient(90deg, rgba(255, 107, 0, 0.08), rgba(255, 255, 255, 0.03)) !important;
+}
+
+.admin-card-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.admin-card-photo-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  overflow: visible;
+}
+
+.admin-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  display: block;
+}
+
+.admin-card-icon-badge {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  width: 32px;
+  height: 32px;
+  background: #1c182b;
+  border: 2px solid var(--neon-pumpkin);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
+  font-size: 1.15rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
-.btn-icon-admin:hover {
-  background: rgba(255, 255, 255, 0.15);
+.admin-card-main-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.admin-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.admin-card-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #fff;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.btn-icon-delete:hover {
-  background: rgba(255, 0, 85, 0.2);
-  color: var(--blood-crimson);
+.admin-card-detail-line {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.admin-card-owner-box {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-card-quote {
+  font-size: 0.76rem;
+  color: #a8a29e;
+  font-style: italic;
+  margin: 4px 0 0 0;
+  line-height: 1.3;
+}
+
+/* Barra de Botones de Acción */
+.admin-card-actions-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-action-primary-approve {
+  width: 100%;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.btn-action-primary-approve:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+  filter: brightness(1.08);
+}
+
+.admin-card-actions-secondary {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.admin-card-actions-secondary button,
+.admin-card-actions-secondary a {
+  flex: 1;
+  min-width: 75px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border: 1px solid var(--border-glass);
+}
+
+.btn-action-view {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #93c5fd !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+
+.btn-action-view:hover {
+  background: rgba(59, 130, 246, 0.3) !important;
+  color: #fff !important;
+}
+
+.btn-action-edit {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fcd34d !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+.btn-action-edit:hover {
+  background: rgba(245, 158, 11, 0.3) !important;
+  color: #fff !important;
+}
+
+.btn-action-whatsapp {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #86efac !important;
+  border-color: rgba(34, 197, 94, 0.35) !important;
+}
+
+.btn-action-whatsapp:hover {
+  background: rgba(34, 197, 94, 0.3) !important;
+  color: #fff !important;
+}
+
+.btn-action-delete {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+.btn-action-delete:hover {
+  background: rgba(239, 68, 68, 0.35) !important;
+  color: #fff !important;
+}
+
+@media (max-width: 480px) {
+  .admin-card-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .admin-card-title-row {
+    justify-content: center;
+  }
+  .admin-card-actions-secondary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
 }
 
 /* Fichas Detalladas de Vecinos y sus Casas en Panel de Admin */
