@@ -72,92 +72,7 @@ const PHOTO_PRESETS = [
   "https://images.unsplash.com/photo-1572099606223-6e29045d7de3?auto=format&fit=crop&w=700&q=80"
 ];
 
-const DEFAULT_HOUSES = [
-  {
-    id: "casa-1",
-    title: "La Mansión del Terror de la Villa",
-    street: "Plaza de la Villa, 4",
-    coords: [40.5448, -3.4572],
-    category: "terror",
-    iconId: "mansion",
-    icon: "🏚️",
-    hours: "19:00 - 23:30",
-    hasCandies: true,
-    kidsFriendly: false,
-    image: "assets/haunted_mansion.jpg",
-    description: "Pasaje interactivo con actores disfrazados, niebla ambiental y esqueletos gigantes."
-  },
-  {
-    id: "casa-2",
-    title: "El Castillo Dulce de las Brujas",
-    street: "Calle Mayor, 18",
-    coords: [40.5435, -3.4565],
-    category: "caramelos",
-    iconId: "caramelo",
-    icon: "🍬",
-    hours: "18:00 - 21:30",
-    hasCandies: true,
-    kidsFriendly: true,
-    image: PHOTO_PRESETS[1],
-    description: "Reparto de chuches y golosinas sin gluten para todos los peques de Daganzo."
-  },
-  {
-    id: "casa-3",
-    title: "El Refugio de los Vampiros",
-    street: "Calle San Vicente, 12",
-    coords: [40.5458, -3.4589],
-    category: "caramelos",
-    iconId: "calabaza",
-    icon: "🎃",
-    hours: "19:30 - 22:30",
-    hasCandies: true,
-    kidsFriendly: true,
-    image: PHOTO_PRESETS[2],
-    description: "Fachada completa esculpida a mano con cementerio temático y photocall para familias."
-  },
-  {
-    id: "casa-4",
-    title: "La Cueva de las Calabazas",
-    street: "Camino de Fresnedillas, 7",
-    coords: [40.5422, -3.4595],
-    category: "infantil",
-    iconId: "caldero",
-    icon: "🫕",
-    hours: "18:00 - 21:00",
-    hasCandies: true,
-    kidsFriendly: true,
-    image: PHOTO_PRESETS[3],
-    description: "Especial para los más peques (0 a 8 años). Sin sustos bruscos y con música festiva."
-  },
-  {
-    id: "casa-5",
-    title: "El Manicomio Abandonado",
-    street: "Calle Real, 25",
-    coords: [40.5462, -3.4552],
-    category: "terror",
-    iconId: "calavera",
-    icon: "💀",
-    hours: "20:00 - 00:00",
-    hasCandies: true,
-    kidsFriendly: false,
-    image: PHOTO_PRESETS[4],
-    description: "Efectos luminosos, sonidos tenebrosos y animatronics activados por movimiento."
-  },
-  {
-    id: "casa-6",
-    title: "La Parada del Truco o Trato",
-    street: "Calle Constitución, 9",
-    coords: [40.5441, -3.4538],
-    category: "caramelos",
-    iconId: "piruleta",
-    icon: "🍭",
-    hours: "18:30 - 22:00",
-    hasCandies: true,
-    kidsFriendly: true,
-    image: PHOTO_PRESETS[5],
-    description: "Ven disfrazado y di la frase mágica para llevarte una bolsa de dulces sorpresa."
-  }
-];
+const DEFAULT_HOUSES = [];
 
 // ========================================================
 // CONFIGURACIÓN DE FIREBASE FIRESTORE (SINCRONIZACIÓN EN TIEMPO REAL)
@@ -189,7 +104,7 @@ try {
 // ========================================================
 class HouseStore {
   constructor() {
-    this.storageKey = 'daganzo_halloween_houses_v4';
+    this.storageKey = 'daganzo_halloween_houses_v5';
     this.deletedKey = 'daganzo_deleted_houses_v1';
     this.houses = this.load();
     this.initRealtimeSync();
@@ -220,7 +135,7 @@ class HouseStore {
     const deletedIds = this.getDeletedIds();
     let loaded = [];
     if (!raw) {
-      const initial = DEFAULT_HOUSES.filter(h => !deletedIds.includes(h.id));
+      const initial = [];
       this.save(initial);
       return initial;
     }
@@ -228,7 +143,7 @@ class HouseStore {
       loaded = JSON.parse(raw);
     } catch (e) {
       console.error("Error al parsear casas:", e);
-      return [...DEFAULT_HOUSES];
+      return [];
     }
 
     // Filtrar las casas que hayan sido eliminadas por el administrador
@@ -280,10 +195,14 @@ class HouseStore {
             }
           }
         } else {
-          // Si la base de datos de Firestore está vacía, sembramos las casas iniciales
-          DEFAULT_HOUSES.forEach(h => {
-            db.collection('houses').doc(h.id).set(h).catch(() => {});
-          });
+          // Si la base de datos de Firestore está vacía, no forzamos casas de muestra
+          this.houses = [];
+          this.save([]);
+          if (window.app) {
+            window.app.refreshMapMarkers();
+            window.app.renderSidebarHouses();
+            window.app.updateGeneralCounters();
+          }
         }
       }, (err) => {
         console.warn("Firestore houses listener warning:", err);
@@ -1378,6 +1297,17 @@ class HalloweenApp {
       this.renderWizardIconsGrid(this.wizard.iconCategoryFilter || 'all');
       this.updateWizardSelectedIconDisplay();
     }
+
+    // Asegurar que en móvil y escritorio la vista del asistente se desplace siempre al inicio (parte de arriba)
+    const wizardSheet = document.querySelector('#modalApunta .modal-sheet') || document.querySelector('.wizard-modal-sheet');
+    if (wizardSheet) {
+      wizardSheet.scrollTop = 0;
+    }
+    const modalBackdrop = document.getElementById('modalApunta');
+    if (modalBackdrop) {
+      modalBackdrop.scrollTop = 0;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // Renderiza los 50 iconos de Halloween con bloqueo exclusivo
@@ -2775,6 +2705,9 @@ class HalloweenApp {
     const modal = document.getElementById(id);
     if (modal) {
       modal.classList.add('open');
+      modal.scrollTop = 0;
+      const sheet = modal.querySelector('.modal-sheet');
+      if (sheet) sheet.scrollTop = 0;
       if (id === 'modalApunta') this.initWizard();
       if (id === 'modalAdmin') this.renderAdminView();
       if (id === 'modalPass') this.updatePassCounters();
@@ -2817,6 +2750,15 @@ class HalloweenApp {
 
     document.getElementById('btnCloseSidebar')?.addEventListener('click', () => {
       this.toggleSidebar(false);
+    });
+
+    document.getElementById('btnSidebarShare')?.addEventListener('click', () => {
+      this.shareMap();
+    });
+
+    // 2.1 Botón Compartir en barra superior del mapa
+    document.getElementById('btnHeaderShare')?.addEventListener('click', () => {
+      this.shareMap();
     });
 
     // 3. Botones de Pantalla Inicial
