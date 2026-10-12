@@ -3111,9 +3111,203 @@ body {
   border-color: #c084fc;
 }
 
-/* Elevación de modal de edición por encima del panel de admin */
+/* Elevación y optimización del modal de edición de casas */
 #modalEditHouse {
   z-index: 1000100 !important;
+}
+
+.modal-sheet-edit-house {
+  max-width: 580px !important;
+  max-height: 90vh !important;
+  max-height: 90dvh !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding: 22px !important;
+}
+
+/* Contenedor encapsulado y con scroll para los 50 iconos del mapa */
+.admin-icons-picker-container {
+  max-height: 195px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px;
+  background: rgba(10, 5, 20, 0.75);
+  border: 1px solid var(--border-neon-purple);
+  border-radius: var(--radius-lg);
+  -webkit-overflow-scrolling: touch;
+  margin-top: 4px;
+}
+
+.admin-icons-picker-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-icons-picker-container::-webkit-scrollbar-thumb {
+  background: var(--neon-pumpkin);
+  border-radius: 4px;
+}
+
+.admin-icons-picker-container .icons-50-grid {
+  margin-bottom: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  gap: 5px;
+}
+
+.edit-icon-current-badge {
+  background: rgba(255, 117, 24, 0.2);
+  border: 1px solid rgba(255, 117, 24, 0.6);
+  color: #ffaa55;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Editor de Imagen de Portada */
+.edit-cover-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.edit-photo-preview-card {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1.5px solid var(--border-neon-orange);
+  background: #000;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+}
+
+.edit-photo-preview-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.edit-photo-preview-info {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.edit-photo-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #ffaa55;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#editPhotoSourceLabel {
+  font-size: 0.72rem;
+  color: #cbd5e1;
+}
+
+.edit-photo-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.btn-edit-photo-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid var(--border-neon-purple);
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-edit-photo-action:hover, .btn-edit-photo-action:active {
+  background: rgba(168, 85, 247, 0.35);
+  border-color: #c084fc;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-edit-photo-presets {
+  background: rgba(255, 117, 24, 0.15);
+  border-color: rgba(255, 117, 24, 0.5);
+  color: #ffedd5;
+}
+
+.btn-edit-photo-presets:hover, .btn-edit-photo-presets:active {
+  background: rgba(255, 117, 24, 0.35);
+  border-color: var(--neon-pumpkin);
+  box-shadow: 0 0 14px var(--neon-pumpkin-glow);
+}
+
+.edit-presets-wrapper {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border-neon-orange);
+  border-radius: var(--radius-lg);
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.edit-presets-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.edit-presets-wrapper::-webkit-scrollbar-thumb {
+  background: var(--neon-pumpkin);
+  border-radius: 4px;
+}
+
+.edit-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+}
+
+.btn-link-toggle {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 0;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+
+.btn-link-toggle:hover {
+  color: #ffaa55;
 }
 
 /* ========================================================
