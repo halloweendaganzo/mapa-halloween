@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   
   <!-- Estilos Temáticos de Halloween con Creepster y Neón -->
-  <link rel="stylesheet" href="styles.css?v=110">
+  <link rel="stylesheet" href="styles.css?v=111">
 </head>
 <body>
 
@@ -1014,10 +1014,10 @@
        MODAL 3: EDITAR CASA (ADMIN)
        ======================================================== -->
   <div id="modalEditHouse" class="modal-backdrop">
-    <div class="modal-sheet">
+    <div class="modal-sheet modal-sheet-edit-house">
       <div class="modal-top">
         <h2><span>✏️</span> Editar Casa</h2>
-        <button class="btn-modal-close">&times;</button>
+        <button class="btn-modal-close" type="button">&times;</button>
       </div>
 
       <form id="formEditHouse">
@@ -1035,11 +1035,63 @@
           <span id="editCoordsText">📍 Coordenadas actuales (toca en el mapa para cambiarlas)</span>
         </div>
 
-        <!-- Selector de los 50 iconos para el administrador -->
-        <div class="input-row">
-          <label>Icono asignado en el mapa (50 Iconos exclusivos):</label>
-          <div id="adminEditIconsGrid" class="icons-50-grid" style="max-height: 160px;">
-            <!-- Grid de iconos para admin -->
+        <!-- SECCIÓN: IMAGEN DE PORTADA DE LA CASA -->
+        <div class="input-row edit-cover-section">
+          <label>Imagen de Portada de la Casa:</label>
+
+          <!-- Tarjeta de vista previa de la portada actual -->
+          <div class="edit-photo-preview-card">
+            <img id="editHousePhotoPreview" src="assets/preset_photos/h1_mansion_calabazas.jpg" alt="Portada de la casa">
+            <div class="edit-photo-preview-info">
+              <span class="edit-photo-badge">Portada actual</span>
+              <small id="editPhotoSourceLabel">Foto asignada</small>
+            </div>
+          </div>
+
+          <!-- Botones de acción para cambiar la foto -->
+          <div class="edit-photo-actions-grid">
+            <input type="file" id="editHousePhotoFileInput" accept="image/*" style="display: none;">
+            <button type="button" id="btnUploadEditPhoto" class="btn-edit-photo-action" onclick="document.getElementById('editHousePhotoFileInput').click()">
+              <span>📷</span> <span>Subir foto (móvil / PC)</span>
+            </button>
+            <button type="button" id="btnToggleEditPresets" class="btn-edit-photo-action btn-edit-photo-presets" onclick="window.app && window.app.toggleEditPresets()">
+              <span>🎨</span> <span id="btnToggleEditPresetsText">30 Fotos Halloween ▼</span>
+            </button>
+          </div>
+
+          <!-- Galería desplegable de 30 ilustraciones temáticas -->
+          <div id="editPresetPhotosContainer" class="edit-presets-wrapper" style="display: none;">
+            <div style="font-size: 0.74rem; color: #ffaa55; margin-bottom: 6px; font-weight: 600;">
+              Toca una de las 30 temáticas oficiales para asignarla como portada:
+            </div>
+            <div id="editPresetPhotosGrid" class="preset-photos-grid edit-presets-grid">
+              <!-- Rellenado dinámicamente con las 30 fotos -->
+            </div>
+          </div>
+
+          <!-- Input real de la imagen para el formulario -->
+          <input type="hidden" id="editImage" name="editImage" value="">
+
+          <div style="margin-top: 6px;">
+            <button type="button" class="btn-link-toggle" onclick="const u = document.getElementById('editCustomUrlWrap'); u.style.display = u.style.display === 'none' ? 'block' : 'none';">
+              🔗 O pegar enlace de imagen web...
+            </button>
+            <div id="editCustomUrlWrap" style="display: none; margin-top: 6px;">
+              <input type="text" id="editCustomUrlInput" class="form-control-input" placeholder="https://ejemplo.com/mifoto.jpg" style="font-size: 0.78rem;">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN: SELECTOR DE LOS 50 ICONOS DEL MAPA -->
+        <div class="input-row edit-icon-section">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="margin-bottom: 0;">Icono asignado en el mapa:</label>
+            <span id="editSelectedIconBadge" class="edit-icon-current-badge">🎃 Calabaza</span>
+          </div>
+          <div class="admin-icons-picker-container">
+            <div id="adminEditIconsGrid" class="icons-50-grid">
+              <!-- Grid de iconos para admin -->
+            </div>
           </div>
         </div>
 
@@ -1055,11 +1107,6 @@
         <div class="input-row">
           <label for="editHours">Horario:</label>
           <input type="text" id="editHours" name="editHours" class="form-control-input">
-        </div>
-
-        <div class="input-row">
-          <label for="editImage">URL de la Imagen:</label>
-          <input type="text" id="editImage" name="editImage" class="form-control-input">
         </div>
 
         <div class="input-row">
@@ -1244,7 +1291,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <!-- Scripts de la Aplicación -->
-  <script src="sound.js?v=110"></script>
-  <script src="app.js?v=110"></script>
+  <script src="sound.js?v=111"></script>
+  <script src="app.js?v=111"></script>
 </body>
 </html>
