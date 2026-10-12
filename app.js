@@ -663,7 +663,7 @@ class HalloweenApp {
       const iconEmoji = matched ? matched.emoji : (h.icon || '🎃');
 
       return `
-        <div class="side-house-card ${this.selectedHouse?.id === h.id ? 'selected' : ''}" onclick="window.app.selectHouseFromSidebar('${h.id}')">
+        <div class="side-house-card ${this.selectedHouse?.id === h.id ? 'selected' : ''}" onclick="window.app.selectHouseFromSidebar('${h.id}')" title="Pulsar para ver en el mapa">
           <img class="side-house-thumb" src="${h.image}" alt="">
           <div class="side-house-info">
             <h4><span>${iconEmoji}</span> ${h.title}</h4>
@@ -671,6 +671,7 @@ class HalloweenApp {
             <div class="side-house-meta">
               <span>🕒 ${h.hours || '19:00 - 22:30'}</span>
               ${isVisited ? '<span style="color: var(--emerald);">✓ Visitada</span>' : ''}
+              <span class="side-house-map-pill">📍 Ver en mapa</span>
             </div>
           </div>
         </div>
@@ -681,11 +682,7 @@ class HalloweenApp {
   selectHouseFromSidebar(id) {
     const house = this.store.getById(id);
     if (house) {
-      this.openHouseCard(house);
-      // En pantallas pequeñas, colapsar el menú lateral para ver el mapa
-      if (window.innerWidth <= 768) {
-        this.toggleSidebar(false);
-      }
+      this.highlightHouseOnMap(id);
     }
   }
 
@@ -812,8 +809,9 @@ class HalloweenApp {
     // 1. Asegurar vista de mapa
     this.switchView('map');
 
-    // 2. Cerrar tarjeta de detalle para despejar la vista
+    // 2. Cerrar tarjeta de detalle y modales para despejar completamente la vista del mapa
     this.closeHouseCard();
+    document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
 
     // 3. Colapsar el menú lateral
     this.toggleSidebar(false);
@@ -836,10 +834,13 @@ class HalloweenApp {
         const iconEmoji = matched ? matched.emoji : (house.icon || '🎃');
 
         marker.bindPopup(`
-          <div style="text-align: center; padding: 6px 4px; font-family: var(--font-body);">
-            <div style="font-size: 1.4rem; margin-bottom: 2px;">${iconEmoji}</div>
-            <b style="color: #ffaa55; font-size: 0.95rem;">${house.title}</b>
-            <p style="font-size: 0.78rem; color: #cbd5e1; margin: 3px 0 0 0;">📍 ${house.street}</p>
+          <div style="text-align: center; padding: 6px 4px; font-family: var(--font-body); min-width: 170px;">
+            <div style="font-size: 1.6rem; margin-bottom: 2px;">${iconEmoji}</div>
+            <b style="color: #ffaa55; font-size: 0.95rem; display: block; line-height: 1.2;">${house.title}</b>
+            <p style="font-size: 0.78rem; color: #cbd5e1; margin: 4px 0 8px 0;">📍 ${house.street}</p>
+            <button onclick="window.app.openHouseCard(window.app.store.getById('${house.id}'))" style="background: rgba(255, 85, 0, 0.25); border: 1px solid rgba(255, 85, 0, 0.6); color: #ffaa55; font-size: 0.74rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: all 0.2s;">
+              Ver ficha completa ➔
+            </button>
           </div>
         `).openPopup();
 
