@@ -2977,8 +2977,18 @@ class HalloweenApp {
 
     if (index === -1) {
       this.state.visited.push(id);
-      window.spookyAudio?.playStinger('unlock');
-      this.showToast(`¡Check-in en ${this.selectedHouse.title}! 🎃`);
+      const totalVisited = this.state.visited.length;
+      if (totalVisited === 10) {
+        window.spookyAudio?.playStinger('unlock');
+        this.showToast(`🏆 ¡ENHORABUENA! ¡Has alcanzado 10 casas! 🎉 Ya puedes sacar tu Pasaporte del Terror.`);
+      } else if (totalVisited < 10) {
+        window.spookyAudio?.playStinger('unlock');
+        const remaining = 10 - totalVisited;
+        this.showToast(`🎃 ¡Check-in en ${this.selectedHouse.title}! Llevas ${totalVisited}/10 casas para tu pasaporte (faltan ${remaining}).`);
+      } else {
+        window.spookyAudio?.playStinger('unlock');
+        this.showToast(`¡Check-in en ${this.selectedHouse.title}! 🎃 (${totalVisited} casas completadas)`);
+      }
     } else {
       this.state.visited.splice(index, 1);
       this.showToast(`Check-in desmarcado.`);
@@ -2992,13 +3002,72 @@ class HalloweenApp {
 
   updatePassCounters() {
     const total = this.store.getAll().length;
-    const visited = this.state.visited.length;
-    const pct = total > 0 ? Math.round((visited / total) * 100) : 0;
+    const visited = (this.state.visited || []).length;
+    const minRequired = 10;
+    const isUnlocked = visited >= minRequired;
+    const pctToTarget = Math.min(100, Math.round((visited / minRequired) * 100));
 
     const progFill = document.getElementById('passProgFill');
     const progText = document.getElementById('passProgText');
-    if (progFill) progFill.style.width = `${pct}%`;
-    if (progText) progText.textContent = `${visited} de ${total} casas completadas (${pct}%)`;
+    const statusNotice = document.getElementById('passStatusNotice');
+    const btnDiploma = document.getElementById('btnGenerateDiploma');
+    const homePassDesc = document.getElementById('homePassCardDesc');
+
+    if (progFill) progFill.style.width = `${pctToTarget}%`;
+    
+    if (progText) {
+      if (isUnlocked) {
+        progText.innerHTML = `🎉 <strong>¡Reto Superado!</strong> Has visitado <strong>${visited}</strong> casas (${pctToTarget}%)`;
+        progText.style.color = '#34d399';
+      } else {
+        const remaining = minRequired - visited;
+        progText.innerHTML = `🔒 <strong>${visited} de ${minRequired}</strong> casas requeridas (${pctToTarget}%) &bull; <em>¡Te faltan ${remaining}!</em>`;
+        progText.style.color = 'var(--neon-pumpkin)';
+      }
+    }
+
+    if (statusNotice) {
+      if (isUnlocked) {
+        statusNotice.className = 'pass-status-notice pass-unlocked';
+        statusNotice.innerHTML = `
+          <div class="pass-status-icon">🏆</div>
+          <div class="pass-status-text">
+            <strong>¡PASAPORTE DESBLOQUEADO!</strong>
+            <p>¡Increíble valentía! Has sellado tu visita en <strong>${visited} casas</strong>. Ya puedes generar y descargar tu Pasaporte Oficial de Daganzo.</p>
+          </div>
+        `;
+      } else {
+        const remaining = minRequired - visited;
+        statusNotice.className = 'pass-status-notice pass-locked';
+        statusNotice.innerHTML = `
+          <div class="pass-status-icon">🔒</div>
+          <div class="pass-status-text">
+            <strong>PASAPORTE BLOQUEADO</strong>
+            <p>Debes sellar tu visita en al menos <strong>10 casas</strong> para poder sacar tu pasaporte. Visita el mapa y sella <strong>${remaining} casas más</strong>.</p>
+          </div>
+        `;
+      }
+    }
+
+    if (btnDiploma) {
+      if (isUnlocked) {
+        btnDiploma.disabled = false;
+        btnDiploma.classList.remove('btn-locked');
+        btnDiploma.innerHTML = `<span>📜 Sacar y Descargar Pasaporte Oficial (${visited} casas)</span>`;
+      } else {
+        btnDiploma.disabled = true;
+        btnDiploma.classList.add('btn-locked');
+        btnDiploma.innerHTML = `<span>🔒 Bloqueado: Visita al menos 10 casas (${visited}/10)</span>`;
+      }
+    }
+
+    if (homePassDesc) {
+      if (isUnlocked) {
+        homePassDesc.innerHTML = `<span style="color: #34d399; font-weight: 700;">¡Desbloqueado! (${visited} casas)</span>`;
+      } else {
+        homePassDesc.textContent = `${visited} de 10 casas visitadas`;
+      }
+    }
 
     const aliasIn = document.getElementById('passAliasInput');
     if (aliasIn) aliasIn.value = this.state.alias;
@@ -3011,9 +3080,19 @@ class HalloweenApp {
 
     if (homeCount) homeCount.innerHTML = `<b>${total}</b> Casas registradas`;
     if (mapHeaderCount) mapHeaderCount.textContent = total;
+    this.updatePassCounters();
   }
 
   generateCertificate() {
+    const minRequired = 10;
+    const visitedCount = (this.state.visited || []).length;
+    if (visitedCount < minRequired) {
+      const remaining = minRequired - visitedCount;
+      window.spookyAudio?.playStinger('creak');
+      this.showToast(`🔒 ¡No puedes sacar el pasaporte! Debes visitar al menos 10 casas (llevas ${visitedCount}/10, te faltan ${remaining}).`);
+      return;
+    }
+
     const canvas = document.getElementById('diplomaCanvas');
     if (!canvas) return;
 
@@ -3039,15 +3118,15 @@ class HalloweenApp {
     ctx.textAlign = 'center';
     ctx.font = 'bold 50px "Space Grotesk", sans-serif';
     ctx.fillStyle = '#ff6b00';
-    ctx.fillText('DIPLOMA DEL TERROR DE DAGANZO', 600, 150);
+    ctx.fillText('PASAPORTE DEL TERROR DE DAGANZO 2026', 600, 150);
 
     ctx.font = '600 22px "Plus Jakarta Sans", sans-serif';
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText('Ruta Oficial de Casas Encantadas • Halloween 2026', 600, 200);
+    ctx.fillText('Ruta Oficial de Casas Encantadas • Daganzo de Arriba', 600, 200);
 
     ctx.font = '500 22px "Plus Jakarta Sans", sans-serif';
     ctx.fillStyle = '#cbd5e1';
-    ctx.fillText('Se otorga el reconocimiento de SUPERVIVIENTE a:', 600, 280);
+    ctx.fillText('Se otorga el reconocimiento de EXPLORADOR(A) SUPERVIVIENTE a:', 600, 280);
 
     ctx.font = 'bold 48px "Space Grotesk", sans-serif';
     ctx.fillStyle = '#a855f7';
@@ -3055,15 +3134,15 @@ class HalloweenApp {
 
     ctx.font = '400 22px "Plus Jakarta Sans", sans-serif';
     ctx.fillStyle = '#e2e8f0';
-    ctx.fillText(`Por haber explorado ${this.state.visited.length} casas encantadas en Daganzo de Arriba,`, 600, 440);
-    ctx.fillText('demostrando valentía ante fantasmas, brujas y repartos de caramelos.', 600, 480);
+    ctx.fillText(`Por haber explorado y superado ${visitedCount} casas encantadas en Daganzo de Arriba,`, 600, 440);
+    ctx.fillText('cumpliendo con éxito el gran reto de Halloween de nuestro pueblo.', 600, 480);
 
     ctx.font = '70px sans-serif';
     ctx.fillText('🎃', 600, 580);
 
     ctx.font = 'bold 18px "Plus Jakarta Sans", sans-serif';
     ctx.fillStyle = '#ff6b00';
-    ctx.fillText('AYUNTAMIENTO & VECINOS DE DAGANZO DE ARRIBA', 600, 640);
+    ctx.fillText('COMUNIDAD VECINAL DE DAGANZO DE ARRIBA', 600, 640);
 
     const dateStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
     ctx.font = '16px "Plus Jakarta Sans", sans-serif';
@@ -3077,8 +3156,10 @@ class HalloweenApp {
       preview.src = dataUrl;
       preview.style.display = 'block';
       dlBtn.href = dataUrl;
-      dlBtn.download = `Diploma_Halloween_Daganzo_${(this.state.alias).replace(/\s+/g, '_')}.png`;
+      dlBtn.download = `Pasaporte_Halloween_Daganzo_${(this.state.alias).replace(/\s+/g, '_')}.png`;
       dlBtn.style.display = 'inline-flex';
+      window.spookyAudio?.playStinger('unlock');
+      this.showToast('📜 ¡Pasaporte Oficial expedido con éxito!');
     }
   }
 
@@ -3372,7 +3453,7 @@ class HalloweenApp {
 
     document.getElementById('optPassport')?.addEventListener('click', () => {
       this.toggleMapOptions(false);
-      this.openModal('modalDiploma');
+      this.openModal('modalPass');
     });
 
     document.getElementById('optAdmin')?.addEventListener('click', () => {
@@ -3775,8 +3856,17 @@ class HalloweenApp {
       this.handleUserLoginSubmit(e);
     });
 
-    // 10. Diploma
-    document.getElementById('btnGenerateDiploma')?.addEventListener('click', () => {
+    // 10. Diploma / Pasaporte Oficial
+    document.getElementById('btnGenerateDiploma')?.addEventListener('click', (e) => {
+      const minRequired = 10;
+      const visitedCount = (this.state.visited || []).length;
+      if (visitedCount < minRequired) {
+        e.preventDefault();
+        window.spookyAudio?.playStinger('creak');
+        const remaining = minRequired - visitedCount;
+        this.showToast(`🔒 ¡Pasaporte bloqueado! Debes visitar al menos 10 casas (llevas ${visitedCount}/10, te faltan ${remaining}).`);
+        return;
+      }
       this.generateCertificate();
     });
 
