@@ -1008,9 +1008,10 @@ body {
 }
 
 .map-sidebar-overlay.collapsed {
-  transform: translateX(-120%);
-  opacity: 0;
-  pointer-events: none;
+  transform: translateX(-120%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 .sidebar-top-bar {
@@ -1158,6 +1159,10 @@ body {
   align-items: center;
   gap: 12px;
   cursor: pointer;
+  -webkit-tap-highlight-color: rgba(255, 85, 0, 0.2);
+  touch-action: manipulation;
+  user-select: none;
+  position: relative;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1212,24 +1217,33 @@ body {
 
 .side-house-map-pill {
   margin-left: auto;
-  font-size: 0.70rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #ffaa55;
-  background: rgba(255, 117, 24, 0.15);
-  border: 1px solid rgba(255, 117, 24, 0.4);
-  padding: 2px 8px;
+  background: rgba(255, 117, 24, 0.2);
+  border: 1px solid rgba(255, 117, 24, 0.6);
+  padding: 4px 10px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(255, 117, 24, 0.3);
+  touch-action: manipulation;
+  user-select: none;
+  font-family: inherit;
   transition: all 0.2s ease;
+  z-index: 2;
 }
 
-.side-house-card:hover .side-house-map-pill {
-  background: rgba(255, 117, 24, 0.3);
+.side-house-card:hover .side-house-map-pill,
+.side-house-map-pill:hover,
+.side-house-map-pill:active {
+  background: rgba(255, 117, 24, 0.45);
   border-color: #ff7518;
   color: #fff;
-  box-shadow: 0 0 10px rgba(255, 117, 24, 0.4);
+  box-shadow: 0 0 12px rgba(255, 117, 24, 0.6);
+  transform: scale(1.04);
 }
 
 /* ========================================================
