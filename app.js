@@ -306,7 +306,8 @@ class HouseStore {
   }
 
   getById(id) {
-    return this.houses.find(h => h.id === id);
+    if (!id) return null;
+    return this.houses.find(h => h.id === id || String(h.id) === String(id));
   }
 
   async add(houseData) {
@@ -663,7 +664,12 @@ class HalloweenApp {
       const iconEmoji = matched ? matched.emoji : (h.icon || '🎃');
 
       return `
-        <div class="side-house-card ${this.selectedHouse?.id === h.id ? 'selected' : ''}" onclick="window.app.selectHouseFromSidebar('${h.id}')" title="Pulsar para ver en el mapa">
+        <div class="side-house-card ${this.selectedHouse?.id === h.id ? 'selected' : ''}" 
+             data-house-id="${h.id}" 
+             role="button" 
+             tabindex="0"
+             onclick="window.app && window.app.highlightHouseOnMap('${h.id}')" 
+             title="Pulsar para ver en el mapa">
           <img class="side-house-thumb" src="${h.image}" alt="">
           <div class="side-house-info">
             <h4><span>${iconEmoji}</span> ${h.title}</h4>
@@ -671,19 +677,38 @@ class HalloweenApp {
             <div class="side-house-meta">
               <span>🕒 ${h.hours || '19:00 - 22:30'}</span>
               ${isVisited ? '<span style="color: var(--emerald);">✓ Visitada</span>' : ''}
-              <span class="side-house-map-pill">📍 Ver en mapa</span>
+              <button type="button" 
+                      class="side-house-map-pill" 
+                      data-house-id="${h.id}"
+                      onclick="event.stopPropagation(); window.app && window.app.highlightHouseOnMap('${h.id}');">
+                📍 Ver en mapa
+              </button>
             </div>
           </div>
         </div>
       `;
     }).join('');
+
+    // Delegación de eventos para móvil (asegura respuesta instantánea a toques táctiles)
+    if (!list.dataset.hasTapListener) {
+      list.dataset.hasTapListener = 'true';
+      const handleSelect = (e) => {
+        const item = e.target.closest('.side-house-map-pill') || e.target.closest('.side-house-card');
+        if (item) {
+          const houseId = item.getAttribute('data-house-id') || item.closest('.side-house-card')?.getAttribute('data-house-id');
+          if (houseId) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.highlightHouseOnMap(houseId);
+          }
+        }
+      };
+      list.addEventListener('click', handleSelect);
+    }
   }
 
   selectHouseFromSidebar(id) {
-    const house = this.store.getById(id);
-    if (house) {
-      this.highlightHouseOnMap(id);
-    }
+    this.highlightHouseOnMap(id);
   }
 
   openHouseCard(house) {
@@ -804,7 +829,10 @@ class HalloweenApp {
     const id = houseId || this.selectedHouse?.id;
     if (!id) return;
     const house = this.store.getById(id);
-    if (!house) return;
+    if (!house) {
+      console.warn("highlightHouseOnMap: Casa no encontrada con ID:", id);
+      return;
+    }
 
     // 1. Asegurar vista de mapa
     this.switchView('map');
@@ -813,41 +841,78 @@ class HalloweenApp {
     this.closeHouseCard();
     document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
 
-    // 3. Colapsar el menú lateral
+    // 3. Colapsar el menú lateral en móvil y escritorio
     this.toggleSidebar(false);
-
-    // 4. Volar al punto en el mapa con zoom de alta resolución
-    if (this.map) {
-      this.map.flyTo(house.coords, 18, { animate: true, duration: 0.8 });
+    const sidebar = document.getElementById('sidebarPanel');
+    if (sidebar) {
+      sidebar.classList.add('collapsed');
     }
 
-    // 5. Localizar marcador y aplicar efecto neón que bota y pulsa
-    const marker = this.markers.get(house.id);
+    // 4. Coordenadas seguras y normalizadas
+    let coords = DAGANZO_COORDS;
+    if (Array.isArray(house.coords) && house.coords.length >= 2) {
+      const lat = parseFloat(house.coords[0]);
+      const lng = parseFloat(house.coords[1]);
+      if (!isNaN(lat) && !isNaN(lng)) coords = [lat, lng];
+    } else if (house.coords && typeof house.coords === 'object') {
+      if ('lat' in house.coords && 'lng' in house.coords) {
+        const lat = parseFloat(house.coords.lat);
+        const lng = parseFloat(house.coords.lng);
+        if (!isNaN(lat) && !isNaN(lng)) coords = [lat, lng];
+      } else if ('0' in house.coords && '1' in house.coords) {
+        const lat = parseFloat(house.coords['0']);
+        const lng = parseFloat(house.coords['1']);
+        if (!isNaN(lat) && !isNaN(lng)) coords = [lat, lng];
+      }
+    }
+
+    // 5. Asegurar que los marcadores del mapa incluyan esta casa (si un filtro la ocultaba)
+    if (!this.markers.has(house.id)) {
+      this.activeFilter = 'all';
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.value = '';
+      this.refreshMapMarkers();
+    }
+
+    // 6. Volar al punto en el mapa con zoom de alta resolución
+    if (this.map) {
+      this.map.invalidateSize();
+      this.map.flyTo(coords, 18, { animate: true, duration: 0.8 });
+    }
+
+    // 7. Localizar marcador y aplicar efecto neón que bota y pulsa
+    const matched = HALLOWEEN_50_ICONS.find(i => i.id === house.iconId || i.emoji === house.icon);
+    const iconEmoji = matched ? matched.emoji : (house.icon || '🎃');
+    let marker = this.markers.get(house.id);
+
+    const popupHtml = `
+      <div style="text-align: center; padding: 6px 4px; font-family: var(--font-body); min-width: 170px;">
+        <div style="font-size: 1.6rem; margin-bottom: 2px;">${iconEmoji}</div>
+        <b style="color: #ffaa55; font-size: 0.95rem; display: block; line-height: 1.2;">${house.title}</b>
+        <p style="font-size: 0.78rem; color: #cbd5e1; margin: 4px 0 8px 0;">📍 ${house.street}</p>
+        <button type="button" onclick="window.app && window.app.openHouseCard(window.app.store.getById('${house.id}'))" style="background: rgba(255, 85, 0, 0.25); border: 1px solid rgba(255, 85, 0, 0.6); color: #ffaa55; font-size: 0.74rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: all 0.2s;">
+          Ver ficha completa ➔
+        </button>
+      </div>
+    `;
+
     if (marker) {
       const el = marker.getElement();
       if (el) {
         document.querySelectorAll('.pin-spotlight-active').forEach(p => p.classList.remove('pin-spotlight-active'));
         el.classList.add('pin-spotlight-active');
-
-        // Abrir popup informativo encima del pin
-        const matched = HALLOWEEN_50_ICONS.find(i => i.id === house.iconId || i.emoji === house.icon);
-        const iconEmoji = matched ? matched.emoji : (house.icon || '🎃');
-
-        marker.bindPopup(`
-          <div style="text-align: center; padding: 6px 4px; font-family: var(--font-body); min-width: 170px;">
-            <div style="font-size: 1.6rem; margin-bottom: 2px;">${iconEmoji}</div>
-            <b style="color: #ffaa55; font-size: 0.95rem; display: block; line-height: 1.2;">${house.title}</b>
-            <p style="font-size: 0.78rem; color: #cbd5e1; margin: 4px 0 8px 0;">📍 ${house.street}</p>
-            <button onclick="window.app.openHouseCard(window.app.store.getById('${house.id}'))" style="background: rgba(255, 85, 0, 0.25); border: 1px solid rgba(255, 85, 0, 0.6); color: #ffaa55; font-size: 0.74rem; font-weight: 700; padding: 5px 12px; border-radius: 999px; cursor: pointer; transition: all 0.2s;">
-              Ver ficha completa ➔
-            </button>
-          </div>
-        `).openPopup();
-
+        marker.bindPopup(popupHtml).openPopup();
         setTimeout(() => {
           el.classList.remove('pin-spotlight-active');
         }, 6000);
+      } else {
+        marker.bindPopup(popupHtml).openPopup();
       }
+    } else if (this.map) {
+      L.popup({ offset: [0, -20] })
+        .setLatLng(coords)
+        .setContent(popupHtml)
+        .openOn(this.map);
     }
 
     this.showToast(`📍 Mostrando "${house.title}" en el mapa`);
