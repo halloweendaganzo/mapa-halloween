@@ -387,10 +387,10 @@ body {
   box-shadow: 0 0 20px rgba(147, 51, 234, 0.25);
 }
 
-/* ILUSTRACIÓN HERO DE DAGANZO 2026 CON FUSIÓN ESPECTRAL */
+/* ILUSTRACIÓN HERO DE DAGANZO 2026 - IMAGEN COMPLETA VISIBLE SIN RECORTES NI TEXTO */
 .hero-illustration-showcase {
   width: 100%;
-  max-width: 820px;
+  max-width: 860px;
   margin: 0 auto 22px auto;
   position: relative;
   padding: 0 4px;
@@ -399,90 +399,28 @@ body {
 .hero-illustration-frame {
   position: relative;
   width: 100%;
-  height: 380px;
-  border-radius: 22px;
+  border-radius: 20px;
   overflow: hidden;
   box-shadow: 
-    0 25px 60px rgba(0, 0, 0, 0.95),
-    0 0 45px rgba(255, 85, 0, 0.3),
-    0 0 80px rgba(147, 51, 234, 0.25);
-  border: 2px solid rgba(255, 102, 0, 0.45);
+    0 18px 50px rgba(0, 0, 0, 0.95),
+    0 0 35px rgba(255, 85, 0, 0.35),
+    0 0 65px rgba(147, 51, 234, 0.22);
+  border: 2px solid rgba(255, 102, 0, 0.5);
   background: #05030a;
+  line-height: 0;
 }
 
 .hero-illustration-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 35%;
+  height: auto;
   display: block;
-  transform: scale(1.02);
-  transition: transform 0.6s ease;
+  object-fit: contain;
+  border-radius: 18px;
+  transition: transform 0.4s ease;
 }
 
 .hero-illustration-frame:hover .hero-illustration-img {
-  transform: scale(1.05);
-}
-
-/* Niebla y viñeteado para mimetizar con el fondo #05030a de la web */
-.hero-illustration-fog-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: 
-    radial-gradient(circle at center, transparent 40%, rgba(5, 3, 10, 0.6) 80%, #05030a 100%),
-    linear-gradient(180deg, rgba(5, 3, 10, 0.45) 0%, transparent 22%, transparent 75%, rgba(5, 3, 10, 0.95) 100%);
-}
-
-.hero-illustration-edge-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: 22px;
-  box-shadow: inset 0 0 35px rgba(255, 85, 0, 0.35), inset 0 0 60px rgba(5, 3, 10, 0.9);
-}
-
-.hero-illustration-caption {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  right: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  background: rgba(10, 7, 20, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #e2e8f0;
-  font-size: 0.82rem;
-  z-index: 2;
-}
-
-.caption-icon {
-  font-size: 1.15rem;
-}
-
-.caption-text {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.caption-pulse {
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 1px;
-  background: rgba(239, 68, 68, 0.25);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.5);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  text-transform: uppercase;
-  animation: pulseBeacon 1.5s infinite;
+  transform: scale(1.02);
 }
 
 .hero-description {
@@ -3336,7 +3274,8 @@ body {
   }
 
   .hero-illustration-frame {
-    height: 200px;
+    height: auto;
+    border-radius: 16px;
   }
 
   .map-sidebar-overlay {
