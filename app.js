@@ -2692,7 +2692,27 @@ class HalloweenApp {
     if (f.elements['editCategory']) f.elements['editCategory'].value = house.category || 'caramelos';
     if (f.elements['editHours']) f.elements['editHours'].value = house.hours || '19:00 - 22:30';
     if (f.elements['editDesc']) f.elements['editDesc'].value = house.description || '';
-    if (f.elements['editImage']) f.elements['editImage'].value = house.image || '';
+
+    // Portada actual e inicialización del editor de imagen
+    const defaultPreset = typeof PHOTO_PRESETS[0] === 'object' ? PHOTO_PRESETS[0].url : PHOTO_PRESETS[0];
+    const initialImg = house.image || defaultPreset;
+    if (f.elements['editImage']) f.elements['editImage'].value = initialImg;
+
+    const preview = document.getElementById('editHousePhotoPreview');
+    if (preview) preview.src = initialImg;
+
+    const sourceLabel = document.getElementById('editPhotoSourceLabel');
+    if (sourceLabel) sourceLabel.textContent = 'Portada asignada';
+
+    // Ocultar galería desplegable de presets al abrir
+    const presetsContainer = document.getElementById('editPresetPhotosContainer');
+    if (presetsContainer) presetsContainer.style.display = 'none';
+
+    const toggleText = document.getElementById('btnToggleEditPresetsText');
+    if (toggleText) toggleText.textContent = '30 Fotos Halloween ▼';
+
+    const customInp = document.getElementById('editCustomUrlInput');
+    if (customInp) customInp.value = initialImg.startsWith('http') ? initialImg : '';
 
     const coordsDisplay = house.coords ? `${house.coords[0].toFixed(4)}, ${house.coords[1].toFixed(4)}` : 'Daganzo de Arriba';
     const coordsEl = document.getElementById('editCoordsText');
@@ -2700,7 +2720,10 @@ class HalloweenApp {
       coordsEl.innerHTML = `📍 Coordenadas: <b>${coordsDisplay}</b> (Toca el mapa para cambiarlas)`;
     }
 
+    // Renderizar iconos y presets
     this.renderAdminEditIconsGrid(house.id, this.adminSelectedIconId);
+    this.updateEditSelectedIconBadge();
+    this.renderEditPresetsGrid(initialImg);
     
     // Abrir el modal de edición asegurando que esté por encima de cualquier otro
     const editModal = document.getElementById('modalEditHouse');
@@ -2710,6 +2733,124 @@ class HalloweenApp {
       const sheet = editModal.querySelector('.modal-sheet');
       if (sheet) sheet.scrollTop = 0;
     }
+  }
+
+  // Actualiza el indicador visual del icono seleccionado en edición
+  updateEditSelectedIconBadge() {
+    const badge = document.getElementById('editSelectedIconBadge');
+    if (!badge) return;
+    const item = HALLOWEEN_50_ICONS.find(i => i.id === this.adminSelectedIconId || i.emoji === this.adminSelectedIconId) || HALLOWEEN_50_ICONS[0];
+    badge.innerHTML = `<span>${item.emoji}</span> <b>${item.name}</b>`;
+  }
+
+  // Alterna la visibilidad de la galería de 30 temáticas en edición
+  toggleEditPresets() {
+    const container = document.getElementById('editPresetPhotosContainer');
+    const btnText = document.getElementById('btnToggleEditPresetsText');
+    if (!container) return;
+    const isHidden = container.style.display === 'none';
+    container.style.display = isHidden ? 'block' : 'none';
+    if (btnText) {
+      btnText.textContent = isHidden ? 'Ocultar Fotos ▲' : '30 Fotos Halloween ▼';
+    }
+  }
+
+  // Renderiza las 30 ilustraciones temáticas en el modal de edición
+  renderEditPresetsGrid(currentUrl) {
+    const container = document.getElementById('editPresetPhotosGrid');
+    if (!container) return;
+
+    container.innerHTML = PHOTO_PRESETS.map((item, i) => {
+      const url = typeof item === 'object' ? item.url : item;
+      const title = typeof item === 'object' ? item.title : `Temática ${i + 1}`;
+      const isSelected = currentUrl === url;
+
+      return `
+        <div class="preset-photo-thumb ${isSelected ? 'selected' : ''}"
+             data-url="${url}"
+             title="${title}"
+             onclick="window.app && window.app.selectEditPresetPhoto('${url}', '${title.replace(/'/g, "\\'")}')">
+          <img src="${url}" alt="${title}" loading="lazy">
+          <span class="thumb-select-tag" style="font-size: 0.65rem;">${title}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Selección de foto de preset para la casa editada
+  selectEditPresetPhoto(url, title) {
+    const f = document.getElementById('formEditHouse');
+    if (f && f.elements['editImage']) f.elements['editImage'].value = url;
+
+    const preview = document.getElementById('editHousePhotoPreview');
+    if (preview) preview.src = url;
+
+    const sourceLabel = document.getElementById('editPhotoSourceLabel');
+    if (sourceLabel) sourceLabel.textContent = title || 'Ilustración oficial';
+
+    document.querySelectorAll('#editPresetPhotosGrid .preset-photo-thumb').forEach(t => {
+      t.classList.toggle('selected', t.getAttribute('data-url') === url);
+    });
+
+    this.showToast(`Portada cambiada: "${title}" 🎃`);
+  }
+
+  // Subida y compresión de nueva foto desde móvil / PC para la casa editada
+  handleEditPhotoUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.showToast('Por favor, selecciona un archivo de imagen válido.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+
+        const f = document.getElementById('formEditHouse');
+        if (f && f.elements['editImage']) f.elements['editImage'].value = compressedDataUrl;
+
+        const preview = document.getElementById('editHousePhotoPreview');
+        if (preview) preview.src = compressedDataUrl;
+
+        const sourceLabel = document.getElementById('editPhotoSourceLabel');
+        if (sourceLabel) sourceLabel.textContent = `Foto subida: ${file.name}`;
+
+        // Deseleccionar presets
+        document.querySelectorAll('#editPresetPhotosGrid .preset-photo-thumb').forEach(t => t.classList.remove('selected'));
+
+        this.showToast('¡Foto cargada como nueva portada! 📷');
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   // Renderiza el selector de los 50 iconos en la edición de Admin
@@ -2729,7 +2870,7 @@ class HalloweenApp {
              data-icon-id="${icon.id}"
              role="button"
              title="${isTaken ? `🔒 Reservado por: ${takenByTitle}` : `${icon.name}`}"
-             onclick="window.app.selectAdminEditIcon('${icon.id}', '${houseId}')">
+             onclick="window.app && window.app.selectAdminEditIcon('${icon.id}', '${houseId}')">
           <span class="icon-glyph">${icon.emoji}</span>
           <span class="icon-name">${icon.name}</span>
           ${isTaken ? `<span class="icon-taken-tag">🔒</span>` : ''}
@@ -2747,6 +2888,7 @@ class HalloweenApp {
 
     this.adminSelectedIconId = iconId;
     this.renderAdminEditIconsGrid(houseId, iconId);
+    this.updateEditSelectedIconBadge();
   }
 
   async saveEditedHouse() {
@@ -3815,6 +3957,23 @@ class HalloweenApp {
         const idToDelete = this.editingHouseId;
         this.closeModal('modalEditHouse');
         this.adminDeleteHouse(idToDelete);
+      }
+    });
+
+    // Listeners del editor de imagen de portada en modal de edición
+    document.getElementById('editHousePhotoFileInput')?.addEventListener('change', (e) => {
+      this.handleEditPhotoUpload(e);
+    });
+
+    document.getElementById('editCustomUrlInput')?.addEventListener('input', (e) => {
+      const url = e.target.value.trim();
+      if (url) {
+        const f = document.getElementById('formEditHouse');
+        if (f && f.elements['editImage']) f.elements['editImage'].value = url;
+        const preview = document.getElementById('editHousePhotoPreview');
+        if (preview) preview.src = url;
+        const label = document.getElementById('editPhotoSourceLabel');
+        if (label) label.textContent = 'Enlace web personalizado';
       }
     });
 
