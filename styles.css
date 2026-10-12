@@ -3294,6 +3294,19 @@ body {
   gap: 8px;
 }
 
+.edit-presets-grid .preset-photo-thumb {
+  height: 90px !important;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(255, 117, 24, 0.4);
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.edit-presets-grid .preset-photo-thumb img,
+.edit-presets-grid .preset-photo-thumb span {
+  pointer-events: none;
+}
+
 .btn-link-toggle {
   background: none;
   border: none;
