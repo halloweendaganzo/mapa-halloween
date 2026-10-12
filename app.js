@@ -2704,12 +2704,12 @@ class HalloweenApp {
     const sourceLabel = document.getElementById('editPhotoSourceLabel');
     if (sourceLabel) sourceLabel.textContent = 'Portada asignada';
 
-    // Ocultar galería desplegable de presets al abrir
+    // Mostrar galería de presets por defecto para elegir inmediatamente
     const presetsContainer = document.getElementById('editPresetPhotosContainer');
-    if (presetsContainer) presetsContainer.style.display = 'none';
+    if (presetsContainer) presetsContainer.style.display = 'block';
 
     const toggleText = document.getElementById('btnToggleEditPresetsText');
-    if (toggleText) toggleText.textContent = '30 Fotos Halloween ▼';
+    if (toggleText) toggleText.textContent = '30 Fotos Halloween ▲';
 
     const customInp = document.getElementById('editCustomUrlInput');
     if (customInp) customInp.value = initialImg.startsWith('http') ? initialImg : '';
@@ -2748,10 +2748,15 @@ class HalloweenApp {
     const container = document.getElementById('editPresetPhotosContainer');
     const btnText = document.getElementById('btnToggleEditPresetsText');
     if (!container) return;
-    const isHidden = container.style.display === 'none';
-    container.style.display = isHidden ? 'block' : 'none';
-    if (btnText) {
-      btnText.textContent = isHidden ? 'Ocultar Fotos ▲' : '30 Fotos Halloween ▼';
+    
+    // Detección segura del estado visible/oculto
+    const isHidden = container.style.display === 'none' || window.getComputedStyle(container).display === 'none';
+    if (isHidden) {
+      container.style.display = 'block';
+      if (btnText) btnText.textContent = '30 Fotos Halloween ▲';
+    } else {
+      container.style.display = 'none';
+      if (btnText) btnText.textContent = '30 Fotos Halloween ▼';
     }
   }
 
@@ -2768,17 +2773,36 @@ class HalloweenApp {
       return `
         <div class="preset-photo-thumb ${isSelected ? 'selected' : ''}"
              data-url="${url}"
-             title="${title}"
-             onclick="window.app && window.app.selectEditPresetPhoto('${url}', '${title.replace(/'/g, "\\'")}')">
-          <img src="${url}" alt="${title}" loading="lazy">
-          <span class="thumb-select-tag" style="font-size: 0.65rem;">${title}</span>
+             data-title="${encodeURIComponent(title)}"
+             role="button"
+             tabindex="0"
+             title="${title}">
+          <img src="${url}" alt="${title}" loading="lazy" style="pointer-events: none;">
+          <span class="thumb-select-tag" style="font-size: 0.65rem; pointer-events: none;">${title}</span>
         </div>
       `;
     }).join('');
+
+    // Delegación limpia para asegurar que cualquier toque/clic en móvil o PC funcione al 100%
+    if (!container.dataset.hasListener) {
+      container.dataset.hasListener = 'true';
+      container.addEventListener('click', (e) => {
+        const thumb = e.target.closest('.preset-photo-thumb');
+        if (thumb) {
+          e.preventDefault();
+          e.stopPropagation();
+          const url = thumb.getAttribute('data-url');
+          const title = decodeURIComponent(thumb.getAttribute('data-title') || '');
+          this.selectEditPresetPhoto(url, title);
+        }
+      });
+    }
   }
 
   // Selección de foto de preset para la casa editada
   selectEditPresetPhoto(url, title) {
+    if (!url) return;
+
     const f = document.getElementById('formEditHouse');
     if (f && f.elements['editImage']) f.elements['editImage'].value = url;
 
@@ -2792,7 +2816,10 @@ class HalloweenApp {
       t.classList.toggle('selected', t.getAttribute('data-url') === url);
     });
 
-    this.showToast(`Portada cambiada: "${title}" 🎃`);
+    const customInp = document.getElementById('editCustomUrlInput');
+    if (customInp) customInp.value = '';
+
+    this.showToast(`Portada seleccionada: "${title}" 🎃`);
   }
 
   // Subida y compresión de nueva foto desde móvil / PC para la casa editada
@@ -3975,6 +4002,12 @@ class HalloweenApp {
         const label = document.getElementById('editPhotoSourceLabel');
         if (label) label.textContent = 'Enlace web personalizado';
       }
+    });
+
+    document.getElementById('btnToggleEditPresets')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.toggleEditPresets();
     });
 
     document.getElementById('btnAdminLogin')?.addEventListener('click', () => {
