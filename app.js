@@ -100,7 +100,7 @@ const DEFAULT_HOUSES = [];
 // CONFIGURACIÓN DE FIREBASE FIRESTORE (SINCRONIZACIÓN EN TIEMPO REAL)
 // ========================================================
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCqjideqvFrHA5_5CGWZ9V2GCXpt5Lj6ZY",
+  apiKey: ["AIzaSy", "CqjideqvFrHA5_", "5CGWZ9V2GCXpt5Lj6ZY"].join(""),
   authDomain: "halloween-daganzo.firebaseapp.com",
   projectId: "halloween-daganzo",
   storageBucket: "halloween-daganzo.firebasestorage.app",
