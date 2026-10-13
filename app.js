@@ -2331,61 +2331,10 @@ class HalloweenApp {
       }
     }
 
-    const sustoLabelsMap = {
-      infantil: 'Para Peques (Infantil)',
-      caramelos: 'Misterio / Caramelos',
-      terror: 'Pasaje del Terror'
-    };
-
-    const candyLabelsMap = {
-      normal: 'Reparto de chuches variado',
-      glutenfree: 'Chuches sin gluten (Celíacos)',
-      chocolates: 'Chocolates y bombones',
-      sugarfree: 'Opciones sin azúcar / Fruta',
-      toys: 'Juguetes / Pegatinas (No comida)',
-      vegan: 'Chuches veganas / Sin lactosa',
-      deluxe: 'Bolsitas sorpresa preparadas',
-      none: 'Solo exhibición / Sin chuches'
-    };
-
-    const effectLabelsMap = {
-      smoke: 'Máquina de humo / Niebla',
-      actors: 'Actores en vivo',
-      photocall: 'Photocall familiar',
-      sound: 'Efectos de audio y gritos',
-      animatronics: 'Animatronics con movimiento',
-      lights: 'Luces estroboscópicas / Láser',
-      blacklight: 'Luz ultravioleta / Flúor',
-      walkthrough: 'Pasaje interior accesible',
-      interactive: 'Juegos interactivos / Retos',
-      projection: 'Proyección o hologramas'
-    };
-
-    const rows = approvedHouses.map((h, index) => {
-      const matchedIcon = HALLOWEEN_50_ICONS.find(i => i.id === h.iconId || i.emoji === h.icon);
-      const iconEmoji = matchedIcon ? matchedIcon.emoji : (h.icon || '🎃');
-      const iconName = matchedIcon ? matchedIcon.name : (h.iconId || 'Calabaza Tallada');
-
+    const rows = approvedHouses.map((h) => {
       const ownerName = h.ownerName || (h.owner && h.owner.name) || 'Vecino de Daganzo';
       const ownerPhone = (h.owner && h.owner.phone) || h.ownerContact || 'No indicado';
       const ownerEmail = (h.owner && h.owner.email) || h.ownerEmail || 'No indicado';
-
-      const cType = h.candiesType || (h.hasCandies ? 'normal' : 'none');
-      const candiesLabel = candyLabelsMap[cType] || (h.hasCandies ? 'Reparto de chuches' : 'Sin chuches');
-
-      const effectsList = Array.isArray(h.effects) && h.effects.length > 0
-        ? h.effects.map(ef => effectLabelsMap[ef] || ef).join(', ')
-        : 'Ninguno';
-
-      const lat = Array.isArray(h.coords) && h.coords.length >= 2 ? Number(h.coords[0]) : DAGANZO_COORDS[0];
-      const lng = Array.isArray(h.coords) && h.coords.length >= 2 ? Number(h.coords[1]) : DAGANZO_COORDS[1];
-      const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
-
-      const imgStr = normalizeHouseImage(h.image);
-      const matchedPreset = PHOTO_PRESETS.find(p => (typeof p === 'object' ? p.url : p) === imgStr);
-      const imageLabel = matchedPreset
-        ? `${matchedPreset.title} (${imgStr})`
-        : (imgStr.startsWith('data:image') ? 'Foto propia subida por el vecino' : imgStr);
 
       let createdDateStr = 'No registrada';
       if (h.createdAt) {
@@ -2402,59 +2351,25 @@ class HalloweenApp {
       }
 
       return {
-        'Nº': index + 1,
-        'ID Casa': h.id || '',
-        'Nombre / Título de la Casa': h.title || '',
+        'Nombre / Título de la casa': h.title || '',
         'Dirección en Daganzo': h.street || '',
-        'Estado': 'Aprobada y Publicada',
-        'Categoría / Nivel de Susto': sustoLabelsMap[h.category] || h.category || 'Halloween',
-        'Icono': iconEmoji,
-        'Nombre del Icono': iconName,
-        'Horario de Visita': h.hours || '19:00 - 22:30',
-        '¿Reparte Caramelos?': h.hasCandies ? 'Sí' : 'No',
-        'Tipo de Caramelos / Chuches': candiesLabel,
-        '¿Apta para Peques?': (h.kidsFriendly || h.category === 'infantil') ? 'Sí' : 'No',
-        'Efectos Especiales': effectsList,
-        '¿Participa en Concurso?': h.inContest !== false ? 'Sí' : 'No',
-        'Descripción': h.description || '',
         'Vecino / Propietario': ownerName,
         'Teléfono de Contacto': ownerPhone,
-        'Email de Contacto': ownerEmail,
-        'Latitud': lat,
-        'Longitud': lng,
-        'Enlace Google Maps': googleMapsUrl,
-        'Imagen de Portada': imageLabel,
-        'Fecha de Inscripción': createdDateStr
+        'Email de contacto': ownerEmail,
+        'Fecha de inscripción': createdDateStr
       };
     });
 
     const worksheet = XLSX.utils.json_to_sheet(rows);
 
-    // Ajustar el ancho de las columnas para lectura cómoda en Excel
+    // Ajustar el ancho de las 6 columnas para lectura cómoda en Excel
     worksheet['!cols'] = [
-      { wch: 5 },  // Nº
-      { wch: 26 }, // ID Casa
-      { wch: 30 }, // Nombre / Título
-      { wch: 28 }, // Dirección
-      { wch: 20 }, // Estado
-      { wch: 24 }, // Categoría
-      { wch: 8 },  // Icono
-      { wch: 22 }, // Nombre del Icono
-      { wch: 18 }, // Horario
-      { wch: 18 }, // ¿Reparte Caramelos?
-      { wch: 30 }, // Tipo de Caramelos
-      { wch: 18 }, // ¿Apta para Peques?
-      { wch: 38 }, // Efectos Especiales
-      { wch: 22 }, // ¿Participa en Concurso?
-      { wch: 50 }, // Descripción
-      { wch: 24 }, // Vecino / Propietario
-      { wch: 18 }, // Teléfono
-      { wch: 28 }, // Email
-      { wch: 12 }, // Latitud
-      { wch: 12 }, // Longitud
-      { wch: 42 }, // Enlace Google Maps
-      { wch: 45 }, // Imagen de Portada
-      { wch: 20 }  // Fecha de Inscripción
+      { wch: 32 }, // Nombre / Título de la casa
+      { wch: 30 }, // Dirección en Daganzo
+      { wch: 26 }, // Vecino / Propietario
+      { wch: 18 }, // Teléfono de Contacto
+      { wch: 30 }, // Email de contacto
+      { wch: 20 }  // Fecha de inscripción
     ];
 
     const workbook = XLSX.utils.book_new();
