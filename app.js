@@ -121,6 +121,22 @@ try {
   console.warn("⚠️ Aviso al inicializar Firebase:", fbErr);
 }
 
+// Helper universal para garantizar que la imagen de una casa sea siempre un string URL válido
+function normalizeHouseImage(img) {
+  const fallback = typeof PHOTO_PRESETS[0] === 'object' ? PHOTO_PRESETS[0].url : String(PHOTO_PRESETS[0]);
+  if (!img) return fallback;
+  if (typeof img === 'object') {
+    if (typeof img.url === 'string' && img.url.trim()) return img.url.trim();
+    return fallback;
+  }
+  if (typeof img === 'string') {
+    const trimmed = img.trim();
+    if (!trimmed || trimmed.includes('[object Object]')) return fallback;
+    return trimmed;
+  }
+  return fallback;
+}
+
 // ========================================================
 // GESTOR DE ALMACENAMIENTO DE DATOS (DATA STORE)
 // ========================================================
@@ -131,6 +147,39 @@ class HouseStore {
     this.houses = this.load();
     this.initRealtimeSync();
     this.syncWithServer();
+  }
+
+  normalizeHouse(h) {
+    if (!h || typeof h !== 'object') return h;
+    const copy = { ...h };
+    if (!copy.status) copy.status = 'approved';
+    if (!copy.iconId) {
+      const found = HALLOWEEN_50_ICONS.find(i => i.emoji === copy.icon);
+      copy.iconId = found ? found.id : 'calabaza';
+    }
+    copy.image = normalizeHouseImage(copy.image);
+
+    // Normalizar coordenadas como [lat, lng] numérico
+    let coords = [DAGANZO_COORDS[0], DAGANZO_COORDS[1]];
+    if (Array.isArray(copy.coords) && copy.coords.length >= 2) {
+      const lat = parseFloat(copy.coords[0]);
+      const lng = parseFloat(copy.coords[1]);
+      if (!isNaN(lat) && !isNaN(lng)) coords = [lat, lng];
+    } else if (copy.coords && typeof copy.coords === 'object') {
+      const lat = parseFloat(copy.coords.lat ?? copy.coords[0]);
+      const lng = parseFloat(copy.coords.lng ?? copy.coords[1]);
+      if (!isNaN(lat) && !isNaN(lng)) coords = [lat, lng];
+    }
+    copy.coords = coords;
+
+    // Normalizar propietario para que siempre estén disponibles ownerName y ownerContact
+    if (copy.owner && typeof copy.owner === 'object') {
+      if (!copy.ownerName && copy.owner.name) copy.ownerName = copy.owner.name;
+      if (!copy.ownerContact && (copy.owner.phone || copy.owner.email)) {
+        copy.ownerContact = copy.owner.phone || copy.owner.email;
+      }
+    }
+    return copy;
   }
 
   getDeletedIds() {
@@ -172,21 +221,14 @@ class HouseStore {
     const sampleIds = new Set(['casa-1', 'casa-2', 'casa-3', 'casa-4', 'casa-5', 'casa-6']);
     loaded = loaded.filter(h => !deletedIds.includes(h.id) && !sampleIds.has(h.id));
 
-    // Asegurar status y compatibilidad de iconId con los 50 iconos
-    loaded = loaded.map(h => {
-      if (!h.status) h.status = 'approved';
-      if (!h.iconId) {
-        const found = HALLOWEEN_50_ICONS.find(i => i.emoji === h.icon);
-        h.iconId = found ? found.id : 'calabaza';
-      }
-      return h;
-    });
+    // Normalizar status, iconId, imagen, coordenadas y propietario
+    loaded = loaded.map(h => this.normalizeHouse(h));
 
     return loaded;
   }
 
   save(houses) {
-    this.houses = houses;
+    this.houses = (houses || []).map(h => this.normalizeHouse(h));
     localStorage.setItem(this.storageKey, JSON.stringify(this.houses));
   }
 
@@ -204,7 +246,13 @@ class HouseStore {
             const houseId = data.id || doc.id;
             // No cargar las 6 casas de muestra fijas
             if (!sampleIds.has(houseId)) {
-              remoteHouses.push({ ...data, id: houseId });
+              const normalized = this.normalizeHouse({ ...data, id: houseId });
+              remoteHouses.push(normalized);
+
+              // Auto-reparar en Firestore si la imagen estaba guardada como objeto o corrupta
+              if (typeof data.image !== 'string' || data.image.includes('[object Object]')) {
+                db.collection('houses').doc(houseId).update({ image: normalized.image }).catch(() => {});
+              }
             }
           });
 
@@ -247,7 +295,7 @@ class HouseStore {
       if (res.ok) {
         const data = await res.json();
         if (data.ok && Array.isArray(data.houses)) {
-          this.houses = data.houses.filter(h => !deletedIds.includes(h.id));
+          this.houses = data.houses.filter(h => !deletedIds.includes(h.id)).map(h => this.normalizeHouse(h));
           this.save(this.houses);
           if (window.app) {
             window.app.refreshMapMarkers();
@@ -271,7 +319,7 @@ class HouseStore {
             let hasNew = false;
             filtered.forEach(h => {
               if (!currentIds.has(h.id) && !deletedIds.includes(h.id)) {
-                this.houses.push(h);
+                this.houses.push(this.normalizeHouse(h));
                 hasNew = true;
               }
             });
@@ -311,12 +359,12 @@ class HouseStore {
   }
 
   async add(houseData) {
-    const newHouse = {
+    const newHouse = this.normalizeHouse({
       id: `casa-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       createdAt: new Date().toISOString(),
       status: 'pending', // ¡En revisión por el administrador!
       ...houseData
-    };
+    });
 
     this.houses.unshift(newHouse);
     this.save(this.houses);
@@ -398,7 +446,7 @@ class HouseStore {
   async update(id, updatedData) {
     const idx = this.houses.findIndex(h => h.id === id);
     if (idx !== -1) {
-      this.houses[idx] = { ...this.houses[idx], ...updatedData };
+      this.houses[idx] = this.normalizeHouse({ ...this.houses[idx], ...updatedData });
       this.save(this.houses);
 
       // Actualizar en Firestore en tiempo real
@@ -463,7 +511,22 @@ class HalloweenApp {
       isAdminLoggedIn: sessionStorage.getItem('daganzo_admin_auth') === 'true'
     };
 
-    this.selectedPresetPhoto = PHOTO_PRESETS[0];
+    const defaultPhotoUrl = normalizeHouseImage(PHOTO_PRESETS[0]);
+    this.selectedPresetPhoto = defaultPhotoUrl;
+    this.wizard = {
+      step: 1,
+      coords: [DAGANZO_COORDS[0], DAGANZO_COORDS[1]],
+      street: '',
+      name: '',
+      iconId: HALLOWEEN_50_ICONS[0].id,
+      sustoLevel: 'infantil',
+      candies: 'normal',
+      effects: [],
+      hours: '19:00 - 22:30',
+      image: defaultPhotoUrl,
+      desc: '',
+      iconCategoryFilter: 'all'
+    };
 
     this.init();
   }
@@ -662,6 +725,7 @@ class HalloweenApp {
       const isVisited = this.state.visited.includes(h.id);
       const matched = HALLOWEEN_50_ICONS.find(i => i.id === h.iconId || i.emoji === h.icon);
       const iconEmoji = matched ? matched.emoji : (h.icon || '🎃');
+      const imgSrc = normalizeHouseImage(h.image);
 
       return `
         <div class="side-house-card ${this.selectedHouse?.id === h.id ? 'selected' : ''}" 
@@ -670,7 +734,7 @@ class HalloweenApp {
              tabindex="0"
              onclick="window.app && window.app.highlightHouseOnMap('${h.id}')" 
              title="Pulsar para ver en el mapa">
-          <img class="side-house-thumb" src="${h.image}" alt="">
+          <img class="side-house-thumb" src="${imgSrc}" alt="" onerror="this.onerror=null;this.src='assets/preset_photos/h1_mansion_calabazas.jpg';">
           <div class="side-house-info">
             <h4><span>${iconEmoji}</span> ${h.title}</h4>
             <p>📍 ${h.street}</p>
@@ -721,7 +785,14 @@ class HalloweenApp {
     const iconEmoji = matched ? matched.emoji : (house.icon || '🎃');
 
     const card = document.getElementById('houseDetailCard');
-    document.getElementById('cardImg').src = house.image;
+    const cardImg = document.getElementById('cardImg');
+    if (cardImg) {
+      cardImg.onerror = () => {
+        cardImg.onerror = null;
+        cardImg.src = 'assets/preset_photos/h1_mansion_calabazas.jpg';
+      };
+      cardImg.src = normalizeHouseImage(house.image);
+    }
     document.getElementById('cardTitle').innerHTML = `<span style="font-size:1.3rem;">${iconEmoji}</span> ${house.title}`;
     document.getElementById('cardStreet').textContent = `📍 ${house.street}`;
     document.getElementById('cardHours').textContent = `🕒 ${house.hours || '19:00 - 22:30'}`;
@@ -1062,6 +1133,8 @@ class HalloweenApp {
 
   // Inicializa el Asistente Embrujado
   initWizard() {
+    const defaultPhotoUrl = normalizeHouseImage(PHOTO_PRESETS[0]);
+    this.selectedPresetPhoto = defaultPhotoUrl;
     this.wizard = {
       step: 1,
       coords: [DAGANZO_COORDS[0], DAGANZO_COORDS[1]],
@@ -1072,7 +1145,7 @@ class HalloweenApp {
       candies: 'normal',
       effects: [],
       hours: '19:00 - 22:30',
-      image: PHOTO_PRESETS[0],
+      image: defaultPhotoUrl,
       desc: '',
       iconCategoryFilter: 'all'
     };
@@ -1128,6 +1201,10 @@ class HalloweenApp {
     setTimeout(() => {
       this.initWizardMiniMap();
     }, 180);
+  }
+
+  resetWizardForm() {
+    this.initWizard();
   }
 
   // Mini mapa interactivo dentro del asistente
@@ -1567,8 +1644,7 @@ class HalloweenApp {
     const hours = document.getElementById('houseHours')?.value.trim() || '19:00 - 22:30';
     const desc = document.getElementById('houseDesc')?.value.trim() || '¡Decoración vecinal lista para Halloween en Daganzo!';
     const customImg = document.getElementById('houseCustomImage')?.value.trim();
-    const defaultPreset = typeof PHOTO_PRESETS[0] === 'object' ? PHOTO_PRESETS[0].url : PHOTO_PRESETS[0];
-    const imgUrl = customImg || this.wizard.image || defaultPreset;
+    const imgUrl = normalizeHouseImage(customImg || this.wizard?.image);
 
     const iconItem = HALLOWEEN_50_ICONS.find(i => i.id === this.wizard.iconId) || HALLOWEEN_50_ICONS[0];
 
@@ -1628,7 +1704,7 @@ class HalloweenApp {
     const hours = document.getElementById('houseHours')?.value.trim() || '19:00 - 22:30';
     const desc = document.getElementById('houseDesc')?.value.trim() || '¡Nueva decoración vecinal en Daganzo!';
     const customImg = document.getElementById('houseCustomImage')?.value.trim();
-    const image = customImg || this.wizard.image || PHOTO_PRESETS[0];
+    const image = normalizeHouseImage(customImg || this.wizard?.image);
 
     // Doble comprobación: asegurarse de que el icono elegido sigue libre
     const status = this.getIconsWithStatus().find(i => i.id === this.wizard.iconId);
@@ -1662,7 +1738,10 @@ class HalloweenApp {
       candiesType: this.wizard.candies,
       effects: this.wizard.effects,
       status: 'pending',
-      owner: ownerData
+      owner: ownerData,
+      ownerId: this.currentUser?.id || null,
+      ownerName: ownerData.name || 'Vecino de Daganzo',
+      ownerContact: ownerData.phone || ownerData.email || ''
     });
 
     this.refreshMapMarkers();
@@ -1670,7 +1749,7 @@ class HalloweenApp {
     this.switchView('map');
     window.spookyAudio?.playStinger('unlock');
     this.showToast(`¡Solicitud enviada! Tu casa y tu icono ${iconItem.emoji} han quedado reservados para la aprobación del administrador 🎃`);
-    this.resetWizardForm();
+    this.initWizard();
   }
 
   // ========================================================
@@ -2229,6 +2308,165 @@ class HalloweenApp {
     this.showToast('📥 Copia de seguridad JSON descargada con éxito');
   }
 
+  async exportApprovedHousesXLSX() {
+    const approvedHouses = this.store.getApproved();
+    if (!approvedHouses || approvedHouses.length === 0) {
+      this.showToast('⚠️ No hay casas aprobadas todavía para exportar a Excel.');
+      return;
+    }
+
+    // Asegurar que la librería SheetJS (XLSX) esté disponible
+    if (typeof XLSX === 'undefined') {
+      try {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      } catch (e) {
+        this.showToast('❌ No se pudo cargar el generador de archivos XLSX. Comprueba tu conexión.');
+        return;
+      }
+    }
+
+    const sustoLabelsMap = {
+      infantil: 'Para Peques (Infantil)',
+      caramelos: 'Misterio / Caramelos',
+      terror: 'Pasaje del Terror'
+    };
+
+    const candyLabelsMap = {
+      normal: 'Reparto de chuches variado',
+      glutenfree: 'Chuches sin gluten (Celíacos)',
+      chocolates: 'Chocolates y bombones',
+      sugarfree: 'Opciones sin azúcar / Fruta',
+      toys: 'Juguetes / Pegatinas (No comida)',
+      vegan: 'Chuches veganas / Sin lactosa',
+      deluxe: 'Bolsitas sorpresa preparadas',
+      none: 'Solo exhibición / Sin chuches'
+    };
+
+    const effectLabelsMap = {
+      smoke: 'Máquina de humo / Niebla',
+      actors: 'Actores en vivo',
+      photocall: 'Photocall familiar',
+      sound: 'Efectos de audio y gritos',
+      animatronics: 'Animatronics con movimiento',
+      lights: 'Luces estroboscópicas / Láser',
+      blacklight: 'Luz ultravioleta / Flúor',
+      walkthrough: 'Pasaje interior accesible',
+      interactive: 'Juegos interactivos / Retos',
+      projection: 'Proyección o hologramas'
+    };
+
+    const rows = approvedHouses.map((h, index) => {
+      const matchedIcon = HALLOWEEN_50_ICONS.find(i => i.id === h.iconId || i.emoji === h.icon);
+      const iconEmoji = matchedIcon ? matchedIcon.emoji : (h.icon || '🎃');
+      const iconName = matchedIcon ? matchedIcon.name : (h.iconId || 'Calabaza Tallada');
+
+      const ownerName = h.ownerName || (h.owner && h.owner.name) || 'Vecino de Daganzo';
+      const ownerPhone = (h.owner && h.owner.phone) || h.ownerContact || 'No indicado';
+      const ownerEmail = (h.owner && h.owner.email) || h.ownerEmail || 'No indicado';
+
+      const cType = h.candiesType || (h.hasCandies ? 'normal' : 'none');
+      const candiesLabel = candyLabelsMap[cType] || (h.hasCandies ? 'Reparto de chuches' : 'Sin chuches');
+
+      const effectsList = Array.isArray(h.effects) && h.effects.length > 0
+        ? h.effects.map(ef => effectLabelsMap[ef] || ef).join(', ')
+        : 'Ninguno';
+
+      const lat = Array.isArray(h.coords) && h.coords.length >= 2 ? Number(h.coords[0]) : DAGANZO_COORDS[0];
+      const lng = Array.isArray(h.coords) && h.coords.length >= 2 ? Number(h.coords[1]) : DAGANZO_COORDS[1];
+      const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+      const imgStr = normalizeHouseImage(h.image);
+      const matchedPreset = PHOTO_PRESETS.find(p => (typeof p === 'object' ? p.url : p) === imgStr);
+      const imageLabel = matchedPreset
+        ? `${matchedPreset.title} (${imgStr})`
+        : (imgStr.startsWith('data:image') ? 'Foto propia subida por el vecino' : imgStr);
+
+      let createdDateStr = 'No registrada';
+      if (h.createdAt) {
+        const d = new Date(h.createdAt);
+        if (!isNaN(d.getTime())) {
+          createdDateStr = d.toLocaleString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        }
+      }
+
+      return {
+        'Nº': index + 1,
+        'ID Casa': h.id || '',
+        'Nombre / Título de la Casa': h.title || '',
+        'Dirección en Daganzo': h.street || '',
+        'Estado': 'Aprobada y Publicada',
+        'Categoría / Nivel de Susto': sustoLabelsMap[h.category] || h.category || 'Halloween',
+        'Icono': iconEmoji,
+        'Nombre del Icono': iconName,
+        'Horario de Visita': h.hours || '19:00 - 22:30',
+        '¿Reparte Caramelos?': h.hasCandies ? 'Sí' : 'No',
+        'Tipo de Caramelos / Chuches': candiesLabel,
+        '¿Apta para Peques?': (h.kidsFriendly || h.category === 'infantil') ? 'Sí' : 'No',
+        'Efectos Especiales': effectsList,
+        '¿Participa en Concurso?': h.inContest !== false ? 'Sí' : 'No',
+        'Descripción': h.description || '',
+        'Vecino / Propietario': ownerName,
+        'Teléfono de Contacto': ownerPhone,
+        'Email de Contacto': ownerEmail,
+        'Latitud': lat,
+        'Longitud': lng,
+        'Enlace Google Maps': googleMapsUrl,
+        'Imagen de Portada': imageLabel,
+        'Fecha de Inscripción': createdDateStr
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    // Ajustar el ancho de las columnas para lectura cómoda en Excel
+    worksheet['!cols'] = [
+      { wch: 5 },  // Nº
+      { wch: 26 }, // ID Casa
+      { wch: 30 }, // Nombre / Título
+      { wch: 28 }, // Dirección
+      { wch: 20 }, // Estado
+      { wch: 24 }, // Categoría
+      { wch: 8 },  // Icono
+      { wch: 22 }, // Nombre del Icono
+      { wch: 18 }, // Horario
+      { wch: 18 }, // ¿Reparte Caramelos?
+      { wch: 30 }, // Tipo de Caramelos
+      { wch: 18 }, // ¿Apta para Peques?
+      { wch: 38 }, // Efectos Especiales
+      { wch: 22 }, // ¿Participa en Concurso?
+      { wch: 50 }, // Descripción
+      { wch: 24 }, // Vecino / Propietario
+      { wch: 18 }, // Teléfono
+      { wch: 28 }, // Email
+      { wch: 12 }, // Latitud
+      { wch: 12 }, // Longitud
+      { wch: 42 }, // Enlace Google Maps
+      { wch: 45 }, // Imagen de Portada
+      { wch: 20 }  // Fecha de Inscripción
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Casas Aprobadas');
+
+    const dateTag = new Date().toISOString().slice(0, 10);
+    const fileName = `casas_aprobadas_halloween_daganzo_${dateTag}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+
+    this.showToast(`📊 ¡Listado Excel (.xlsx) con ${approvedHouses.length} casa(s) aprobada(s) descargado!`);
+  }
+
   renderAdminView() {
     const loginBox = document.getElementById('adminLoginBox');
     const dashboardBox = document.getElementById('adminDashboardBox');
@@ -2275,7 +2513,7 @@ class HalloweenApp {
         filteredPending = filteredPending.filter(h =>
           (h.title || '').toLowerCase().includes(q) ||
           (h.street || '').toLowerCase().includes(q) ||
-          (h.ownerName || '').toLowerCase().includes(q)
+          (h.ownerName || h.owner?.name || '').toLowerCase().includes(q)
         );
       }
 
@@ -2291,16 +2529,18 @@ class HalloweenApp {
         pendingList.innerHTML = filteredPending.map(h => {
           const matched = HALLOWEEN_50_ICONS.find(i => i.id === h.iconId || i.emoji === h.icon);
           const iconEmoji = matched ? matched.emoji : (h.icon || '🎃');
+          const ownerName = h.ownerName || (h.owner ? h.owner.name : '') || 'Vecino';
           const ownerContact = h.ownerContact || (h.owner ? (h.owner.phone || h.owner.email) : '');
           const cleanPhone = (ownerContact || '').replace(/\D/g, '');
           const hasPhone = cleanPhone.length >= 9;
+          const imgSrc = normalizeHouseImage(h.image);
 
           return `
             <div class="admin-house-card admin-pending-card" data-id="${h.id}">
               <!-- Cabecera de la tarjeta con imagen, icono y datos principales -->
               <div class="admin-card-header">
                 <div class="admin-card-photo-wrap">
-                  <img class="admin-card-img" src="${h.image}" alt="${h.title}">
+                  <img class="admin-card-img" src="${imgSrc}" alt="${h.title}" onerror="this.onerror=null;this.src='assets/preset_photos/h1_mansion_calabazas.jpg';">
                   <div class="admin-card-icon-badge">${iconEmoji}</div>
                 </div>
                 <div class="admin-card-main-meta">
@@ -2312,7 +2552,7 @@ class HalloweenApp {
                   <div class="admin-card-detail-line">🕒 Horario: <b>${h.hours || '19:00 a 22:30'}</b></div>
                   <div class="admin-card-detail-line">🎭 Temática: <span style="color: #cbd5e1; text-transform: capitalize;">${h.category || 'Halloween'}</span></div>
                   <div class="admin-card-owner-box">
-                    <span>👤 Inscrita por: <b>${h.ownerName || 'Vecino'}</b></span>
+                    <span>👤 Inscrita por: <b>${ownerName}</b></span>
                     ${ownerContact ? `<span style="margin-left: 8px;">📞 ${ownerContact}</span>` : ''}
                   </div>
                   ${h.description ? `<p class="admin-card-quote">"${h.description}"</p>` : ''}
@@ -2355,7 +2595,7 @@ class HalloweenApp {
           (h.title || '').toLowerCase().includes(q) ||
           (h.street || '').toLowerCase().includes(q) ||
           (h.category || '').toLowerCase().includes(q) ||
-          (h.ownerName || '').toLowerCase().includes(q)
+          (h.ownerName || h.owner?.name || '').toLowerCase().includes(q)
         );
       }
 
@@ -2371,16 +2611,18 @@ class HalloweenApp {
         approvedList.innerHTML = filteredApproved.map(h => {
           const matched = HALLOWEEN_50_ICONS.find(i => i.id === h.iconId || i.emoji === h.icon);
           const iconEmoji = matched ? matched.emoji : (h.icon || '🎃');
+          const ownerName = h.ownerName || (h.owner ? h.owner.name : '') || 'Vecino';
           const ownerContact = h.ownerContact || (h.owner ? (h.owner.phone || h.owner.email) : '');
           const cleanPhone = (ownerContact || '').replace(/\D/g, '');
           const hasPhone = cleanPhone.length >= 9;
+          const imgSrc = normalizeHouseImage(h.image);
 
           return `
             <div class="admin-house-card" data-id="${h.id}">
               <!-- Cabecera de la tarjeta con imagen, icono y datos principales -->
               <div class="admin-card-header">
                 <div class="admin-card-photo-wrap">
-                  <img class="admin-card-img" src="${h.image}" alt="${h.title}">
+                  <img class="admin-card-img" src="${imgSrc}" alt="${h.title}" onerror="this.onerror=null;this.src='assets/preset_photos/h1_mansion_calabazas.jpg';">
                   <div class="admin-card-icon-badge">${iconEmoji}</div>
                 </div>
                 <div class="admin-card-main-meta">
@@ -2391,7 +2633,7 @@ class HalloweenApp {
                   <div class="admin-card-detail-line">📍 <b>${h.street}</b></div>
                   <div class="admin-card-detail-line">🕒 Horario: <b>${h.hours || '19:00 a 22:30'}</b></div>
                   <div class="admin-card-detail-line">🎭 Temática: <span style="color: #cbd5e1; text-transform: capitalize;">${h.category || 'Halloween'}</span></div>
-                  ${ownerContact ? `<div class="admin-card-owner-box"><span>👤 ${h.ownerName || 'Vecino'}: ${ownerContact}</span></div>` : ''}
+                  ${ownerContact ? `<div class="admin-card-owner-box"><span>👤 ${ownerName}: ${ownerContact}</span></div>` : `<div class="admin-card-owner-box"><span>👤 ${ownerName}</span></div>`}
                 </div>
               </div>
 
@@ -2681,7 +2923,19 @@ class HalloweenApp {
     }
 
     this.editingHouseId = id;
-    this.tempCoords = house.coords ? [...house.coords] : DAGANZO_COORDS;
+
+    // Normalizar coordenadas de forma segura
+    let safeCoords = [DAGANZO_COORDS[0], DAGANZO_COORDS[1]];
+    if (Array.isArray(house.coords) && house.coords.length >= 2) {
+      const lat = parseFloat(house.coords[0]);
+      const lng = parseFloat(house.coords[1]);
+      if (!isNaN(lat) && !isNaN(lng)) safeCoords = [lat, lng];
+    } else if (house.coords && typeof house.coords === 'object') {
+      const lat = parseFloat(house.coords.lat ?? house.coords[0]);
+      const lng = parseFloat(house.coords.lng ?? house.coords[1]);
+      if (!isNaN(lat) && !isNaN(lng)) safeCoords = [lat, lng];
+    }
+    this.tempCoords = [...safeCoords];
     this.adminSelectedIconId = house.iconId || 'calabaza';
 
     const f = document.getElementById('formEditHouse');
@@ -2693,9 +2947,8 @@ class HalloweenApp {
     if (f.elements['editHours']) f.elements['editHours'].value = house.hours || '19:00 - 22:30';
     if (f.elements['editDesc']) f.elements['editDesc'].value = house.description || '';
 
-    // Portada actual e inicialización del editor de imagen
-    const defaultPreset = typeof PHOTO_PRESETS[0] === 'object' ? PHOTO_PRESETS[0].url : PHOTO_PRESETS[0];
-    const initialImg = house.image || defaultPreset;
+    // Portada actual e inicialización del editor de imagen (siempre string URL válido)
+    const initialImg = normalizeHouseImage(house.image);
     if (f.elements['editImage']) f.elements['editImage'].value = initialImg;
 
     const preview = document.getElementById('editHousePhotoPreview');
@@ -2712,9 +2965,9 @@ class HalloweenApp {
     if (toggleText) toggleText.textContent = '30 Fotos Halloween ▲';
 
     const customInp = document.getElementById('editCustomUrlInput');
-    if (customInp) customInp.value = initialImg.startsWith('http') ? initialImg : '';
+    if (customInp) customInp.value = typeof initialImg === 'string' && initialImg.startsWith('http') ? initialImg : '';
 
-    const coordsDisplay = house.coords ? `${house.coords[0].toFixed(4)}, ${house.coords[1].toFixed(4)}` : 'Daganzo de Arriba';
+    const coordsDisplay = `${safeCoords[0].toFixed(4)}, ${safeCoords[1].toFixed(4)}`;
     const coordsEl = document.getElementById('editCoordsText');
     if (coordsEl) {
       coordsEl.innerHTML = `📍 Coordenadas: <b>${coordsDisplay}</b> (Toca el mapa para cambiarlas)`;
@@ -2934,7 +3187,7 @@ class HalloweenApp {
       icon: chosenIconItem.emoji,
       hours: f.elements['editHours']?.value.trim() || '19:00 - 22:30',
       description: f.elements['editDesc']?.value.trim() || '',
-      image: f.elements['editImage']?.value.trim() || PHOTO_PRESETS[0],
+      image: normalizeHouseImage(f.elements['editImage']?.value.trim()),
       coords: this.tempCoords
     };
 
@@ -3047,10 +3300,12 @@ class HalloweenApp {
     const container = document.getElementById('presetPhotosGrid');
     if (!container) return;
 
+    const currentWizardImg = normalizeHouseImage(this.wizard?.image);
+
     container.innerHTML = PHOTO_PRESETS.map((item, i) => {
       const url = typeof item === 'object' ? item.url : item;
       const title = typeof item === 'object' ? item.title : `Temática ${i+1}`;
-      const isSelected = this.wizard.image === url || (!this.wizard.image && i === 0);
+      const isSelected = currentWizardImg === url || (!currentWizardImg && i === 0);
 
       return `
         <div class="preset-photo-thumb ${isSelected ? 'selected' : ''}" 
@@ -3069,15 +3324,18 @@ class HalloweenApp {
   }
 
   selectPresetPhoto(el, url) {
+    const validUrl = normalizeHouseImage(url);
     document.querySelectorAll('.preset-photo-thumb').forEach(t => t.classList.remove('selected'));
     if (el) {
       el.classList.add('selected');
     } else {
-      const target = document.querySelector(`.preset-photo-thumb[data-url="${url}"]`);
+      const target = document.querySelector(`.preset-photo-thumb[data-url="${validUrl}"]`);
       if (target) target.classList.add('selected');
     }
-    this.selectedPresetPhoto = url;
-    this.wizard.image = url;
+    this.selectedPresetPhoto = validUrl;
+    if (this.wizard) {
+      this.wizard.image = validUrl;
+    }
 
     // Si había una foto del móvil subida, limpiarla visualmente
     const mobilePreview = document.getElementById('mobilePhotoUploadPreview');
@@ -3087,7 +3345,7 @@ class HalloweenApp {
     if (customImgInput) customImgInput.value = '';
 
     const previewImg = document.getElementById('wizardPreviewImg');
-    if (previewImg) previewImg.src = url;
+    if (previewImg) previewImg.src = validUrl;
   }
 
   openPhotoPreviewModal(url, title = 'Ilustración de Halloween') {
@@ -3198,7 +3456,7 @@ class HalloweenApp {
     if (previewWrap) previewWrap.style.display = 'none';
 
     // Volver al primer preset
-    this.selectPresetPhoto(document.querySelector('.preset-photo-thumb'), PHOTO_PRESETS[0]);
+    this.selectPresetPhoto(document.querySelector('.preset-photo-thumb'), normalizeHouseImage(PHOTO_PRESETS[0]));
   }
 
   // ========================================================
@@ -4060,6 +4318,11 @@ class HalloweenApp {
     document.getElementById('btnAdminAddNewHouse')?.addEventListener('click', () => {
       this.closeModal('modalAdmin');
       this.openApuntaOrAuth();
+    });
+
+    // Botón "Exportar XLSX" desde Admin
+    document.getElementById('btnAdminExportXlsx')?.addEventListener('click', () => {
+      this.exportApprovedHousesXLSX();
     });
 
     // Botón "Backup JSON" desde Admin
