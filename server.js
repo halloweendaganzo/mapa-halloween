@@ -123,8 +123,15 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
+      const rawImg = body.image;
+      const safeImage = (rawImg && typeof rawImg === 'object' && rawImg.url)
+        ? rawImg.url
+        : (typeof rawImg === 'string' && rawImg.trim() && !rawImg.includes('[object Object]')
+            ? rawImg.trim()
+            : 'assets/preset_photos/h1_mansion_calabazas.jpg');
+
       const newHouse = {
-        id: `casa-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        id: body.id || `casa-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
         title: body.title.trim(),
         street: body.street.trim(),
         coords: body.coords,
@@ -133,14 +140,18 @@ const server = http.createServer(async (req, res) => {
         icon: body.icon || '🎃',
         hours: body.hours || '19:00 - 22:30',
         hasCandies: !!body.hasCandies,
+        candiesType: body.candiesType || (body.hasCandies ? 'normal' : 'none'),
+        effects: Array.isArray(body.effects) ? body.effects : [],
+        inContest: body.inContest !== false,
         kidsFriendly: !!body.kidsFriendly,
-        image: body.image || 'https://images.unsplash.com/photo-1509114397022-ed747cca3f65?auto=format&fit=crop&w=700&q=80',
+        image: safeImage,
         description: body.description || '',
-        status: 'pending', // ¡PENDIENTE DE APROBACIÓN POR EL ADMINISTRADOR!
-        createdAt: Date.now(),
+        status: body.status || 'pending',
+        createdAt: body.createdAt || new Date().toISOString(),
+        owner: body.owner || null,
         ownerId: body.ownerId || null,
-        ownerName: body.ownerName || 'Vecino anónimo',
-        ownerContact: body.ownerContact || 'No especificado'
+        ownerName: body.ownerName || (body.owner && body.owner.name) || 'Vecino anónimo',
+        ownerContact: body.ownerContact || (body.owner && (body.owner.phone || body.owner.email)) || 'No especificado'
       };
 
       houses.push(newHouse);
