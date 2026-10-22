@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   
   <!-- Estilos Temáticos de Halloween con Creepster y Neón -->
-  <link rel="stylesheet" href="styles.css?v=113">
+  <link rel="stylesheet" href="styles.css?v=115">
 </head>
 <body>
 
@@ -355,9 +355,11 @@
       <!-- TARJETA FLOTANTE CENTRADA DE DETALLE DE CASA -->
       <div id="houseDetailBackdrop" class="house-detail-backdrop"></div>
       <div id="houseDetailCard" class="house-detail-flyout">
-        <div class="flyout-photo">
+        <div class="flyout-photo" id="flyoutPhotoWrap" title="Toca para ver la foto completa en grande">
+          <div id="flyoutPhotoBg" class="flyout-photo-bg"></div>
           <img id="cardImg" src="" alt="Decoración Halloween">
-          <button id="btnCloseCard" class="btn-flyout-close">&times;</button>
+          <button id="btnCloseCard" class="btn-flyout-close" title="Cerrar">&times;</button>
+          <div class="flyout-photo-hint">🔍 Foto completa</div>
         </div>
 
         <div class="flyout-body">
@@ -385,6 +387,15 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Barra flotante superior cuando el admin elige la ubicación en el mapa grande -->
+    <div id="floatingPickLocationBanner" class="floating-pick-location-banner" style="display: none;">
+      <div class="floating-pick-content">
+        <span class="floating-pick-icon">📍</span>
+        <span id="floatingPickText" class="floating-pick-text">Toca en el mapa de Daganzo para posicionar esta casa</span>
+      </div>
+      <button type="button" id="btnCancelPickLocation" class="btn-cancel-pick">✕ Volver al Editor</button>
     </div>
   </section>
 
@@ -1020,109 +1031,159 @@
     <div class="modal-sheet modal-sheet-edit-house">
       <div class="modal-top">
         <h2><span>✏️</span> Editar Casa</h2>
-        <button class="btn-modal-close" type="button">&times;</button>
+        <button class="btn-modal-close" type="button" title="Cerrar">&times;</button>
       </div>
 
-      <form id="formEditHouse">
-        <div class="input-row">
-          <label for="editName">Nombre / Título:</label>
-          <input type="text" id="editName" name="editName" class="form-control-input" required>
-        </div>
+      <form id="formEditHouse" class="edit-house-form">
+        <div class="edit-house-form-body">
+          <div class="input-row">
+            <label for="editName">Nombre / Título:</label>
+            <input type="text" id="editName" name="editName" class="form-control-input" required>
+          </div>
 
-        <div class="input-row">
-          <label for="editStreet">Dirección:</label>
-          <input type="text" id="editStreet" name="editStreet" class="form-control-input" required>
-        </div>
-
-        <div class="map-location-picker">
-          <span id="editCoordsText">📍 Coordenadas actuales (toca en el mapa para cambiarlas)</span>
-        </div>
-
-        <!-- SECCIÓN: IMAGEN DE PORTADA DE LA CASA -->
-        <div class="input-row edit-cover-section">
-          <label>Imagen de Portada de la Casa:</label>
-
-          <!-- Tarjeta de vista previa de la portada actual -->
-          <div class="edit-photo-preview-card">
-            <img id="editHousePhotoPreview" src="assets/preset_photos/h1_mansion_calabazas.jpg" alt="Portada de la casa">
-            <div class="edit-photo-preview-info">
-              <span class="edit-photo-badge">Portada actual</span>
-              <small id="editPhotoSourceLabel">Foto asignada</small>
+          <div class="input-row">
+            <label for="editStreet">Dirección:</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="editStreet" name="editStreet" class="form-control-input" style="flex: 1;" required>
+              <button type="button" id="btnEditGeocodeAddress" class="hud-btn" style="padding: 0 12px; height: 42px; font-size: 0.82rem; white-space: nowrap; border-color: rgba(168, 85, 247, 0.4);" title="Buscar y posicionar en el mapa según esta dirección">
+                🔍 Buscar
+              </button>
             </div>
           </div>
 
-          <!-- Botones de acción para cambiar la foto -->
-          <div class="edit-photo-actions-grid">
-            <input type="file" id="editHousePhotoFileInput" accept="image/*" style="display: none;">
-            <button type="button" id="btnUploadEditPhoto" class="btn-edit-photo-action" onclick="document.getElementById('editHousePhotoFileInput').click()">
-              <span>📷</span> <span>Subir foto (móvil / PC)</span>
-            </button>
-            <button type="button" id="btnToggleEditPresets" class="btn-edit-photo-action btn-edit-photo-presets" onclick="window.app && window.app.toggleEditPresets()">
-              <span>🎨</span> <span id="btnToggleEditPresetsText">30 Fotos Halloween ▲</span>
-            </button>
-          </div>
-
-          <!-- Galería de 30 ilustraciones temáticas oficiales (abierta para elegir directamente) -->
-          <div id="editPresetPhotosContainer" class="edit-presets-wrapper" style="display: block;">
-            <div style="font-size: 0.74rem; color: #ffaa55; margin-bottom: 6px; font-weight: 600;">
-              Toca una de las 30 temáticas oficiales para asignarla como portada:
+          <!-- SECCIÓN: UBICACIÓN Y COORDENADAS INTERACTIVAS -->
+          <div class="input-row edit-location-section">
+            <div class="edit-section-header">
+              <label style="margin-bottom: 0;">📍 Ubicación en el Mapa:</label>
+              <span id="editCoordsBadge" class="edit-coords-badge">40.5422, -3.4566</span>
             </div>
-            <div id="editPresetPhotosGrid" class="preset-photos-grid edit-presets-grid">
-              <!-- Rellenado dinámicamente con las 30 fotos -->
+
+            <!-- Mini mapa interactivo dentro de la edición -->
+            <div class="edit-mini-map-container">
+              <div id="editMiniMap" class="edit-mini-map"></div>
+              <div class="edit-mini-map-overlay-tip">
+                <span>💡 Arrastra el marcador 📍 o toca el mapa para reubicar</span>
+              </div>
+            </div>
+
+            <!-- Botones de herramientas de ubicación -->
+            <div class="edit-loc-actions-grid">
+              <button type="button" id="btnEditPickOnMainMap" class="btn-edit-loc-tool">
+                <span>🗺️</span> <span>Mover en mapa grande</span>
+              </button>
+              <button type="button" id="btnEditGps" class="btn-edit-loc-tool">
+                <span>📡</span> <span>Mi GPS</span>
+              </button>
+            </div>
+
+            <!-- Ajuste fino de coordenadas numéricas (Latitud y Longitud) -->
+            <div class="edit-coords-inputs-grid">
+              <div class="coords-field">
+                <span class="coords-label">Latitud:</span>
+                <input type="number" step="any" id="editLatInput" class="form-control-input coords-num-input" placeholder="40.5422">
+              </div>
+              <div class="coords-field">
+                <span class="coords-label">Longitud:</span>
+                <input type="number" step="any" id="editLngInput" class="form-control-input coords-num-input" placeholder="-3.4566">
+              </div>
+            </div>
+            <span id="editCoordsText" style="display: none;"></span>
+          </div>
+
+          <!-- SECCIÓN: IMAGEN DE PORTADA DE LA CASA (COMPLETA) -->
+          <div class="input-row edit-cover-section">
+            <div class="edit-section-header">
+              <label style="margin-bottom: 0;">🖼️ Imagen de Portada de la Casa:</label>
+              <span class="edit-photo-badge">Visible completa</span>
+            </div>
+
+            <!-- Tarjeta de vista previa de la portada actual -->
+            <div class="edit-photo-preview-card" id="editPhotoPreviewCard" title="Toca para ver la foto en grande">
+              <div id="editPhotoPreviewBg" class="edit-photo-preview-bg"></div>
+              <img id="editHousePhotoPreview" src="assets/preset_photos/h1_mansion_calabazas.jpg" alt="Portada de la casa">
+              <div class="edit-photo-preview-info">
+                <span id="editPhotoSourceLabel">Portada asignada</span>
+                <span style="font-size: 0.72rem; color: #ffaa55;">🔍 Ampliar</span>
+              </div>
+            </div>
+
+            <!-- Botones de acción para cambiar la foto -->
+            <div class="edit-photo-actions-grid">
+              <input type="file" id="editHousePhotoFileInput" accept="image/*" style="display: none;">
+              <button type="button" id="btnUploadEditPhoto" class="btn-edit-photo-action" onclick="document.getElementById('editHousePhotoFileInput').click()">
+                <span>📷</span> <span>Subir foto (móvil / PC)</span>
+              </button>
+              <button type="button" id="btnToggleEditPresets" class="btn-edit-photo-action btn-edit-photo-presets" onclick="window.app && window.app.toggleEditPresets()">
+                <span>🎨</span> <span id="btnToggleEditPresetsText">30 Fotos Halloween ▼</span>
+              </button>
+            </div>
+
+            <!-- Galería de 30 ilustraciones temáticas oficiales (colapsada por defecto para no saturar) -->
+            <div id="editPresetPhotosContainer" class="edit-presets-wrapper" style="display: none;">
+              <div style="font-size: 0.74rem; color: #ffaa55; margin-bottom: 6px; font-weight: 600;">
+                Toca una de las 30 temáticas oficiales para asignarla como portada:
+              </div>
+              <div id="editPresetPhotosGrid" class="preset-photos-grid edit-presets-grid">
+                <!-- Rellenado dinámicamente con las 30 fotos -->
+              </div>
+            </div>
+
+            <!-- Input real de la imagen para el formulario -->
+            <input type="hidden" id="editImage" name="editImage" value="">
+
+            <div style="margin-top: 6px;">
+              <button type="button" class="btn-link-toggle" onclick="const u = document.getElementById('editCustomUrlWrap'); u.style.display = u.style.display === 'none' ? 'block' : 'none';">
+                🔗 O pegar enlace de imagen web...
+              </button>
+              <div id="editCustomUrlWrap" style="display: none; margin-top: 6px;">
+                <input type="text" id="editCustomUrlInput" class="form-control-input" placeholder="https://ejemplo.com/mifoto.jpg" style="font-size: 0.78rem;">
+              </div>
             </div>
           </div>
 
-          <!-- Input real de la imagen para el formulario -->
-          <input type="hidden" id="editImage" name="editImage" value="">
-
-          <div style="margin-top: 6px;">
-            <button type="button" class="btn-link-toggle" onclick="const u = document.getElementById('editCustomUrlWrap'); u.style.display = u.style.display === 'none' ? 'block' : 'none';">
-              🔗 O pegar enlace de imagen web...
-            </button>
-            <div id="editCustomUrlWrap" style="display: none; margin-top: 6px;">
-              <input type="text" id="editCustomUrlInput" class="form-control-input" placeholder="https://ejemplo.com/mifoto.jpg" style="font-size: 0.78rem;">
+          <!-- SECCIÓN: SELECTOR DE LOS 50 ICONOS DEL MAPA -->
+          <div class="input-row edit-icon-section">
+            <div class="edit-section-header">
+              <label style="margin-bottom: 0;">Icono asignado en el mapa:</label>
+              <span id="editSelectedIconBadge" class="edit-icon-current-badge">🎃 Calabaza</span>
+            </div>
+            <div class="admin-icons-picker-container">
+              <div id="adminEditIconsGrid" class="icons-50-grid">
+                <!-- Grid de iconos para admin -->
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- SECCIÓN: SELECTOR DE LOS 50 ICONOS DEL MAPA -->
-        <div class="input-row edit-icon-section">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <label style="margin-bottom: 0;">Icono asignado en el mapa:</label>
-            <span id="editSelectedIconBadge" class="edit-icon-current-badge">🎃 Calabaza</span>
+          <div class="input-row">
+            <label for="editCategory">Categoría / Nivel:</label>
+            <select id="editCategory" name="editCategory" class="form-control-select">
+              <option value="caramelos">🍬 Caramelos / Truco o Trato</option>
+              <option value="terror">👻 Pasaje Terror</option>
+              <option value="infantil">👶 Para Peques</option>
+            </select>
           </div>
-          <div class="admin-icons-picker-container">
-            <div id="adminEditIconsGrid" class="icons-50-grid">
-              <!-- Grid de iconos para admin -->
-            </div>
+
+          <div class="input-row">
+            <label for="editHours">Horario:</label>
+            <input type="text" id="editHours" name="editHours" class="form-control-input">
+          </div>
+
+          <div class="input-row">
+            <label for="editDesc">Descripción:</label>
+            <textarea id="editDesc" name="editDesc" class="form-control-textarea" rows="2"></textarea>
           </div>
         </div>
 
-        <div class="input-row">
-          <label for="editCategory">Categoría / Nivel:</label>
-          <select id="editCategory" name="editCategory" class="form-control-select">
-            <option value="caramelos">🍬 Caramelos / Truco o Trato</option>
-            <option value="terror">👻 Pasaje Terror</option>
-            <option value="infantil">👶 Para Peques</option>
-          </select>
-        </div>
-
-        <div class="input-row">
-          <label for="editHours">Horario:</label>
-          <input type="text" id="editHours" name="editHours" class="form-control-input">
-        </div>
-
-        <div class="input-row">
-          <label for="editDesc">Descripción:</label>
-          <textarea id="editDesc" name="editDesc" class="form-control-textarea" rows="2"></textarea>
-        </div>
-
-        <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
-          <button type="submit" class="btn-cta-monumental" style="flex: 2; min-width: 180px; padding: 14px; font-size: 1.15rem; margin-bottom: 0;">
+        <!-- PIE DE ACCIONES FIJO / STICKY: NUNCA SE OCULTA POR RESOLUCIÓN -->
+        <div class="edit-modal-footer">
+          <button type="submit" class="btn-cta-monumental edit-btn-save">
             <span>💾 Guardar Cambios</span>
           </button>
-          <button type="button" id="btnAdminDeleteFromEditModal" class="btn-admin-action btn-admin-reject" style="flex: 1; min-width: 120px; padding: 14px; font-size: 0.95rem; justify-content: center; border-radius: var(--radius-xl);">
+          <button type="button" id="btnAdminDeleteFromEditModal" class="btn-admin-action btn-admin-reject edit-btn-delete">
             <span>🗑️ Eliminar</span>
+          </button>
+          <button type="button" class="hud-btn edit-btn-cancel" onclick="window.app && window.app.closeModal('modalEditHouse')">
+            <span>✕ Cancelar</span>
           </button>
         </div>
       </form>
@@ -1298,6 +1359,6 @@
 
   <!-- Scripts de la Aplicación -->
   <script src="sound.js?v=114"></script>
-  <script src="app.js?v=114"></script>
+  <script src="app.js?v=115"></script>
 </body>
 </html>
