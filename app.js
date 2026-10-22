@@ -2474,8 +2474,21 @@ class HalloweenApp {
                 </div>
                 <div class="admin-card-main-meta">
                   <div class="admin-card-title-row">
-                    <h4 class="admin-card-title">${h.title}</h4>
-                    <span class="user-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">⏳ Pendiente de Aprobación</span>
+                    <div class="admin-card-title-group">
+                      <h4 class="admin-card-title">${h.title}</h4>
+                      <span class="user-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #fbbf24; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">⏳ Pendiente de Aprobación</span>
+                    </div>
+                    <div class="admin-card-quick-actions">
+                      <button type="button" class="btn-action-primary-approve btn-quick-approve" onclick="event.stopPropagation(); window.app.adminApproveHouse('${h.id}')" title="Aprobar y publicar en el mapa">
+                        <span>✓</span> Aprobar
+                      </button>
+                      <button type="button" class="btn-action-edit btn-quick-edit" onclick="event.stopPropagation(); window.app.openEditHouseModal('${h.id}')" title="Editar datos antes de publicar">
+                        <span>✏️</span> Editar
+                      </button>
+                      <button type="button" class="btn-action-delete btn-quick-delete" onclick="event.stopPropagation(); window.app.adminRejectHouse('${h.id}')" title="Descartar solicitud">
+                        <span>🗑️</span>
+                      </button>
+                    </div>
                   </div>
                   <div class="admin-card-detail-line">📍 <b>${h.street}</b></div>
                   <div class="admin-card-detail-line">🕒 Horario: <b>${h.hours || '19:00 a 22:30'}</b></div>
@@ -2556,8 +2569,21 @@ class HalloweenApp {
                 </div>
                 <div class="admin-card-main-meta">
                   <div class="admin-card-title-row">
-                    <h4 class="admin-card-title">${h.title}</h4>
-                    <span class="user-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">✓ Publicada en Mapa</span>
+                    <div class="admin-card-title-group">
+                      <h4 class="admin-card-title">${h.title}</h4>
+                      <span class="user-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #34d399; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">✓ Publicada en Mapa</span>
+                    </div>
+                    <div class="admin-card-quick-actions">
+                      <button type="button" class="btn-action-edit btn-quick-edit" onclick="event.stopPropagation(); window.app.openEditHouseModal('${h.id}')" title="Editar datos y ubicación de esta casa">
+                        <span>✏️</span> <b>Editar Casa</b>
+                      </button>
+                      <button type="button" class="btn-action-view btn-quick-view" onclick="event.stopPropagation(); window.app.adminFocusHouse('${h.id}')" title="Ver en el mapa">
+                        <span>👁️</span> Ver
+                      </button>
+                      <button type="button" class="btn-action-delete btn-quick-delete" onclick="event.stopPropagation(); window.app.adminDeleteHouse('${h.id}')" title="Eliminar casa permanentemente">
+                        <span>🗑️</span>
+                      </button>
+                    </div>
                   </div>
                   <div class="admin-card-detail-line">📍 <b>${h.street}</b></div>
                   <div class="admin-card-detail-line">🕒 Horario: <b>${h.hours || '19:00 a 22:30'}</b></div>
@@ -2594,6 +2620,18 @@ class HalloweenApp {
     // Vinculación directa de eventos para máxima fiabilidad en móviles táctiles
     const bindCardActions = (container) => {
       if (!container) return;
+
+      // Hacer que tocar la tarjeta abra directamente el editor para máxima comodidad en cualquier resolución
+      container.querySelectorAll('.admin-house-card').forEach(card => {
+        card.style.cursor = 'pointer';
+        card.setAttribute('title', 'Toca para editar datos o mover en el mapa');
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('button, a, input, select, textarea, .admin-card-photo-wrap')) return;
+          const id = card.getAttribute('data-id');
+          if (id) this.openEditHouseModal(id);
+        });
+      });
+
       container.querySelectorAll('.btn-action-primary-approve').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
