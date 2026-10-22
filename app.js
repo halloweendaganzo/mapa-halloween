@@ -786,12 +786,26 @@ class HalloweenApp {
 
     const card = document.getElementById('houseDetailCard');
     const cardImg = document.getElementById('cardImg');
+    const photoBg = document.getElementById('flyoutPhotoBg');
+    const photoWrap = document.getElementById('flyoutPhotoWrap');
+    const normalizedImg = normalizeHouseImage(house.image);
+
     if (cardImg) {
       cardImg.onerror = () => {
         cardImg.onerror = null;
         cardImg.src = 'assets/preset_photos/h1_mansion_calabazas.jpg';
+        if (photoBg) photoBg.style.backgroundImage = `url('assets/preset_photos/h1_mansion_calabazas.jpg')`;
       };
-      cardImg.src = normalizeHouseImage(house.image);
+      cardImg.src = normalizedImg;
+    }
+    if (photoBg) {
+      photoBg.style.backgroundImage = `url('${normalizedImg}')`;
+    }
+    if (photoWrap) {
+      photoWrap.onclick = (e) => {
+        if (e.target && e.target.id === 'btnCloseCard') return;
+        this.openPhotoPreviewModal(normalizedImg, house.title);
+      };
     }
     document.getElementById('cardTitle').innerHTML = `<span style="font-size:1.3rem;">${iconEmoji}</span> ${house.title}`;
     document.getElementById('cardStreet').textContent = `📍 ${house.street}`;
@@ -2454,7 +2468,7 @@ class HalloweenApp {
             <div class="admin-house-card admin-pending-card" data-id="${h.id}">
               <!-- Cabecera de la tarjeta con imagen, icono y datos principales -->
               <div class="admin-card-header">
-                <div class="admin-card-photo-wrap">
+                <div class="admin-card-photo-wrap" onclick="window.app && window.app.openPhotoPreviewModal('${imgSrc}', '${h.title.replace(/'/g, "\\'")}')" title="Toca para ver la foto completa en grande">
                   <img class="admin-card-img" src="${imgSrc}" alt="${h.title}" onerror="this.onerror=null;this.src='assets/preset_photos/h1_mansion_calabazas.jpg';">
                   <div class="admin-card-icon-badge">${iconEmoji}</div>
                 </div>
@@ -2536,7 +2550,7 @@ class HalloweenApp {
             <div class="admin-house-card" data-id="${h.id}">
               <!-- Cabecera de la tarjeta con imagen, icono y datos principales -->
               <div class="admin-card-header">
-                <div class="admin-card-photo-wrap">
+                <div class="admin-card-photo-wrap" onclick="window.app && window.app.openPhotoPreviewModal('${imgSrc}', '${h.title.replace(/'/g, "\\'")}')" title="Toca para ver la foto completa en grande">
                   <img class="admin-card-img" src="${imgSrc}" alt="${h.title}" onerror="this.onerror=null;this.src='assets/preset_photos/h1_mansion_calabazas.jpg';">
                   <div class="admin-card-icon-badge">${iconEmoji}</div>
                 </div>
@@ -2583,7 +2597,7 @@ class HalloweenApp {
       container.querySelectorAll('.btn-action-primary-approve').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          e.stopPropagation();
+          e.stopImmediatePropagation();
           const card = btn.closest('.admin-house-card');
           const id = card?.getAttribute('data-id');
           if (id) this.adminApproveHouse(id);
@@ -2593,7 +2607,7 @@ class HalloweenApp {
       container.querySelectorAll('.btn-action-view').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          e.stopPropagation();
+          e.stopImmediatePropagation();
           const card = btn.closest('.admin-house-card');
           const id = card?.getAttribute('data-id');
           if (id) this.adminFocusHouse(id);
@@ -2603,7 +2617,7 @@ class HalloweenApp {
       container.querySelectorAll('.btn-action-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          e.stopPropagation();
+          e.stopImmediatePropagation();
           const card = btn.closest('.admin-house-card');
           const id = card?.getAttribute('data-id');
           if (id) this.openEditHouseModal(id);
@@ -2613,7 +2627,7 @@ class HalloweenApp {
       container.querySelectorAll('.btn-action-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.preventDefault();
-          e.stopPropagation();
+          e.stopImmediatePropagation();
           const card = btn.closest('.admin-house-card');
           const id = card?.getAttribute('data-id');
           if (id) {
@@ -2869,24 +2883,30 @@ class HalloweenApp {
     const preview = document.getElementById('editHousePhotoPreview');
     if (preview) preview.src = initialImg;
 
+    const previewBg = document.getElementById('editPhotoPreviewBg');
+    if (previewBg) previewBg.style.backgroundImage = `url('${initialImg}')`;
+
+    const previewCard = document.getElementById('editPhotoPreviewCard');
+    if (previewCard) {
+      previewCard.onclick = () => this.openPhotoPreviewModal(this.getEditCurrentPhoto(), house.title);
+    }
+
     const sourceLabel = document.getElementById('editPhotoSourceLabel');
     if (sourceLabel) sourceLabel.textContent = 'Portada asignada';
 
-    // Mostrar galería de presets por defecto para elegir inmediatamente
+    // Mantener la galería de presets colapsada por defecto para no saturar la vista verticalmente
     const presetsContainer = document.getElementById('editPresetPhotosContainer');
-    if (presetsContainer) presetsContainer.style.display = 'block';
+    if (presetsContainer) presetsContainer.style.display = 'none';
 
     const toggleText = document.getElementById('btnToggleEditPresetsText');
-    if (toggleText) toggleText.textContent = '30 Fotos Halloween ▲';
+    if (toggleText) toggleText.textContent = '30 Fotos Halloween ▼';
 
     const customInp = document.getElementById('editCustomUrlInput');
     if (customInp) customInp.value = typeof initialImg === 'string' && initialImg.startsWith('http') ? initialImg : '';
 
-    const coordsDisplay = `${safeCoords[0].toFixed(4)}, ${safeCoords[1].toFixed(4)}`;
-    const coordsEl = document.getElementById('editCoordsText');
-    if (coordsEl) {
-      coordsEl.innerHTML = `📍 Coordenadas: <b>${coordsDisplay}</b> (Toca el mapa para cambiarlas)`;
-    }
+    // Inicializar mini-mapa interactivo y controles de ubicación de la casa
+    this.setEditCoordinates(safeCoords[0], safeCoords[1]);
+    this.initEditMiniMap(safeCoords);
 
     // Renderizar iconos y presets
     this.renderAdminEditIconsGrid(house.id, this.adminSelectedIconId);
@@ -2900,7 +2920,207 @@ class HalloweenApp {
       editModal.scrollTop = 0;
       const sheet = editModal.querySelector('.modal-sheet');
       if (sheet) sheet.scrollTop = 0;
+      setTimeout(() => {
+        if (this.editMiniMap) this.editMiniMap.invalidateSize();
+      }, 200);
     }
+  }
+
+  // Mini-mapa interactivo para cambiar la ubicación de la casa en el panel admin
+  initEditMiniMap(coords) {
+    const container = document.getElementById('editMiniMap');
+    if (!container) return;
+
+    if (!this.editMiniMap) {
+      this.editMiniMap = L.map('editMiniMap', {
+        center: coords,
+        zoom: 16,
+        zoomControl: false,
+        attributionControl: false
+      });
+
+      L.tileLayer('https://{s}.google.com/vt/lyrs=m&apistyle=s.t:2%7Cp.v:off&x={x}&y={y}&z={z}', {
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        maxZoom: 20,
+        attribution: ''
+      }).addTo(this.editMiniMap);
+
+      const miniPinIcon = L.divIcon({
+        html: `<div class="pin-bubble-glow pin-cat-caramelos" style="width:34px;height:34px;animation: pulseGps 1.8s infinite;"><span class="pin-inner-emoji" id="editMiniMarkerEmoji">📍</span></div>`,
+        className: 'spooky-pin-wrap',
+        iconSize: [34, 34],
+        iconAnchor: [17, 30]
+      });
+
+      this.editMiniMarker = L.marker(coords, {
+        icon: miniPinIcon,
+        draggable: true
+      }).addTo(this.editMiniMap);
+
+      this.editMiniMarker.on('dragend', (e) => {
+        const pos = e.target.getLatLng();
+        this.setEditCoordinates(pos.lat, pos.lng);
+      });
+
+      this.editMiniMap.on('click', (e) => {
+        this.setEditCoordinates(e.latlng.lat, e.latlng.lng);
+      });
+    } else {
+      this.editMiniMarker.setLatLng(coords);
+      this.editMiniMap.setView(coords, 16);
+    }
+
+    setTimeout(() => {
+      if (this.editMiniMap) this.editMiniMap.invalidateSize();
+    }, 180);
+  }
+
+  // Asigna las coordenadas temporales y sincroniza badge, inputs y mini-mapa
+  setEditCoordinates(lat, lng) {
+    const numLat = parseFloat(lat);
+    const numLng = parseFloat(lng);
+    if (isNaN(numLat) || isNaN(numLng)) return;
+
+    this.tempCoords = [numLat, numLng];
+
+    if (this.editMiniMarker) {
+      this.editMiniMarker.setLatLng([numLat, numLng]);
+    }
+
+    const badge = document.getElementById('editCoordsBadge');
+    if (badge) {
+      badge.textContent = `${numLat.toFixed(5)}, ${numLng.toFixed(5)}`;
+    }
+
+    const latInp = document.getElementById('editLatInput');
+    const lngInp = document.getElementById('editLngInput');
+    if (latInp && document.activeElement !== latInp) latInp.value = numLat.toFixed(6);
+    if (lngInp && document.activeElement !== lngInp) lngInp.value = numLng.toFixed(6);
+  }
+
+  // Permite al admin elegir la ubicación directamente en el mapa grande de Daganzo
+  startPickingEditOnMainMap() {
+    this.isPickingEditCoords = true;
+
+    // Ocultar temporalmente los modales para dejar libre el mapa interactivo
+    const editModal = document.getElementById('modalEditHouse');
+    if (editModal) editModal.classList.remove('open');
+    const adminModal = document.getElementById('modalAdmin');
+    if (adminModal) adminModal.classList.remove('open');
+
+    // Cambiar a la vista del mapa
+    this.switchView('map');
+
+    // Centrar el mapa en las coordenadas actuales de la casa
+    if (this.tempCoords && this.tempCoords.length === 2) {
+      this.map.setView(this.tempCoords, 17, { animate: true });
+    }
+
+    // Mostrar banner flotante en la parte superior
+    const banner = document.getElementById('floatingPickLocationBanner');
+    if (banner) banner.style.display = 'flex';
+
+    this.showToast('🗺️ Toca en el mapa de Daganzo para posicionar esta casa.');
+  }
+
+  // Cancela la selección en mapa grande y vuelve al modal de edición
+  cancelPickingEditOnMainMap() {
+    this.isPickingEditCoords = false;
+    const banner = document.getElementById('floatingPickLocationBanner');
+    if (banner) banner.style.display = 'none';
+
+    // Reabrir modal de edición
+    const editModal = document.getElementById('modalEditHouse');
+    if (editModal) {
+      editModal.classList.add('open');
+      setTimeout(() => {
+        if (this.editMiniMap) this.editMiniMap.invalidateSize();
+      }, 150);
+    }
+  }
+
+  // Usar GPS actual del administrador para la casa en edición
+  handleEditGps() {
+    if (!navigator.geolocation) {
+      this.showToast('La geolocalización no está disponible en este dispositivo.');
+      return;
+    }
+    this.showToast('Obteniendo posición GPS... 📡');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        this.setEditCoordinates(lat, lng);
+        if (this.editMiniMap) {
+          this.editMiniMap.setView([lat, lng], 17);
+        }
+        this.showToast('¡Posición GPS obtenida y fijada! 📡✔️');
+      },
+      (err) => {
+        console.warn('GPS error in edit modal:', err);
+        this.showToast('No se pudo obtener el GPS. Puedes pinchar en el mapa.');
+      },
+      { enableHighAccuracy: true, timeout: 6000 }
+    );
+  }
+
+  // Buscar coordenadas según el texto introducido en el campo dirección
+  async handleEditGeocodeAddress() {
+    const streetInput = document.getElementById('editStreet');
+    const street = streetInput ? streetInput.value.trim() : '';
+    if (!street) {
+      this.showToast('Escribe primero el nombre de la calle en el campo de dirección.');
+      return;
+    }
+
+    this.showToast(`Buscando "${street}" en Daganzo... 🔍`);
+    try {
+      const fullAddress = `${street}, Daganzo de Arriba, Madrid, España`;
+      const url = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?singleLine=${encodeURIComponent(fullAddress)}&location=-3.4575,40.5447&distance=6000&maxLocations=1&f=json`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data && data.candidates && data.candidates.length > 0) {
+        const loc = data.candidates[0].location;
+        this.setEditCoordinates(loc.y, loc.x);
+        if (this.editMiniMap) {
+          this.editMiniMap.setView([loc.y, loc.x], 17);
+        }
+        this.showToast(`¡Ubicación encontrada para "${street}"! 📍✔️`);
+      } else {
+        this.showToast('No se encontró la dirección exacta. Puedes mover el pin manualmente en el mapa.');
+      }
+    } catch (e) {
+      console.error('Error geocoding edit address:', e);
+      this.showToast('No se pudo consultar el servicio de direcciones.');
+    }
+  }
+
+  // Ajuste manual de latitud y longitud por inputs numéricos
+  handleManualCoordsInput() {
+    const latInp = parseFloat(document.getElementById('editLatInput')?.value);
+    const lngInp = parseFloat(document.getElementById('editLngInput')?.value);
+    if (!isNaN(latInp) && !isNaN(lngInp)) {
+      this.tempCoords = [latInp, lngInp];
+      if (this.editMiniMarker) {
+        this.editMiniMarker.setLatLng([latInp, lngInp]);
+      }
+      if (this.editMiniMap) {
+        this.editMiniMap.setView([latInp, lngInp], this.editMiniMap.getZoom());
+      }
+      const badge = document.getElementById('editCoordsBadge');
+      if (badge) {
+        badge.textContent = `${latInp.toFixed(5)}, ${lngInp.toFixed(5)}`;
+      }
+    }
+  }
+
+  // Retorna la URL de la portada actualmente activa en edición
+  getEditCurrentPhoto() {
+    const f = document.getElementById('formEditHouse');
+    const imgVal = f?.elements['editImage']?.value?.trim();
+    if (imgVal) return normalizeHouseImage(imgVal);
+    const preview = document.getElementById('editHousePhotoPreview');
+    return preview ? preview.src : 'assets/preset_photos/h1_mansion_calabazas.jpg';
   }
 
   // Actualiza el indicador visual del icono seleccionado en edición
@@ -2977,6 +3197,9 @@ class HalloweenApp {
     const preview = document.getElementById('editHousePhotoPreview');
     if (preview) preview.src = url;
 
+    const previewBg = document.getElementById('editPhotoPreviewBg');
+    if (previewBg) previewBg.style.backgroundImage = `url('${url}')`;
+
     const sourceLabel = document.getElementById('editPhotoSourceLabel');
     if (sourceLabel) sourceLabel.textContent = title || 'Ilustración oficial';
 
@@ -3035,6 +3258,9 @@ class HalloweenApp {
         const preview = document.getElementById('editHousePhotoPreview');
         if (preview) preview.src = compressedDataUrl;
 
+        const previewBg = document.getElementById('editPhotoPreviewBg');
+        if (previewBg) previewBg.style.backgroundImage = `url('${compressedDataUrl}')`;
+
         const sourceLabel = document.getElementById('editPhotoSourceLabel');
         if (sourceLabel) sourceLabel.textContent = `Foto subida: ${file.name}`;
 
@@ -3092,6 +3318,13 @@ class HalloweenApp {
     const f = document.getElementById('formEditHouse');
     if (!f) return;
 
+    // Asegurar que si el usuario introdujo coordenadas manuales en los inputs se tomen en cuenta
+    const latInp = parseFloat(document.getElementById('editLatInput')?.value);
+    const lngInp = parseFloat(document.getElementById('editLngInput')?.value);
+    if (!isNaN(latInp) && !isNaN(lngInp)) {
+      this.tempCoords = [latInp, lngInp];
+    }
+
     const chosenIconItem = HALLOWEEN_50_ICONS.find(i => i.id === this.adminSelectedIconId) || HALLOWEEN_50_ICONS[0];
 
     const updated = {
@@ -3112,7 +3345,12 @@ class HalloweenApp {
     this.updateGeneralCounters();
     this.renderAdminView();
     this.closeModal('modalEditHouse');
-    this.showToast('Casa actualizada correctamente ✔️');
+    this.showToast('Casa y ubicación actualizadas correctamente ✔️');
+
+    // Reabrir panel de admin si estaba logueado para continuar gestionando
+    if (this.isAdminLoggedIn) {
+      this.openModal('modalAdmin');
+    }
 
     if (this.selectedHouse?.id === this.editingHouseId) {
       this.openHouseCard(this.store.getById(this.editingHouseId));
@@ -3182,30 +3420,39 @@ class HalloweenApp {
       return;
     }
 
+    // Si viene del botón "Mover en mapa grande" de la Edición de Casa
+    if (this.isPickingEditCoords) {
+      this.isPickingEditCoords = false;
+      const banner = document.getElementById('floatingPickLocationBanner');
+      if (banner) banner.style.display = 'none';
+
+      this.setEditCoordinates(lat, lng);
+      if (this.editMiniMap) {
+        this.editMiniMap.setView([lat, lng], 17);
+      }
+
+      // Reabrir modal de edición
+      const editModal = document.getElementById('modalEditHouse');
+      if (editModal) {
+        editModal.classList.add('open');
+        setTimeout(() => {
+          if (this.editMiniMap) this.editMiniMap.invalidateSize();
+        }, 180);
+      }
+
+      this.showToast('¡Ubicación fijada en el mapa! 📍✔️');
+      return;
+    }
+
     const isEditing = document.getElementById('modalEditHouse')?.classList.contains('open');
-    if (!isEditing) return;
-
-    this.tempCoords = [lat, lng];
-
-    if (this.tempPickerMarker) {
-      this.map.removeLayer(this.tempPickerMarker);
+    if (isEditing) {
+      this.setEditCoordinates(lat, lng);
+      if (this.editMiniMap) {
+        this.editMiniMap.setView([lat, lng], 17);
+      }
+      this.showToast('¡Ubicación fijada en el mapa! 📍');
+      return;
     }
-
-    const tempIcon = L.divIcon({
-      html: `<div class="pin-bubble-glow pin-cat-caramelos" style="animation: pulseGps 1.5s infinite;"><span class="pin-inner-emoji">📍</span></div>`,
-      className: 'spooky-pin-wrap',
-      iconSize: [38, 38],
-      iconAnchor: [19, 34]
-    });
-
-    this.tempPickerMarker = L.marker([lat, lng], { icon: tempIcon }).addTo(this.map);
-
-    const textEl = document.getElementById('editCoordsText');
-    if (textEl) {
-      textEl.innerHTML = `📍 Ubicación fijada: <b>${lat.toFixed(4)}, ${lng.toFixed(4)}</b> ✔️`;
-    }
-
-    this.showToast('¡Ubicación fijada en el mapa!');
   }
 
   // ========================================================
@@ -3278,11 +3525,27 @@ class HalloweenApp {
     }
 
     if (selectBtn) {
-      selectBtn.onclick = () => {
-        this.selectPresetPhoto(null, url);
-        modal.style.display = 'none';
-        this.showToast(`✓ Imagen seleccionada: ${title}`);
-      };
+      const isWizard = document.getElementById('modalApunta')?.classList.contains('open');
+      const isEditing = document.getElementById('modalEditHouse')?.classList.contains('open');
+      if (isWizard) {
+        selectBtn.style.display = 'inline-block';
+        selectBtn.textContent = '✓ Elegir esta imagen para mi fachada';
+        selectBtn.onclick = () => {
+          this.selectPresetPhoto(null, url);
+          modal.style.display = 'none';
+          this.showToast(`✓ Imagen seleccionada: ${title}`);
+        };
+      } else if (isEditing) {
+        selectBtn.style.display = 'inline-block';
+        selectBtn.textContent = '✓ Asignar como portada de la casa';
+        selectBtn.onclick = () => {
+          this.selectEditPresetPhoto(url, title);
+          modal.style.display = 'none';
+          this.showToast(`✓ Portada asignada: ${title}`);
+        };
+      } else {
+        selectBtn.style.display = 'none';
+      }
     }
 
     if (closeBtn) {
@@ -3729,6 +3992,10 @@ class HalloweenApp {
   closeModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.remove('open');
+    if (id === 'modalEditHouse' && this.isAdminLoggedIn && !this.isPickingEditCoords) {
+      const adminModal = document.getElementById('modalAdmin');
+      if (adminModal) adminModal.classList.add('open');
+    }
   }
 
   showToast(msg) {
@@ -4160,6 +4427,31 @@ class HalloweenApp {
       }
     });
 
+    // Herramientas de ubicación para editar casas en panel admin
+    document.getElementById('btnEditPickOnMainMap')?.addEventListener('click', () => {
+      this.startPickingEditOnMainMap();
+    });
+
+    document.getElementById('btnCancelPickLocation')?.addEventListener('click', () => {
+      this.cancelPickingEditOnMainMap();
+    });
+
+    document.getElementById('btnEditGps')?.addEventListener('click', () => {
+      this.handleEditGps();
+    });
+
+    document.getElementById('btnEditGeocodeAddress')?.addEventListener('click', () => {
+      this.handleEditGeocodeAddress();
+    });
+
+    document.getElementById('editLatInput')?.addEventListener('input', () => {
+      this.handleManualCoordsInput();
+    });
+
+    document.getElementById('editLngInput')?.addEventListener('input', () => {
+      this.handleManualCoordsInput();
+    });
+
     // Listeners del editor de imagen de portada en modal de edición
     document.getElementById('editHousePhotoFileInput')?.addEventListener('change', (e) => {
       this.handleEditPhotoUpload(e);
@@ -4172,6 +4464,8 @@ class HalloweenApp {
         if (f && f.elements['editImage']) f.elements['editImage'].value = url;
         const preview = document.getElementById('editHousePhotoPreview');
         if (preview) preview.src = url;
+        const previewBg = document.getElementById('editPhotoPreviewBg');
+        if (previewBg) previewBg.style.backgroundImage = `url('${url}')`;
         const label = document.getElementById('editPhotoSourceLabel');
         if (label) label.textContent = 'Enlace web personalizado';
       }
