@@ -1493,7 +1493,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  cursor: pointer;
+  cursor: zoom-in;
 }
 
 .flyout-photo-bg {
@@ -1519,26 +1519,43 @@ body {
   display: block;
   margin: 0 auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
 }
 
-.flyout-photo-hint {
+.flyout-photo:hover img {
+  transform: scale(1.02);
+}
+
+.flyout-photo-zoom-pill {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffedd5;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 4px 9px;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(15, 11, 24, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid var(--neon-pumpkin);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 12px;
   border-radius: var(--radius-full);
-  z-index: 5;
-  pointer-events: none;
-  display: flex;
+  z-index: 10;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 107, 0, 0.4);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.flyout-photo-zoom-pill:hover,
+.flyout-photo-zoom-pill:active {
+  background: var(--neon-pumpkin);
+  color: #000;
+  transform: scale(1.06);
+  box-shadow: 0 6px 20px rgba(255, 107, 0, 0.75);
 }
 
 .btn-flyout-close {
@@ -4030,7 +4047,8 @@ body {
   }
 
   .flyout-photo {
-    height: 115px;
+    height: 200px;
+    max-height: 215px;
     flex-shrink: 0;
   }
 
@@ -4323,6 +4341,212 @@ body {
 .btn-cta-monumental.btn-locked:hover {
   transform: none !important;
   box-shadow: none !important;
+}
+
+/* ========================================================
+   LIGHTBOX MODAL MODERNO CON ZOOM & PANNING INTERACTIVO
+   ======================================================== */
+.photo-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000000 !important;
+  background: rgba(4, 2, 10, 0.95);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  animation: fadeInStep 0.22s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.photo-lightbox-container {
+  width: 100%;
+  max-width: 1080px;
+  height: 94vh;
+  height: 94dvh;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 11, 25, 0.96);
+  border: 1.5px solid var(--neon-pumpkin);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9), 0 0 45px var(--neon-pumpkin-glow);
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: rgba(8, 5, 15, 0.92);
+  border-bottom: 1px solid rgba(255, 107, 0, 0.3);
+  gap: 12px;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.photo-lightbox-title-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.photo-lightbox-title {
+  margin: 0;
+  color: #ffaa55;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.photo-lightbox-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.photo-tool-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  height: 38px;
+  min-width: 38px;
+  padding: 0 10px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.photo-tool-btn:hover {
+  background: rgba(255, 107, 0, 0.25);
+  border-color: var(--neon-pumpkin);
+  color: #ffedd5;
+  transform: translateY(-1px);
+}
+
+.photo-btn-close {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  font-size: 1.5rem;
+  padding: 0 12px;
+}
+
+.photo-btn-close:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.photo-lightbox-stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: radial-gradient(circle at center, #17112a 0%, #06040a 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+}
+
+.photo-lightbox-stage.is-panning {
+  cursor: grabbing;
+}
+
+.photo-zoom-transform-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  will-change: transform;
+  transition: transform 0.12s ease-out;
+}
+
+.photo-zoom-transform-wrap img {
+  max-width: 96%;
+  max-height: 96%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
+
+.photo-lightbox-floating-tip {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  font-size: 0.74rem;
+  padding: 5px 14px;
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 15;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.photo-lightbox-footer {
+  padding: 12px 18px;
+  background: rgba(8, 5, 15, 0.95);
+  border-top: 1px solid rgba(255, 107, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+@media (max-width: 480px) {
+  .photo-lightbox-container {
+    height: 96vh;
+    height: 96dvh;
+    border-radius: var(--radius-xl);
+  }
+  .photo-lightbox-header {
+    padding: 10px 12px;
+  }
+  .photo-lightbox-title {
+    font-size: 0.95rem;
+  }
+  .photo-tool-btn {
+    height: 34px;
+    min-width: 34px;
+    font-size: 0.82rem;
+    padding: 0 8px;
+  }
+  .photo-lightbox-floating-tip {
+    font-size: 0.68rem;
+    max-width: 90%;
+    text-align: center;
+    white-space: normal;
+  }
 }
 
 
