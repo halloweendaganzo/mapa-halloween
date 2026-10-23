@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   
   <!-- Estilos Temáticos de Halloween con Creepster y Neón -->
-  <link rel="stylesheet" href="styles.css?v=125">
+  <link rel="stylesheet" href="styles.css?v=130">
 </head>
 <body>
 
@@ -355,11 +355,13 @@
       <!-- TARJETA FLOTANTE CENTRADA DE DETALLE DE CASA -->
       <div id="houseDetailBackdrop" class="house-detail-backdrop"></div>
       <div id="houseDetailCard" class="house-detail-flyout">
-        <div class="flyout-photo" id="flyoutPhotoWrap" title="Toca para ver la foto completa en grande">
+        <div class="flyout-photo" id="flyoutPhotoWrap" title="Toca para ampliar la foto a pantalla completa">
           <div id="flyoutPhotoBg" class="flyout-photo-bg"></div>
           <img id="cardImg" src="" alt="Decoración Halloween">
           <button id="btnCloseCard" class="btn-flyout-close" title="Cerrar">&times;</button>
-          <div class="flyout-photo-hint">🔍 Foto completa</div>
+          <button type="button" id="btnZoomFlyoutPhoto" class="flyout-photo-zoom-pill" title="Ampliar foto a pantalla completa">
+            <span>🔍</span> <b>Ampliar foto</b>
+          </button>
         </div>
 
         <div class="flyout-body">
@@ -1324,20 +1326,46 @@
     </div>
   </div>
 
-  <!-- Modal Vista Previa de Foto en Grande (Lightbox) -->
-  <div id="modalPhotoPreview" class="modal-backdrop" style="display: none; z-index: 10500;">
-    <div class="modal-sheet photo-preview-modal-sheet" style="max-width: 620px; padding: 16px; text-align: center; background: rgba(13, 11, 24, 0.98); border: 2px solid var(--neon-pumpkin);">
-      <div class="modal-top" style="margin-bottom: 12px; justify-content: space-between;">
-        <h3 id="photoPreviewTitle" style="color: #ffaa55; font-size: 1.15rem; margin: 0; display: flex; align-items: center; gap: 8px;">
-          <span>🎃</span> Vista previa en grande
-        </h3>
-        <button id="btnClosePhotoPreview" class="btn-modal-close" style="width: 36px; height: 36px; font-size: 1.5rem;">&times;</button>
+  <!-- Modal Vista Previa y Zoom de Foto en Grande (Lightbox Interactivo) -->
+  <div id="modalPhotoPreview" class="photo-lightbox-backdrop" style="display: none;">
+    <div class="photo-lightbox-container">
+      <!-- Barra superior con título y controles de zoom -->
+      <div class="photo-lightbox-header">
+        <div class="photo-lightbox-title-box">
+          <span style="font-size: 1.25rem;">🎃</span>
+          <h3 id="photoPreviewTitle" class="photo-lightbox-title">Decoración Halloween</h3>
+        </div>
+
+        <div class="photo-lightbox-tools">
+          <button type="button" id="btnPhotoZoomIn" class="photo-tool-btn" title="Acercar (Zoom In)">
+            <span>➕</span>
+          </button>
+          <button type="button" id="btnPhotoZoomOut" class="photo-tool-btn" title="Alejar (Zoom Out)">
+            <span>➖</span>
+          </button>
+          <button type="button" id="btnPhotoZoomReset" class="photo-tool-btn" title="Restablecer tamaño (100%)">
+            <span>🔄</span> <small id="photoZoomLevelText">100%</small>
+          </button>
+          <a id="btnPhotoOpenOriginal" href="#" target="_blank" rel="noopener noreferrer" class="photo-tool-btn" title="Abrir imagen completa en pestaña nueva">
+            <span>🔗</span>
+          </a>
+          <button id="btnClosePhotoPreview" type="button" class="photo-tool-btn photo-btn-close" title="Cerrar vista">&times;</button>
+        </div>
       </div>
-      <div style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 107, 0, 0.3); background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-        <img id="photoPreviewImgLarge" src="" alt="Ilustración Halloween en grande" style="width: 100%; max-height: 55vh; object-fit: contain; display: block; margin: 0 auto;">
+
+      <!-- Área de visualización interactiva de la imagen con zoom y arrastre -->
+      <div class="photo-lightbox-stage" id="photoLightboxStage">
+        <div id="photoZoomTransformWrap" class="photo-zoom-transform-wrap">
+          <img id="photoPreviewImgLarge" src="" alt="Decoración Halloween en alta resolución" draggable="false">
+        </div>
+        <div class="photo-lightbox-floating-tip">
+          <span>💡 Doble toque o rueda para acercar • Arrastra para mover</span>
+        </div>
       </div>
-      <div style="margin-top: 14px; display: flex; gap: 10px; justify-content: center;">
-        <button id="btnSelectFromPhotoPreview" type="button" class="hud-btn btn-cta" style="flex: 1; max-width: 280px; padding: 12px; font-size: 0.95rem; font-weight: 700; background: linear-gradient(135deg, #ff6b00, #ff8800);">
+
+      <!-- Pie de acciones condicionales (ej. elegir en wizard o asignar en admin) -->
+      <div id="photoLightboxFooter" class="photo-lightbox-footer" style="display: none;">
+        <button id="btnSelectFromPhotoPreview" type="button" class="hud-btn btn-cta" style="max-width: 320px; padding: 12px 20px; font-size: 0.95rem; font-weight: 700; background: linear-gradient(135deg, #ff6b00, #ff8800);">
           ✓ Elegir esta imagen para mi fachada
         </button>
       </div>
@@ -1359,6 +1387,6 @@
 
   <!-- Scripts de la Aplicación -->
   <script src="sound.js?v=114"></script>
-  <script src="app.js?v=125"></script>
+  <script src="app.js?v=130"></script>
 </body>
 </html>
