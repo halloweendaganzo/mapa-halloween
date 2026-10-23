@@ -801,11 +801,23 @@ class HalloweenApp {
     if (photoBg) {
       photoBg.style.backgroundImage = `url('${normalizedImg}')`;
     }
+    const zoomPill = document.getElementById('btnZoomFlyoutPhoto');
+    const openZoom = (e) => {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      this.openPhotoPreviewModal(normalizedImg, house.title);
+    };
+
     if (photoWrap) {
       photoWrap.onclick = (e) => {
         if (e.target && e.target.id === 'btnCloseCard') return;
-        this.openPhotoPreviewModal(normalizedImg, house.title);
+        openZoom(e);
       };
+    }
+    if (zoomPill) {
+      zoomPill.onclick = openZoom;
     }
     document.getElementById('cardTitle').innerHTML = `<span style="font-size:1.3rem;">${iconEmoji}</span> ${house.title}`;
     document.getElementById('cardStreet').textContent = `📍 ${house.street}`;
@@ -3548,53 +3560,219 @@ class HalloweenApp {
     if (previewImg) previewImg.src = validUrl;
   }
 
-  openPhotoPreviewModal(url, title = 'Ilustración de Halloween') {
-    const modal = document.getElementById('modalPhotoPreview');
-    const imgLarge = document.getElementById('photoPreviewImgLarge');
-    const titleEl = document.getElementById('photoPreviewTitle');
-    const selectBtn = document.getElementById('btnSelectFromPhotoPreview');
+  initPhotoPreviewZoom() {
+    if (this._photoZoomInitialized) return;
+    this._photoZoomInitialized = true;
+
+    this.photoZoomState = {
+      scale: 1,
+      minScale: 1,
+      maxScale: 4,
+      panX: 0,
+      panY: 0,
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      lastTapTime: 0
+    };
+
+    const stage = document.getElementById('photoLightboxStage');
+    const wrap = document.getElementById('photoZoomTransformWrap');
+    const zoomInBtn = document.getElementById('btnPhotoZoomIn');
+    const zoomOutBtn = document.getElementById('btnPhotoZoomOut');
+    const zoomResetBtn = document.getElementById('btnPhotoZoomReset');
     const closeBtn = document.getElementById('btnClosePhotoPreview');
+    const modal = document.getElementById('modalPhotoPreview');
 
-    if (!modal || !imgLarge) return;
+    const updateTransform = () => {
+      if (!wrap) return;
+      const { scale, panX, panY } = this.photoZoomState;
+      wrap.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      const text = document.getElementById('photoZoomLevelText');
+      if (text) text.textContent = `${Math.round(scale * 100)}%`;
+      if (stage) {
+        stage.classList.toggle('is-panning', this.photoZoomState.isDragging);
+        stage.style.cursor = scale > 1 ? (this.photoZoomState.isDragging ? 'grabbing' : 'grab') : 'zoom-in';
+      }
+    };
 
-    imgLarge.src = url;
-    if (titleEl) {
-      titleEl.innerHTML = `<span>🎃</span> ${title}`;
+    this.setPhotoZoom = (newScale) => {
+      const s = this.photoZoomState;
+      s.scale = Math.min(s.maxScale, Math.max(s.minScale, newScale));
+      if (s.scale === 1) {
+        s.panX = 0;
+        s.panY = 0;
+      }
+      updateTransform();
+    };
+
+    if (zoomInBtn) {
+      zoomInBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.setPhotoZoom(this.photoZoomState.scale + 0.5);
+      };
     }
 
-    if (selectBtn) {
-      const isWizard = document.getElementById('modalApunta')?.classList.contains('open');
-      const isEditing = document.getElementById('modalEditHouse')?.classList.contains('open');
-      if (isWizard) {
-        selectBtn.style.display = 'inline-block';
-        selectBtn.textContent = '✓ Elegir esta imagen para mi fachada';
-        selectBtn.onclick = () => {
-          this.selectPresetPhoto(null, url);
-          modal.style.display = 'none';
-          this.showToast(`✓ Imagen seleccionada: ${title}`);
-        };
-      } else if (isEditing) {
-        selectBtn.style.display = 'inline-block';
-        selectBtn.textContent = '✓ Asignar como portada de la casa';
-        selectBtn.onclick = () => {
-          this.selectEditPresetPhoto(url, title);
-          modal.style.display = 'none';
-          this.showToast(`✓ Portada asignada: ${title}`);
-        };
-      } else {
-        selectBtn.style.display = 'none';
-      }
+    if (zoomOutBtn) {
+      zoomOutBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.setPhotoZoom(this.photoZoomState.scale - 0.5);
+      };
+    }
+
+    if (zoomResetBtn) {
+      zoomResetBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.setPhotoZoom(1);
+      };
     }
 
     if (closeBtn) {
       closeBtn.onclick = () => {
-        modal.style.display = 'none';
+        this.closePhotoPreviewModal();
       };
     }
 
-    modal.onclick = (e) => {
-      if (e.target === modal) modal.style.display = 'none';
-    };
+    if (modal) {
+      modal.onclick = (e) => {
+        if (e.target === modal) this.closePhotoPreviewModal();
+      };
+    }
+
+    // Zoom con rueda de ratón
+    if (stage) {
+      stage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.35 : -0.35;
+        this.setPhotoZoom(this.photoZoomState.scale + delta);
+      }, { passive: false });
+
+      // Doble toque / doble clic para alternar ampliación instantánea
+      stage.addEventListener('pointerdown', (e) => {
+        const s = this.photoZoomState;
+        const now = Date.now();
+        if (now - s.lastTapTime < 320) {
+          e.preventDefault();
+          if (s.scale > 1.1) {
+            this.setPhotoZoom(1);
+          } else {
+            this.setPhotoZoom(2.2);
+          }
+          s.lastTapTime = 0;
+          return;
+        }
+        s.lastTapTime = now;
+
+        if (s.scale > 1) {
+          s.isDragging = true;
+          s.startX = e.clientX - s.panX;
+          s.startY = e.clientY - s.panY;
+          if (stage.setPointerCapture) {
+            try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+          }
+          updateTransform();
+        }
+      });
+
+      stage.addEventListener('pointermove', (e) => {
+        const s = this.photoZoomState;
+        if (!s.isDragging || s.scale <= 1) return;
+        e.preventDefault();
+        s.panX = e.clientX - s.startX;
+        s.panY = e.clientY - s.startY;
+        updateTransform();
+      });
+
+      const stopDrag = () => {
+        const s = this.photoZoomState;
+        if (s.isDragging) {
+          s.isDragging = false;
+          updateTransform();
+        }
+      };
+
+      stage.addEventListener('pointerup', stopDrag);
+      stage.addEventListener('pointercancel', stopDrag);
+    }
+
+    // Cerrar con Escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && modal.style.display !== 'none') {
+        this.closePhotoPreviewModal();
+      }
+    });
+  }
+
+  closePhotoPreviewModal() {
+    const modal = document.getElementById('modalPhotoPreview');
+    if (modal) modal.style.display = 'none';
+    if (this.photoZoomState) {
+      this.photoZoomState.scale = 1;
+      this.photoZoomState.panX = 0;
+      this.photoZoomState.panY = 0;
+      const wrap = document.getElementById('photoZoomTransformWrap');
+      if (wrap) wrap.style.transform = 'translate(0px, 0px) scale(1)';
+      const text = document.getElementById('photoZoomLevelText');
+      if (text) text.textContent = '100%';
+    }
+  }
+
+  openPhotoPreviewModal(url, title = 'Ilustración de Halloween') {
+    this.initPhotoPreviewZoom();
+    const modal = document.getElementById('modalPhotoPreview');
+    const imgLarge = document.getElementById('photoPreviewImgLarge');
+    const titleEl = document.getElementById('photoPreviewTitle');
+    const linkOriginal = document.getElementById('btnPhotoOpenOriginal');
+    const selectBtn = document.getElementById('btnSelectFromPhotoPreview');
+    const footer = document.getElementById('photoLightboxFooter');
+
+    if (!modal || !imgLarge) return;
+
+    // Resetear zoom inicial
+    if (this.photoZoomState) {
+      this.photoZoomState.scale = 1;
+      this.photoZoomState.panX = 0;
+      this.photoZoomState.panY = 0;
+      const wrap = document.getElementById('photoZoomTransformWrap');
+      if (wrap) wrap.style.transform = 'translate(0px, 0px) scale(1)';
+      const text = document.getElementById('photoZoomLevelText');
+      if (text) text.textContent = '100%';
+    }
+
+    imgLarge.src = url;
+    if (titleEl) {
+      titleEl.textContent = title;
+    }
+    if (linkOriginal) {
+      linkOriginal.href = url;
+    }
+
+    if (selectBtn && footer) {
+      const isWizard = document.getElementById('modalApunta')?.classList.contains('open');
+      const isEditing = document.getElementById('modalEditHouse')?.classList.contains('open');
+      if (isWizard) {
+        footer.style.display = 'flex';
+        selectBtn.style.display = 'inline-block';
+        selectBtn.textContent = '✓ Elegir esta imagen para mi fachada';
+        selectBtn.onclick = () => {
+          this.selectPresetPhoto(null, url);
+          this.closePhotoPreviewModal();
+          this.showToast(`✓ Imagen seleccionada: ${title}`);
+        };
+      } else if (isEditing) {
+        footer.style.display = 'flex';
+        selectBtn.style.display = 'inline-block';
+        selectBtn.textContent = '✓ Asignar como portada de la casa';
+        selectBtn.onclick = () => {
+          this.selectEditPresetPhoto(url, title);
+          this.closePhotoPreviewModal();
+          this.showToast(`✓ Portada asignada: ${title}`);
+        };
+      } else {
+        footer.style.display = 'none';
+        selectBtn.style.display = 'none';
+      }
+    }
 
     modal.style.display = 'flex';
   }
