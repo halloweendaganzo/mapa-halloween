@@ -1893,17 +1893,17 @@ class HalloweenApp {
     if (tabName === 'pending') {
       document.getElementById('adminTabBtnPending')?.classList.add('active');
       const v = document.getElementById('adminViewPending');
-      if (v) v.style.display = 'block';
+      if (v) v.style.display = 'flex';
       this.renderAdminView();
     } else if (tabName === 'users') {
       document.getElementById('adminTabBtnUsers')?.classList.add('active');
       const v = document.getElementById('adminViewUsers');
-      if (v) v.style.display = 'block';
+      if (v) v.style.display = 'flex';
       this.loadAdminUsers();
     } else {
       document.getElementById('adminTabBtnApproved')?.classList.add('active');
       const v = document.getElementById('adminViewApproved');
-      if (v) v.style.display = 'block';
+      if (v) v.style.display = 'flex';
       this.renderAdminView();
     }
   }
@@ -2421,7 +2421,7 @@ class HalloweenApp {
     }
 
     if (loginBox) loginBox.style.display = 'none';
-    if (dashboardBox) dashboardBox.style.display = 'block';
+    if (dashboardBox) dashboardBox.style.display = 'flex';
 
     const pendingHouses = this.store.getPending();
     const approvedHouses = this.store.getApproved();
