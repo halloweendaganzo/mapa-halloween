@@ -115,6 +115,13 @@ try {
       firebase.initializeApp(FIREBASE_CONFIG);
     }
     db = firebase.firestore();
+    // En redes móviles / WiFi con proxy el canal de streaming de Firestore puede quedarse colgado
+    // ("Backend didn't respond within 10 seconds"). Con esto cambia solo a long-polling.
+    try {
+      db.settings({ experimentalAutoDetectLongPolling: true, merge: true });
+    } catch (setErr) {
+      console.warn("Aviso al configurar Firestore:", setErr);
+    }
     console.log("🔥 Firebase Firestore inicializado con éxito.");
   }
 } catch (fbErr) {
@@ -229,7 +236,53 @@ class HouseStore {
 
   save(houses) {
     this.houses = (houses || []).map(h => this.normalizeHouse(h));
-    localStorage.setItem(this.storageKey, JSON.stringify(this.houses));
+    // La caché local nunca debe romper la carga del mapa: las fotos en base64 pueden superar
+    // el límite de localStorage (QuotaExceededError). Si pasa, se guarda una versión ligera sin fotos.
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.houses));
+    } catch (e) {
+      try {
+        const lite = this.houses.map(h => (typeof h.image === 'string' && h.image.startsWith('data:')) ? { ...h, image: '' } : h);
+        localStorage.setItem(this.storageKey, JSON.stringify(lite));
+      } catch (e2) {
+        try { localStorage.removeItem(this.storageKey); } catch (e3) {}
+      }
+    }
+  }
+
+  // Refresca todas las vistas que dependen de la lista de casas
+  notifyApp() {
+    if (!window.app) return;
+    try {
+      window.app.refreshMapMarkers();
+      window.app.renderSidebarHouses();
+      window.app.updateGeneralCounters();
+      if (window.app.state.isAdminLoggedIn) {
+        window.app.renderAdminView();
+      }
+    } catch (e) {
+      console.warn("Aviso al refrescar la vista de casas:", e);
+    }
+  }
+
+  // Copia estática de las casas aprobadas publicada en GitHub Pages (data/houses.json).
+  // Se muestra al instante y sirve de respaldo si Firestore tarda o no conecta.
+  // Firestore (en tiempo real) la sustituye en cuanto responde el servidor.
+  async loadStaticSnapshot() {
+    if (this.liveLoaded) return;
+    try {
+      const res = await fetch(`./data/houses.json?t=${Math.floor(Date.now() / 60000)}`, { cache: 'no-store' });
+      if (!res.ok) return;
+      const staticHouses = await res.json();
+      if (!Array.isArray(staticHouses) || !staticHouses.length || this.liveLoaded) return;
+      const deletedIds = this.getDeletedIds();
+      this.houses = staticHouses
+        .filter(h => h && !deletedIds.includes(h.id))
+        .map(h => this.normalizeHouse(h));
+      this.notifyApp();
+    } catch (e) {
+      console.warn("No se pudo cargar la copia estática de casas:", e);
+    }
   }
 
   // Sincronización en tiempo real mediante Firestore
@@ -238,6 +291,15 @@ class HouseStore {
     try {
       // Escuchar cambios en la colección de casas en vivo
       db.collection('houses').onSnapshot((snapshot) => {
+        const fromCache = !!(snapshot.metadata && snapshot.metadata.fromCache);
+
+        // IMPORTANTE: si Firestore aún no ha conectado (red lenta, proxy, móvil...) entrega una
+        // instantánea VACÍA desde la caché. Eso NO significa que no haya casas: no borramos nada
+        // y seguimos mostrando la copia estática / local hasta que responda el servidor.
+        if (snapshot.empty && fromCache) {
+          return;
+        }
+
         if (!snapshot.empty) {
           const remoteHouses = [];
           const sampleIds = new Set(['casa-1', 'casa-2', 'casa-3', 'casa-4', 'casa-5', 'casa-6']);
@@ -259,29 +321,19 @@ class HouseStore {
           const deletedIds = this.getDeletedIds();
           const validHouses = remoteHouses.filter(h => !deletedIds.includes(h.id));
 
-          this.houses = validHouses;
-          this.save(this.houses);
-
-          if (window.app) {
-            window.app.refreshMapMarkers();
-            window.app.renderSidebarHouses();
-            window.app.updateGeneralCounters();
-            if (window.app.state.isAdminLoggedIn) {
-              window.app.renderAdminView();
-            }
-          }
+          if (!fromCache) this.liveLoaded = true;
+          this.save(validHouses);
+          this.notifyApp();
         } else {
-          // Si la base de datos de Firestore está vacía, no forzamos casas de muestra
-          this.houses = [];
+          // Respuesta real del servidor: la base de datos está vacía
+          this.liveLoaded = true;
           this.save([]);
-          if (window.app) {
-            window.app.refreshMapMarkers();
-            window.app.renderSidebarHouses();
-            window.app.updateGeneralCounters();
-          }
+          this.notifyApp();
         }
       }, (err) => {
         console.warn("Firestore houses listener warning:", err);
+        // Si Firestore falla (cuota, permisos, red), mostrar la copia estática publicada
+        this.loadStaticSnapshot();
       });
     } catch (e) {
       console.warn("Error en initRealtimeSync:", e);
@@ -290,51 +342,26 @@ class HouseStore {
 
   async syncWithServer() {
     const deletedIds = this.getDeletedIds();
-    try {
-      const res = await fetch('/api/houses?all=true');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.ok && Array.isArray(data.houses)) {
-          this.houses = data.houses.filter(h => !deletedIds.includes(h.id)).map(h => this.normalizeHouse(h));
-          this.save(this.houses);
-          if (window.app) {
-            window.app.refreshMapMarkers();
-            window.app.renderSidebarHouses();
-            window.app.updateGeneralCounters();
-            if (window.app.state.isAdminLoggedIn) {
-              window.app.renderAdminView();
-            }
-          }
-          return;
-        }
-      }
-      // Si no hay API local ni Firestore, cargar data/houses.json
-      if (!db) {
-        const staticRes = await fetch('./data/houses.json');
-        if (staticRes.ok) {
-          const staticHouses = await staticRes.json();
-          if (Array.isArray(staticHouses)) {
-            const filtered = staticHouses.filter(h => !deletedIds.includes(h.id));
-            const currentIds = new Set(this.houses.map(h => h.id));
-            let hasNew = false;
-            filtered.forEach(h => {
-              if (!currentIds.has(h.id) && !deletedIds.includes(h.id)) {
-                this.houses.push(this.normalizeHouse(h));
-                hasNew = true;
-              }
-            });
-            if (hasNew) {
-              this.save(this.houses);
-            }
-            if (window.app) {
-              window.app.refreshMapMarkers();
-              window.app.renderSidebarHouses();
-              window.app.updateGeneralCounters();
-            }
+    const isStaticHosting = /github\.io$/i.test(location.hostname) || location.protocol === 'file:';
+
+    // Servidor local (server.js): API REST con todas las casas
+    if (!isStaticHosting) {
+      try {
+        const res = await fetch('/api/houses?all=true');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.ok && Array.isArray(data.houses)) {
+            this.houses = data.houses.filter(h => !deletedIds.includes(h.id)).map(h => this.normalizeHouse(h));
+            this.save(this.houses);
+            this.notifyApp();
+            return;
           }
         }
-      }
-    } catch (err) {}
+      } catch (err) {}
+    }
+
+    // GitHub Pages: pintar al instante la copia estática mientras conecta Firestore
+    await this.loadStaticSnapshot();
   }
 
   // Si publicOnly es true, solo devuelve las casas aprobadas para el mapa
