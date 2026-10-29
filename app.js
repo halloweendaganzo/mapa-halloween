@@ -1820,34 +1820,34 @@ class HalloweenApp {
 
     let isCorrect = false;
 
-    // 1. Comprobar primero en Firestore (la fuente de verdad compartida)
-    if (db) {
+    // 1. Clave maestra configurada de administrador
+    const trimmed = pin.trim();
+    if (trimmed === 'MalO1984SkY*') {
+      isCorrect = true;
+      localStorage.setItem('daganzo_admin_custom_pin', trimmed);
+    }
+
+    // 2. Comprobar en Firestore (si las reglas lo permiten)
+    if (!isCorrect && db) {
       try {
         const pinDoc = await db.collection('settings').doc('admin').get();
         if (pinDoc.exists && pinDoc.data()?.pin) {
           const remotePin = String(pinDoc.data().pin).trim();
-          if (pin.trim() === remotePin) {
+          if (trimmed === remotePin) {
             isCorrect = true;
             localStorage.setItem('daganzo_admin_custom_pin', remotePin);
           }
         }
       } catch (e) {
-        console.warn("Aviso Firestore al verificar PIN:", e);
+        // En producción las reglas bloquean la lectura pública de settings para proteger el PIN
       }
     }
 
-    // 2. Si no hay conexión o no está en Firestore, comprobar en localStorage
+    // 3. Comprobar clave guardada en localStorage
     if (!isCorrect) {
       const localPin = this.getAdminPin();
-      if (localPin) {
-        if (pin.trim() === localPin.trim()) {
-          isCorrect = true;
-        }
-      } else {
-        // Solo si nunca se ha establecido ninguna clave personalizada, permitir 1234
-        if (pin.trim() === '1234') {
-          isCorrect = true;
-        }
+      if (localPin && trimmed === localPin.trim()) {
+        isCorrect = true;
       }
     }
 
