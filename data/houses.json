@@ -1,1 +1,439 @@
-[]
+[
+  {
+    "title": "Los brujos de Daganzo",
+    "id": "casa-1791795110165-302",
+    "coords": [
+      40.544707,
+      -3.452858
+    ],
+    "category": "terror",
+    "hours": "18:30 a 23:00",
+    "kidsFriendly": false,
+    "image": "assets/casas/casa-1791795110165-302.jpg",
+    "inContest": true,
+    "hasCandies": true,
+    "createdAt": "2026-10-12T08:51:50.165Z",
+    "description": "Los calderos ya hierven en Daganzo... Acércate a la Casa de los Brujos y descubre nuevos trucos, pociones mágicas y rincones llenos de misterio que hemos preparado para esta noche. ¡Ven con tu mejor disfraz porque tenemos un botín gigante de chuches esperándote!",
+    "effects": [
+      "smoke",
+      "actors",
+      "sound",
+      "animatronics",
+      "lights",
+      "blacklight",
+      "walkthrough",
+      "projection"
+    ],
+    "candiesType": "deluxe",
+    "street": "Calle Cuesta del Rey 15, Daganzo de Arriba",
+    "status": "approved",
+    "icon": "🧙‍♀️",
+    "iconId": "bruja"
+  },
+  {
+    "coords": [
+      40.544196,
+      -3.460482
+    ],
+    "category": "caramelos",
+    "hasCandies": true,
+    "id": "casa-1791845714022-450",
+    "effects": [
+      "projection"
+    ],
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "candiesType": "normal",
+    "status": "approved",
+    "kidsFriendly": false,
+    "icon": "👻",
+    "title": "Todos a bordo.",
+    "street": "Calle Madrid 33",
+    "inContest": true,
+    "image": "assets/casas/casa-1791845714022-450.jpg",
+    "createdAt": "2026-10-12T22:55:14.023Z",
+    "hours": "18:30 a 21:30",
+    "iconId": "fantasma"
+  },
+  {
+    "effects": [],
+    "iconId": "murcielago",
+    "hasCandies": true,
+    "street": "Calle Pintor Rosales 1, Daganzo de Arriba, Madrid",
+    "icon": "🦇",
+    "status": "approved",
+    "title": "La Mansión de Bruce Wayne",
+    "createdAt": "2026-10-13T14:30:20.424Z",
+    "id": "casa-1791901820424-418",
+    "inContest": true,
+    "hours": "18:00 a 20:30",
+    "candiesType": "normal",
+    "coords": [
+      40.542241913211,
+      -3.456482092002
+    ],
+    "kidsFriendly": true,
+    "category": "infantil",
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "image": "assets/preset_photos/h1_mansion_calabazas.jpg"
+  },
+  {
+    "category": "caramelos",
+    "inContest": true,
+    "createdAt": "2026-10-15T12:13:48.118Z",
+    "iconId": "calabaza",
+    "title": "El Cementerio de las Calabazas",
+    "id": "casa-1792066428117-850",
+    "effects": [],
+    "image": "assets/preset_photos/h3_calabaza_fuego.jpg",
+    "status": "approved",
+    "hours": "19:30 a 22:00",
+    "street": "Avenida de las Artes 16, Daganzo de Arriba, Madrid",
+    "icon": "🎃",
+    "hasCandies": true,
+    "coords": [
+      40.550662311982,
+      -3.448672035452
+    ],
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "kidsFriendly": false,
+    "candiesType": "normal"
+  },
+  {
+    "hasCandies": true,
+    "createdAt": "2026-10-15T17:05:41.755Z",
+    "hours": "20:00 a 22:00",
+    "inContest": true,
+    "kidsFriendly": true,
+    "category": "infantil",
+    "image": "assets/preset_photos/h11_arana_gigante.jpg",
+    "title": "La maldición de OCHO patas",
+    "id": "casa-1792083941755-587",
+    "coords": [
+      40.547845028596,
+      -3.453839394941
+    ],
+    "effects": [
+      "smoke",
+      "sound",
+      "projection"
+    ],
+    "iconId": "tarantula",
+    "description": "Cuidado donde pisas, cualquier paso en falso te dejará atado para la eternidad, sin disfraz no hay chuches",
+    "street": "Calle de la Paz 42, Daganzo de Arriba, Madrid",
+    "status": "approved",
+    "icon": "🕷️",
+    "candiesType": "normal"
+  },
+  {
+    "hours": "19:00 a 21:30",
+    "category": "caramelos",
+    "image": "assets/casas/casa-1792097238932-302.jpg",
+    "title": "Alerta Paranormal en Daganzo",
+    "icon": "👹",
+    "coords": [
+      40.547841759654,
+      -3.454574152573
+    ],
+    "description": "🚨 EXPEDIENTE 11 — ALERTA PARANORMAL EN DAGANZO 👻\n\n\nDesde hace años, en el número 11 de la calle La Paz opera discretamente una unidad dedicada a la captura y contención de fantasmas, espectros y entidades sobrenaturales.\n\n\n⚠️ Tras recientes recortes y ajustes presupuestarios por parte del  Ayuntamiento de Daganzo, ¡LA UNIDAD DE CONTENCIÓN HA COLAPSADO!\n\n\n👻 Fantasmas, demonios, espíritus malignos y criaturas de otras dimensiones han escapado y deambulan libremente por la zona. Se han registrado apariciones, posesiones y sucesos que desafían toda lógica.\n\n\n🚨 Nuestro equipo trabaja contrarreloj para recuperar a las entidades fugadas, aunque las labores de captura están sujetas a disponibilidad presupuestaria.\n\n\n🐺 ¡Cuidado! Una peligrosa bestia infernal de ojos rojos continúa en paradero desconocido.\n\n\n¿Te atreves a acercarte al lugar donde comenzó todo?\n\n\n\n⚠️ Accede bajo tu propia responsabilidad. No nos hacemos responsables de posibles posesiones ni desapariciones interdimensionales.",
+    "effects": [
+      "sound",
+      "projection"
+    ],
+    "iconId": "demonio",
+    "hasCandies": true,
+    "createdAt": "2026-10-15T20:47:18.932Z",
+    "candiesType": "normal",
+    "inContest": true,
+    "kidsFriendly": false,
+    "street": "Calle de la Paz 11, Daganzo de Arriba, Madrid",
+    "id": "casa-1792097238932-302",
+    "status": "approved"
+  },
+  {
+    "iconId": "buho",
+    "id": "casa-1792702713152-555",
+    "effects": [],
+    "icon": "🦉",
+    "inContest": true,
+    "category": "caramelos",
+    "createdAt": "2026-10-22T20:58:33.152Z",
+    "status": "approved",
+    "street": "Calle de la Paz 45, Daganzo de Arriba, Madrid",
+    "kidsFriendly": false,
+    "image": "assets/preset_photos/h29_mansion_embrujada.jpg",
+    "hours": "18:30 a 21:00",
+    "hasCandies": true,
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "candiesType": "normal",
+    "coords": [
+      40.546255400659,
+      -3.454736426219
+    ],
+    "title": "La  mansión del niño insomne"
+  },
+  {
+    "street": "Calle Cuesta del Rey 44, Daganzo de Arriba, Madrid",
+    "status": "approved",
+    "kidsFriendly": true,
+    "icon": "👁️",
+    "iconId": "ojo",
+    "id": "casa-1792835600858-48",
+    "title": "The Ghostlys",
+    "coords": [
+      40.543433255769,
+      -3.45311662343
+    ],
+    "category": "infantil",
+    "inContest": true,
+    "createdAt": "2026-10-24T09:53:20.858Z",
+    "hasCandies": true,
+    "hours": "20:00 a 23:00",
+    "candiesType": "normal",
+    "effects": [],
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "image": "assets/casas/casa-1792835600858-48.jpg"
+  },
+  {
+    "image": "assets/casas/casa-1792858360846-234.jpg",
+    "effects": [
+      "smoke",
+      "sound",
+      "lights",
+      "projection"
+    ],
+    "category": "infantil",
+    "hasCandies": true,
+    "hours": "21:00 a 00:00",
+    "inContest": true,
+    "candiesType": "normal",
+    "createdAt": "2026-10-24T16:12:40.846Z",
+    "title": "Los Piratas  de los Culem",
+    "coords": [
+      40.542980151038,
+      -3.458316546613
+    ],
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "iconId": "esqueleto",
+    "icon": "☠️",
+    "kidsFriendly": true,
+    "status": "approved",
+    "street": "Camino Ancho 15  1 Izquierda",
+    "id": "casa-1792858360846-234"
+  },
+  {
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "kidsFriendly": false,
+    "status": "approved",
+    "candiesType": "normal",
+    "title": "El circo del terror",
+    "street": "Calle Oriente 9, Daganzo de Arriba, Madrid",
+    "category": "terror",
+    "image": "assets/preset_photos/h14_payaso_porche.jpg",
+    "iconId": "circo",
+    "hasCandies": true,
+    "hours": "19:00 a 21:00",
+    "icon": "🎪",
+    "coords": [
+      40.545447846197,
+      -3.456703742713
+    ],
+    "id": "casa-1792867600727-774",
+    "inContest": true,
+    "createdAt": "2026-10-24T18:46:40.727Z",
+    "effects": [
+      "actors",
+      "sound",
+      "lights"
+    ]
+  },
+  {
+    "hours": "19:00 a 21:00",
+    "coords": [
+      40.5518155,
+      -3.449918
+    ],
+    "id": "casa-1792965959196-853",
+    "image": "assets/preset_photos/h7_puerta_truco_trato.jpg",
+    "createdAt": "2026-10-25T22:05:59.196Z",
+    "title": "La casa de Coco",
+    "inContest": true,
+    "street": "Calle Jose Luis Garci 12, Daganzo de Arriba",
+    "candiesType": "deluxe",
+    "status": "approved",
+    "description": "Ven disfrazado para el truco o trato, podrás sacarte fotos con Coco y Miguel en el altar de los muertos , recibirás una bolsita temática Coco con chuches y podrás participar en un sorteo!!!",
+    "kidsFriendly": true,
+    "effects": [
+      "actors",
+      "photocall",
+      "sound",
+      "projection"
+    ],
+    "category": "infantil",
+    "icon": "🕯️",
+    "iconId": "vela",
+    "hasCandies": true
+  },
+  {
+    "iconId": "lapida",
+    "createdAt": "2026-10-26T10:08:11.159Z",
+    "inContest": true,
+    "icon": "🪦",
+    "status": "approved",
+    "street": "Calle Gallardo Español 6, Daganzo de Arriba, Madrid",
+    "kidsFriendly": false,
+    "category": "terror",
+    "id": "casa-1793009291158-330",
+    "image": "assets/preset_photos/h18_aquelarre_noche.jpg",
+    "candiesType": "normal",
+    "effects": [
+      "actors",
+      "sound",
+      "walkthrough"
+    ],
+    "description": "Pasaje del terror, con recorrido interior de la casa, decoración de Halloween y con diversos sustos.  La entrada se hará por grupos de 5-6 personas.",
+    "hours": "19:30 a 21:30",
+    "hasCandies": true,
+    "coords": [
+      40.551790809516,
+      -3.454062940299
+    ],
+    "title": "Pasaje terrorífico"
+  },
+  {
+    "title": "La Morgue",
+    "category": "caramelos",
+    "iconId": "calavera",
+    "hours": "18:30 a 20:30",
+    "id": "casa-1793035501285-241",
+    "image": "assets/preset_photos/h17_calabaza_entrada.jpg",
+    "createdAt": "2026-10-26T17:25:01.285Z",
+    "street": "Avenida de las Lomas 83, Daganzo de Arriba, Madrid",
+    "inContest": true,
+    "status": "approved",
+    "hasCandies": true,
+    "effects": [],
+    "kidsFriendly": false,
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "coords": [
+      40.55257388882,
+      -3.458982027815
+    ],
+    "candiesType": "normal",
+    "icon": "💀"
+  },
+  {
+    "effects": [
+      "sound"
+    ],
+    "id": "casa-1793098715247-609",
+    "category": "infantil",
+    "createdAt": "2026-10-27T10:58:35.248Z",
+    "iconId": "mansion",
+    "inContest": true,
+    "hasCandies": true,
+    "status": "approved",
+    "street": "Carretera del Fresno 2, Daganzo de Arriba",
+    "icon": "🏚️",
+    "title": "El esqueleto y la calabaza",
+    "image": "assets/casas/casa-1793098715247-609.jpg",
+    "coords": [
+      40.543357981692594,
+      -3.4578071095501
+    ],
+    "kidsFriendly": true,
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "candiesType": "normal",
+    "hours": "20:00 a 22:30"
+  },
+  {
+    "effects": [
+      "sound",
+      "actors"
+    ],
+    "hasCandies": true,
+    "iconId": "payaso",
+    "category": "caramelos",
+    "kidsFriendly": false,
+    "street": "Calle Gustavo Adolfo Becquer 31, Daganzo de Arriba",
+    "status": "approved",
+    "id": "casa-1793124044442-507",
+    "title": "🔥🎪🤡Circo Abandonado 🤡🎪🔥",
+    "hours": "19:00 a 20:30",
+    "description": "🎪🤡🔥Varios lustros atrás... Un pavoroso incendio culminó el célebre circo de Cachopolandia, condenando a sus ánimas a vagar encadenadas entre las tinieblas de sus propias entrañas. Desde entonces, nadie osa profanar aquellas ruinas calcinadas, donde el eco de la otrora algarabía aún susurra entre cenizas y espectros.🔥🤡🎪",
+    "coords": [
+      40.54645838860283,
+      -3.4615781120396925
+    ],
+    "candiesType": "normal",
+    "icon": "🤡",
+    "createdAt": "2026-10-27T18:00:44.442Z",
+    "image": "assets/preset_photos/h14_payaso_porche.jpg",
+    "inContest": true
+  },
+  {
+    "icon": "🍬",
+    "image": "assets/preset_photos/h2_porche_brujas.jpg",
+    "coords": [
+      40.544261688602,
+      -3.461718836498
+    ],
+    "hours": "18:30 a 22:00",
+    "hasCandies": true,
+    "title": "Brujilda jijijiji",
+    "category": "infantil",
+    "createdAt": "2026-10-27T21:32:06.922Z",
+    "status": "approved",
+    "id": "casa-1793136726922-291",
+    "inContest": true,
+    "street": "Carretera de Cobeña 20, Daganzo de Arriba, Madrid",
+    "effects": [],
+    "kidsFriendly": true,
+    "iconId": "caramelo",
+    "candiesType": "normal",
+    "description": "¡Nueva decoración vecinal en Daganzo!"
+  },
+  {
+    "iconId": "luna_cuerno",
+    "inContest": true,
+    "category": "infantil",
+    "kidsFriendly": true,
+    "createdAt": "2026-10-29T13:14:49.851Z",
+    "status": "approved",
+    "street": "Calle Cuesta Lengua 45, Daganzo de Arriba, Madrid",
+    "effects": [],
+    "hasCandies": true,
+    "icon": "🌙",
+    "image": "assets/preset_photos/h6_cementerio_jardin.jpg",
+    "id": "casa-1793279689851-938",
+    "hours": "20:00 a 22:30",
+    "description": "¡Nueva decoración vecinal en Daganzo!",
+    "coords": [
+      40.543069439262,
+      -3.45350965087
+    ],
+    "title": "La casa de la cuesta",
+    "candiesType": "normal"
+  },
+  {
+    "candiesType": "normal",
+    "effects": [],
+    "id": "casa-1793305817542-114",
+    "kidsFriendly": true,
+    "createdAt": "2026-10-29T20:30:17.542Z",
+    "iconId": "cuervo",
+    "description": "Ven disfrazado y a disfrutar mi peque de 4 años te espera 👻",
+    "inContest": true,
+    "hasCandies": true,
+    "status": "approved",
+    "street": "Calle Oriente 62, Daganzo de Arriba",
+    "category": "infantil",
+    "icon": "🦅",
+    "title": "Cementerio",
+    "coords": [
+      40.54765146444967,
+      -3.4553949202794527
+    ],
+    "image": "assets/preset_photos/h6_cementerio_jardin.jpg",
+    "hours": "17:00 a 18:30"
+  }
+]
